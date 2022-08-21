@@ -10,7 +10,6 @@ import SwiftUI
 struct ContentView: View {
     
     let emojis: [ String: [String] ] = [
-        "smileys": EmojiConstants.smileys,
         "animals": EmojiConstants.animals,
         "food": EmojiConstants.food,
         "stationery": EmojiConstants.stationery,
@@ -18,11 +17,11 @@ struct ContentView: View {
     ]
     
     @State var emojiCount = 20
-    @State var theme = "smileys"
+    @State var theme = "animals"
     
     var body: some View {
         VStack {
-            Text("Memorize!")
+            Text("Memorize!").font(.largeTitle)
             ScrollView {
                 LazyVGrid(columns: [GridItem(), GridItem(), GridItem(), GridItem()]) {
                     ForEach(emojis[theme]![0..<emojiCount], id: \.self, content: { emoji in
@@ -34,18 +33,17 @@ struct ContentView: View {
             .foregroundColor(.red).padding()
             Spacer()
             HStack {
-                smileysButton
-                Spacer()
                 animalsButton
                 Spacer()
                 foodButton
                 Spacer()
                 stationeryButton
                 Spacer()
-                animalsButton
+                travelButton
             }
-            .padding(.horizontal)
+            .font(.title2)
             .labelStyle(VerticalLabelStyle())
+            .padding(.horizontal)
         }
     }
     var smileysButton: some View {
@@ -53,35 +51,35 @@ struct ContentView: View {
             theme = "smileys"
         } label: {
             Label("Smileys", systemImage:"face.smiling.fill")
-        }
+        }.disabled(theme == "smileys")
     }
     var animalsButton: some View {
         Button {
             theme = "animals"
         } label: {
             Label("Animals", systemImage: "ladybug.fill")
-        }
+        }.disabled(theme == "animals")
     }
     var foodButton: some View {
         Button {
             theme = "food"
         } label: {
             Label("Food", systemImage: "fork.knife")
-        }
+        }.disabled(theme == "food")
     }
     var stationeryButton: some View {
         Button {
             theme = "stationery"
         } label: {
             Label("Books", systemImage: "books.vertical.circle.fill")
-        }
+        }.disabled(theme == "stationery")
     }
     var travelButton: some View {
         Button {
             theme = "travel"
         } label: {
             Label("Travel", systemImage: "airplane.circle.fill")
-        }
+        }.disabled(theme == "travel")
     }
 }
 
