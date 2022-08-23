@@ -10,29 +10,32 @@ import SwiftUI
 struct ContentView: View {
     
     let emojis: [ String: [String] ] = [
+        "smileys": EmojiConstants.smileys,
         "animals": EmojiConstants.animals,
         "food": EmojiConstants.food,
         "stationery": EmojiConstants.stationery,
         "travel": EmojiConstants.travel
     ]
     
-    @State var emojiCount = 20
+    @State var emojiCount = 25
     @State var theme = "animals"
     
     var body: some View {
         VStack {
+            Spacer()
             Text("Memorize!").font(.largeTitle)
             ScrollView {
-                LazyVGrid(columns: [GridItem(), GridItem(), GridItem(), GridItem()]) {
-                    ForEach(emojis[theme]![0..<emojiCount], id: \.self, content: { emoji in
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65, maximum: 100))]) {
+                    ForEach(emojis[theme]![0..<emojiCount].shuffled(), id: \.self, content: { emoji in
                         CardView(content: emoji)
                             .aspectRatio(2/3, contentMode: .fit)
                     })
                 }
             }
-            .foregroundColor(.red).padding()
-            Spacer()
+            .foregroundColor(.red).padding(.horizontal)
             HStack {
+                smileysButton
+                Spacer()
                 animalsButton
                 Spacer()
                 foodButton
@@ -41,9 +44,8 @@ struct ContentView: View {
                 Spacer()
                 travelButton
             }
-            .font(.title2)
             .labelStyle(VerticalLabelStyle())
-            .padding(.horizontal)
+            .padding([.horizontal, .bottom], 20)
         }
     }
     var smileysButton: some View {
@@ -86,7 +88,7 @@ struct ContentView: View {
 struct VerticalLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 8) {
-            configuration.icon
+            configuration.icon.font(.title2)
             configuration.title
         }
     }
