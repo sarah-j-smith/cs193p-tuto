@@ -9,22 +9,22 @@ import SwiftUI
 
 struct ContentView: View {
     
-    let emojis: [ String: [String] ] = [
-        "smileys": EmojiConstants.smileys,
-        "animals": EmojiConstants.animals,
-        "food": EmojiConstants.food,
-        "stationery": EmojiConstants.stationery,
-        "travel": EmojiConstants.travel
-    ]
+//    let emojis: [ String: [String] ] = [
+//        "smileys": EmojiConstants.smileys,
+//        "animals": EmojiConstants.animals,
+//        "food": EmojiConstants.food,
+//        "stationery": EmojiConstants.office,
+//        "travel": EmojiConstants.travel
+//    ]
     
-    @State var theme = "animals"
+//    @State var theme = "animals"
     
     @ObservedObject var viewModel: EmojiMemoryGame
     
     var body: some View {
         VStack {
-            Spacer()
-            Text("Memorize!").font(.largeTitle)
+//            Spacer()
+//            Text("Memorize!").font(.largeTitle)
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 65, maximum: 100))]) {
                     ForEach(viewModel.cards, content: { card in
@@ -37,63 +37,26 @@ struct ContentView: View {
                 }
             }
             .foregroundColor(.red).padding(.horizontal)
-            HStack {
-                smileysButton
-                Spacer()
-                animalsButton
-                Spacer()
-                foodButton
-                Spacer()
-                stationeryButton
-                Spacer()
-                travelButton
-            }
-            .labelStyle(VerticalLabelStyle())
-            .padding([.horizontal, .bottom], 20)
+            newGameButton
+                .padding()
+                .labelStyle(VerticalLabelStyle())
+//            .padding([.horizontal, .bottom], 20)
         }
     }
-    var smileysButton: some View {
+    var newGameButton: some View {
         Button {
-            theme = "smileys"
+            viewModel.newGame()
         } label: {
-            Label("Smileys", systemImage:"face.smiling.fill")
-        }.disabled(theme == "smileys")
-    }
-    var animalsButton: some View {
-        Button {
-            theme = "animals"
-        } label: {
-            Label("Animals", systemImage: "ladybug.fill")
-        }.disabled(theme == "animals")
-    }
-    var foodButton: some View {
-        Button {
-            theme = "food"
-        } label: {
-            Label("Food", systemImage: "fork.knife")
-        }.disabled(theme == "food")
-    }
-    var stationeryButton: some View {
-        Button {
-            theme = "stationery"
-        } label: {
-            Label("Books", systemImage: "books.vertical.circle.fill")
-        }.disabled(theme == "stationery")
-    }
-    var travelButton: some View {
-        Button {
-            theme = "travel"
-        } label: {
-            Label("Travel", systemImage: "airplane.circle.fill")
-        }.disabled(theme == "travel")
+            Label("New Game", systemImage: "shuffle.circle")
+        }
     }
 }
 
 struct VerticalLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 8) {
-            configuration.icon.font(.title2)
             configuration.title
+            configuration.icon.font(.largeTitle)
         }
     }
 }
@@ -108,6 +71,8 @@ struct CardView: View {
                 shape.strokeBorder(lineWidth: 3)
                 Text(card.content)
                     .font(.largeTitle)
+            } else if card.isMatched {
+                shape.opacity(0.0)
             } else {
                 shape.fill()
             }
