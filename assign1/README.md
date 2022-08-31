@@ -13,6 +13,16 @@
 9. Thetextdescriptionofthetheme-choosingbuttonsmustuseanoticeablysmallerfont than the font we chose for the emoji on the cards.
 10. Your UI should work in portrait or landscape on any iPhone. This probably will not require any work on your part (that’s part of the power of SwiftUI), but be sure to experiment with running on different simulators in Xcode to be sure.
 
+# Screenshots
+
+* Portrait screenshot with some cards flipped
+
+![Portrait screenshot with some cards flipped](screenshots/assign1-portrait.png)
+
+* Landscape screenshot
+
+![Landscape screenshot](screenshots/assign2-landscape.png)
+
 ## Attributions
 
 I added an App Icon by using this image and putting a background on it:
