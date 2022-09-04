@@ -13,10 +13,11 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
+            gameHeader.padding(10.0)
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 65, maximum: 100))]) {
                     ForEach(viewModel.cards, content: { card in
-                        CardView(card: card)
+                        CardView(card: card, themeColor: viewModel.currentThemeColor)
                             .aspectRatio(2/3, contentMode: .fit)
                             .onTapGesture {
                                 viewModel.choose(card)
@@ -24,7 +25,7 @@ struct ContentView: View {
                     })
                 }
             }
-            .foregroundColor(.red).padding(.horizontal)
+            .padding(.horizontal)
             newGameButton
                 .padding()
                 .labelStyle(VerticalLabelStyle())
@@ -35,6 +36,18 @@ struct ContentView: View {
             viewModel.newGame()
         } label: {
             Label("New Game", systemImage: "shuffle.circle")
+        }
+    }
+    var gameHeader: some View {
+        HStack {
+            let themeTitle = Text("Theme: \(viewModel.currentTheme.name.capitalized)")
+            if let gameScore = viewModel.currentScore {
+                themeTitle.font(.title2)
+                Spacer()
+                Text("Score: \(gameScore)")
+            } else {
+                themeTitle.font(.title)
+            }
         }
     }
 }
@@ -50,9 +63,10 @@ struct VerticalLabelStyle: LabelStyle {
 
 struct CardView: View {
     let card: MemoryGame<String>.Card
+    let themeColor: Color
     var body: some View {
         ZStack {
-            let shape = RoundedRectangle(cornerRadius: 20.0)
+            let shape = RoundedRectangle(cornerRadius: 10.0)
             if card.isFaceUp {
                 shape.fill().foregroundColor(.white)
                 shape.strokeBorder(lineWidth: 3)
@@ -61,7 +75,7 @@ struct CardView: View {
             } else if card.isMatched {
                 shape.opacity(0.0)
             } else {
-                shape.fill()
+                shape.fill(.linearGradient(Gradient(colors: [themeColor.opacity(0.2), themeColor]), startPoint: UnitPoint(x: 0.2, y: 0.1), endPoint: UnitPoint(x: 0.8, y: 0.9)))
             }
         }
     }

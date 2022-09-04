@@ -11,12 +11,39 @@ class EmojiMemoryGame : ObservableObject {
     
     static func createMemoryGame() -> MemoryGame<String> {
         let theme = MemoryGame<String>.Theme(fromNamedContentArrays: EmojiConstants.all())
-        return MemoryGame<String>(numberOfPairsOfCards: theme.numberOfPairs) { pairIndex in
+        return MemoryGame<String>(withTheme: theme) { pairIndex in
             theme.itemSet[pairIndex]
         }
     }
 
     @Published private var model = createMemoryGame()
+    
+    var currentThemeColor: Color {
+        switch model.theme.colorForCards {
+        case .blue:
+            return Color.blue
+        case .pink:
+            return Color.pink
+        case .purple:
+            return Color.purple
+        case .green:
+            return Color.green
+        case .orange:
+            return Color.orange
+        case .red:
+            return Color.red
+        case .yellow:
+            return Color.yellow
+        }
+    }
+    
+    var currentTheme: MemoryGame<String>.Theme {
+        return model.theme
+    }
+    
+    var currentScore: Int? {
+        return model.score
+    }
     
     var cards: Array<MemoryGame<String>.Card> {
         return model.cards
