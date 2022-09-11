@@ -67,19 +67,27 @@ struct CardView: View {
     let card: MemoryGame<String>.Card
     let themeColor: Color
     var body: some View {
-        ZStack {
-            let shape = RoundedRectangle(cornerRadius: 10.0)
-            if card.isFaceUp {
-                shape.fill().foregroundColor(.white)
-                shape.strokeBorder(lineWidth: 3)
-                Text(card.content)
-                    .font(.largeTitle)
-            } else if card.isMatched {
-                shape.opacity(0.0)
-            } else {
-                shape.fill(.linearGradient(Gradient(colors: [themeColor.opacity(0.2), themeColor]), startPoint: UnitPoint(x: 0.2, y: 0.1), endPoint: UnitPoint(x: 0.8, y: 0.9)))
-            }
+        GeometryReader { geometry in
+            ZStack {
+                let shape = RoundedRectangle(cornerRadius: 10.0)
+                if card.isFaceUp {
+                    shape.fill().foregroundColor(.white)
+                    shape.strokeBorder(lineWidth: Constants.borderThickness)
+                    Text(card.content)
+                        .font(.system(size: .minimum(geometry.size.width, geometry.size.height) * 0.9))
+                } else if card.isMatched {
+                    shape.opacity(0.0)
+                } else {
+                    shape.fill(.linearGradient(Gradient(colors: [themeColor.opacity(0.2), themeColor]), startPoint: UnitPoint(x: 0.2, y: 0.1), endPoint: UnitPoint(x: 0.8, y: 0.9)))
+                    shape.strokeBorder(lineWidth: Constants.borderThickness)
+                }
+            }.foregroundColor(themeColor)
         }
+    }
+    
+    struct Constants {
+        static let cornerRadius: CGFloat = 10.0
+        static let borderThickness: CGFloat = 3.0
     }
 }
 
