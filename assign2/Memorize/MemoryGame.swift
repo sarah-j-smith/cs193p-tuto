@@ -58,24 +58,10 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     }
     
     /**
-     Keep score in your game by penalizing 1 point for every previously seen card that is involved in a mismatch and
+     Keep score by penalizing 1 point for every previously seen card that is involved in a mismatch and
      giving 2 points for every match (whether or not the cards involved have been “previously seen”).
-     See Hints below for a more detailed explanation. The score is allowed to be negative if the user is bad at Memorize.
-     
-     Hints:
+     The score is allowed to be negative if the user is bad at Memorize.
      A card has “already been seen” only if it has, at some point, been face up and then is turned back face down.
-     So tracking “seen” cards is probably something you’ll want to do when you turn a card that is face up to be face down.
-     
-     If you flipped over a 🐧 + 👻 , then flipped over a ✏ + 🏀 , then flipped over two 👻 s, your score would be 2
-     because you’d have scored a match (and no penalty would be incurred for the flips involving 🐧 , ✏ or 🏀
-     because they have not (yet) been involved in a mismatch, nor was the 👻 ever involved in a mismatch). If you
-     then flipped over the 🐧 again + 🐼 , then flipped 🏀 + 🐧 once more, your score would drop 3 full points down
-     to -1 overall because that 🐧 card had already been seen (on the very first flip) and subsequently was involved
-     in two separate mismatches (scoring -1 for each mismatch) and the 🏀 was mismatched after already having
-     been seen (-1). If you then flip 🐧 + the other 🐧 that you finally found, you’d get 2 points for a match and be
-     back up to 1 total point.
-     
-     The “already been seen” concept is about specific cards that have already been seen, not emoji that have been seen.
      */
     mutating private func updateScore(_ scoreUpdate: ScoreType) {
         switch scoreUpdate {
@@ -97,7 +83,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         var content: CardContent
     }
     
-    enum ScoreType {
+    enum ScoreType: Equatable {
         case match
         case mismatch(Int, Int)
     }
@@ -120,27 +106,35 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         let name: String
         let numberOfPairs: Int
         let colorForCards: CardColor
-
-        /**
-         Initialise a randomly generated Theme from the given content.
-         - Parameter fromNamedContentArrays: A dictionary mapping string names to arrays of content items
-         */
-        init(fromNamedContentArrays content: ContentDictionary) {
-            self.init(fromNamedContentArrays: content, withPairCount: content.count)
+        
+        public enum Error: Swift.Error {
+            case invalidContentArraysOrName
+        }
+        
+        init() {
+            name = "Error Game"
+            numberOfPairs = 0
+            colorForCards = CardColor.red
+            itemSet = []
         }
         
         /**
-         Initialise a randomly generated Theme with the given number of pairs taken from the given content.
-         - Parameter fromNamedContentArrays: A dictionary mapping string names to arrays of content items
-         - Parameter withPairCount: Number of pairs of content items for the theme
+         Initialise a Theme with the given number of pairs taken from the given content, and the given number of pairs.
+         - Parameter fromNamedContentArrays: A dictionary mapping theme names to arrays of content items.
+         - Parameter named: The name of the theme within the dictionary of content. If nil, a random theme will be chosen.
+         - Parameter withPairCount: Number of pairs of content items for the theme, or if nil, a random number of pairs; clamped to the range 1 ... content.count
          */
-        init(fromNamedContentArrays content: ContentDictionary, withPairCount pairCount: Int) {
-            name = content.keys.randomElement()!
-            numberOfPairs = pairCount
+        init(fromNamedContentArrays content: ContentDictionary, named: String? = nil, withPairCount pairCount: Int? = nil) {
+            let nameSelected = named ?? content.keys.randomElement()
+            guard let haveName = nameSelected, let contentSelected = content[haveName] else {
+                self = Theme()
+                return
+            }
+            name = haveName
+            numberOfPairs = pairCount ?? Int.random(in: 1...contentSelected.count)
             colorForCards =  CardColor.allCases.randomElement()!
             let shuffledItems = content[name]!.shuffled()[0..<numberOfPairs]
             itemSet = Array<CardContent>(shuffledItems)
-
         }
     }
 }

@@ -14,18 +14,20 @@ struct ContentView: View {
     var body: some View {
         VStack {
             gameHeader.padding(10.0)
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65, maximum: 100))]) {
-                    ForEach(viewModel.cards, content: { card in
-                        CardView(card: card, themeColor: viewModel.currentThemeColor)
-                            .aspectRatio(2/3, contentMode: .fit)
-                            .onTapGesture {
-                                viewModel.choose(card)
-                            }
-                    })
+            ZStack {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 65, maximum: 100))]) {
+                        ForEach(viewModel.cards, content: { card in
+                            CardView(card: card, themeColor: viewModel.currentThemeColor)
+                                .aspectRatio(2/3, contentMode: .fit)
+                                .onTapGesture {
+                                    viewModel.choose(card)
+                                }
+                        })
+                    }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
             newGameButton
                 .padding()
                 .labelStyle(VerticalLabelStyle())
