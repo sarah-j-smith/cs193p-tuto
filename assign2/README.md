@@ -1,5 +1,7 @@
 # Assignment 2 - Memorize Game v2
 
+* All requirements done
+
 * The [PDF for assignment two](https://cs193p.sites.stanford.edu/sites/g/files/sbiybj16636/files/media/file/Assignment%202.pdf) specifies the requirements.
 
 1. ✅ Get the Memorize game working as demonstrated in lectures 1 through 4. Type in all the code. Do not copy/paste from anywhere.
@@ -14,10 +16,11 @@
 10. ✅ Add a “New Game” button to your UI (anywhere you think is best) which begins a brand new game.
 11. ✅ A new game should use a randomly chosen theme and touching the New Game button should repeatedly keep choosing a new random theme.
 12. ✅ The cards in a new game should all start face down.
-13. ❌ The cards in a new game should be fully shuffled. This means that they are not in any predictable order, that they are selected from any of the emojis in the theme (i.e. Required Task 5), and also that the matching pairs are not all side-by-side like they were in lecture (though they can accidentally still appear side-by-side at random).
-14. ❌ Show the theme’s name in your UI. You can do this in whatever way you think looks best.
-15. ❌ Keep score in your game by penalizing 1 point for every previously seen card that is involved in a mismatch and giving 2 points for every match (whether or not the cards involved have been “previously seen”). See Hints below for a more detailed explanation. The score is allowed to be negative if the user is bad at Memorize.
-16. ❌ Display the score in your UI. You can do this in whatever way you think looks best.
+13. ✅ The cards in a new game should be fully shuffled. This means that they are not in any predictable order, that they are selected from any of the emojis in the theme (i.e. Required Task 5), and also that the matching pairs are not all side-by-side like they were in lecture (though they can accidentally still appear side-by-side at random).
+14. ✅ Show the theme’s name in your UI. You can do this in whatever way you think looks best.
+15. ✅ Keep score in your game by penalizing 1 point for every previously seen card that is involved in a mismatch and giving 2 points for every match (whether or not the cards involved have been “previously seen”). See Hints below for a more detailed explanation. The score is allowed to be negative if the user is bad at Memorize.
+16. ✅ Display the score in your UI. You can do this in whatever way you think looks best.
+
 
 # Screenshots
 
