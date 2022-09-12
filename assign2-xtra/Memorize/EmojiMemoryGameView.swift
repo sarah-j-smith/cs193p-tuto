@@ -19,7 +19,7 @@ struct EmojiMemoryGameView: View {
                     .aspectRatio(2/3, contentMode: .fit)
                     .onTapGesture {
                         game.choose(card)
-                    }.padding(5.0)
+                    }.padding(3.0)
             }).padding(.horizontal)
             newGameButton
                 .padding()
@@ -62,12 +62,12 @@ struct CardView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                let shape = RoundedRectangle(cornerRadius: 10.0)
+                let shape = RoundedRectangle(cornerRadius: Constants.cornerRadius)
                 if card.isFaceUp {
                     shape.fill().foregroundColor(.white)
                     shape.strokeBorder(lineWidth: Constants.borderThickness)
                     Text(card.content)
-                        .font(.system(size: .minimum(geometry.size.width, geometry.size.height) * 0.9))
+                        .font(.system(size: .minimum(geometry.size.width, geometry.size.height) * Constants.textScale))
                 } else if card.isMatched {
                     shape.opacity(0.0)
                 } else {
@@ -80,7 +80,8 @@ struct CardView: View {
     
     struct Constants {
         static let cornerRadius: CGFloat = 10.0
-        static let borderThickness: CGFloat = 3.0
+        static let borderThickness: CGFloat = 2.0
+        static let textScale: CGFloat = 0.85
     }
 }
 
