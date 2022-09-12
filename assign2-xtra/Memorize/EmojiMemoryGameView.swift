@@ -14,20 +14,13 @@ struct EmojiMemoryGameView: View {
     var body: some View {
         VStack {
             gameHeader.padding(10.0)
-            ZStack {
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 65, maximum: 100))]) {
-                        ForEach(game.cards, content: { card in
-                            CardView(card: card, themeColor: game.currentThemeColor)
-                                .aspectRatio(2/3, contentMode: .fit)
-                                .onTapGesture {
-                                    game.choose(card)
-                                }
-                        })
-                    }
-                }
-                .padding(.horizontal)
-            }
+            AspectVGrid(items: game.cards, aspectRatio: 2/3, content: { card in
+                CardView(card: card, themeColor: game.currentThemeColor)
+                    .aspectRatio(2/3, contentMode: .fit)
+                    .onTapGesture {
+                        game.choose(card)
+                    }.padding(5.0)
+            }).padding(.horizontal)
             newGameButton
                 .padding()
                 .labelStyle(VerticalLabelStyle())
