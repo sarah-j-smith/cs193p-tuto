@@ -14,13 +14,17 @@ struct EmojiMemoryGameView: View {
     var body: some View {
         VStack {
             gameHeader.padding(10.0)
-            AspectVGrid(items: game.cards, aspectRatio: 2/3, content: { card in
-                CardView(card: card, themeColor: game.currentThemeColor)
-                    .aspectRatio(2/3, contentMode: .fit)
-                    .onTapGesture {
-                        game.choose(card)
-                    }.padding(3.0)
-            }).padding(.horizontal)
+            AspectVGrid(items: game.cards, aspectRatio: 2/3) { card in
+                if card.isMatched {
+                    Rectangle().opacity(0.0)
+                } else {
+                    CardView(card: card, themeColor: game.currentThemeColor)
+                        .aspectRatio(2/3, contentMode: .fit)
+                        .onTapGesture {
+                            game.choose(card)
+                        }.padding(2)
+                }
+            }.padding(.horizontal)
             newGameButton
                 .padding()
                 .labelStyle(VerticalLabelStyle())
@@ -68,8 +72,6 @@ struct CardView: View {
                     shape.strokeBorder(lineWidth: Constants.borderThickness)
                     Text(card.content)
                         .font(.system(size: .minimum(geometry.size.width, geometry.size.height) * Constants.textScale))
-                } else if card.isMatched {
-                    shape.opacity(0.0)
                 } else {
                     shape.fill(.linearGradient(Gradient(colors: [themeColor.opacity(0.2), themeColor]), startPoint: UnitPoint(x: 0.2, y: 0.1), endPoint: UnitPoint(x: 0.8, y: 0.9)))
                     shape.strokeBorder(lineWidth: Constants.borderThickness)
@@ -91,11 +93,8 @@ struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
         let game = EmojiMemoryGame()
-        EmojiMemoryGameView(game: game)
+        game.choose(game.cards.first!)
+        return EmojiMemoryGameView(game: game)
             .preferredColorScheme(.light)
-        
-        EmojiMemoryGameView(game: game)
-            .preferredColorScheme(.dark)
-            .previewInterfaceOrientation(.landscapeLeft)
     }
 }
