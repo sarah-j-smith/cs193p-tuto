@@ -14,7 +14,11 @@ struct CardView: View {
             let shape = RoundedRectangle(cornerRadius: Constants.cornerRadius)
             shape.fill().foregroundColor(.white)
             shape.strokeBorder(lineWidth: Constants.borderThickness)
-            Text(card.content).font(.largeTitle)
+            Capsule()
+                .stroke(lineWidth: 3.0)
+                .fill(.green)
+                .aspectRatio(3/2, contentMode: .fit)
+                .padding(20.0)
         }
     }
     

@@ -11,7 +11,7 @@ class SetGameViewModel: ObservableObject {
     
     typealias Card = SetGameModel.Card
     
-    @Published private var model = SetGameModel(cards: [ Card(id: 0, content: "A"), Card(id: 1, content: "B") ])
+    @Published private var model = SetGameModel(cards: [ Card(id: 0, shape: .Oval, color: .Green) ])
     
     var cards: [ SetGameModel.Card ] {
         return model.cards
