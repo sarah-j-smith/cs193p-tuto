@@ -14,7 +14,8 @@ struct ContentView: View {
     var body: some View {
         VStack {
             gameHeader.padding(10.0)
-            AspectVGrid(items: game.cards, aspectRatio: 2/3) { card in
+            let cardsDealt = Array( game.cards[0 ..< 12] )
+            AspectVGrid(items: cardsDealt, aspectRatio: 2/3) { card in
                 CardView(card: card).padding(4.0)
             }.padding(.horizontal)
             HStack {
@@ -52,8 +53,8 @@ struct ContentView: View {
 struct VerticalLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 8) {
-            configuration.title
             configuration.icon.font(.largeTitle)
+            configuration.title
         }
     }
 }

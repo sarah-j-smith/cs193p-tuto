@@ -30,6 +30,8 @@
 		B26F947428D2C3D50075E6D5 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameModel.swift; sourceTree = "<group>"; };
 		B26F947828D2C68C0075E6D5 /* SetGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameViewModel.swift; sourceTree = "<group>"; };
+		B2DCAAF928D4099B008163F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B2DCAAFB28D41BB1008163F4 /* screenshot-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screenshot-1.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +48,8 @@
 		B26F945428D2BEA90075E6D5 = {
 			isa = PBXGroup;
 			children = (
+				B2DCAAFA28D41B7A008163F4 /* doc */,
+				B2DCAAF928D4099B008163F4 /* README.md */,
 				B26F946F28D2BF0D0075E6D5 /* SetCards */,
 				B26F945F28D2BEA90075E6D5 /* SetGame */,
 				B26F945E28D2BEA90075E6D5 /* Products */,
@@ -90,6 +94,14 @@
 				B26F947028D2BF350075E6D5 /* 1920px-Set_isomorphic_cards.svg.png */,
 			);
 			path = SetCards;
+			sourceTree = "<group>";
+		};
+		B2DCAAFA28D41B7A008163F4 /* doc */ = {
+			isa = PBXGroup;
+			children = (
+				B2DCAAFB28D41BB1008163F4 /* screenshot-1.png */,
+			);
+			path = doc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
