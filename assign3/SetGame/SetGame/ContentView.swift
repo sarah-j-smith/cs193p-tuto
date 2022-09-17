@@ -16,8 +16,10 @@ struct ContentView: View {
             gameHeader.padding(10.0)
             let cardsDealt = Array( game.cards[0 ..< 12] )
             AspectVGrid(items: cardsDealt, aspectRatio: 2/3) { card in
-                CardView(card: card).padding(4.0)
-            }.padding(.horizontal)
+                CardView(card: card).padding(4.0).onTapGesture {
+                    game.cardTapped(cardId: card.id)
+                }
+            }.padding(.horizontal, 3.0)
             HStack {
                 newGameButton
                 Spacer()
@@ -29,7 +31,7 @@ struct ContentView: View {
     
     private var newGameButton: some View {
         Button {
-            print("New game pressed")
+            game.newGamePressed()
         } label: {
             Label("New Game", systemImage: "shuffle.circle")
         }
@@ -37,7 +39,7 @@ struct ContentView: View {
     
     private var dealThreeMoreButton: some View {
         Button {
-            print("Deal three more pressed")
+            game.dealThreeMorePressed()
         } label: {
             Label("Deal 3", systemImage: "square.3.stack.3d")
         }

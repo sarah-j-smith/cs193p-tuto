@@ -17,10 +17,34 @@ import Foundation
  */
 struct SetGameModel {
     
-    var cards: [ Card ] = fillDeck() //.shuffled()
+    var cards: [ Card ] = fillDeck().shuffled()
     
     static let UniqueCardCount = 81
     static let NumberOfShapesMax = 3
+
+    // When the game starts we have 12 cards dealt out - indexes
+    // This index partitions the array of cards into two: those
+    // that have been dealt out and those that have not
+    // If this value is >= UniqueCardCount, then all cards are dealt
+    private var indexOfFirstUndealtCard: Int = 12
+    
+    var deckCards: [ Card ] {
+        return Array( cards[ indexOfFirstUndealtCard... ] )
+    }
+    
+    var dealtCards: [ Card ] {
+        return Array( cards[ 0 ..< indexOfFirstUndealtCard ] )
+    }
+    
+    mutating func dealCards(cardCount: Int) {
+        indexOfFirstUndealtCard += cardCount
+    }
+    
+    mutating func selectCards(cardId: Int) {
+        if let haveCard = cards.firstIndex(where: { $0.id == cardId }) {
+            cards[haveCard].selected = true
+        }
+    }
     
     enum ShapeFeature {
         case Diamond
@@ -39,13 +63,14 @@ struct SetGameModel {
         case StripedShading
         case OpenShading
     }
-
+    
     struct Card: Identifiable {
         let id: Int
         let numberOfShapes: Int
         let shading: ShadingFeature
         let shape: ShapeFeature
         let color: ColorFeature
+        var selected: Bool
     }
     
     static func fillDeck() -> [ Card ] {
@@ -57,7 +82,8 @@ struct SetGameModel {
                     for numShapes in 1...NumberOfShapesMax {
                         newDeck.append(Card(id: cardIndex,
                                             numberOfShapes: numShapes,
-                                            shading: shadingFeature, shape: shapeFeature, color: colorFeature))
+                                            shading: shadingFeature, shape: shapeFeature, color: colorFeature,
+                                            selected: false))
                         cardIndex += 1
                     }
                 }
@@ -83,7 +109,7 @@ extension SetGameModel.ShapeFeature: CustomStringConvertible, CustomDebugStringC
             return "Oval"
         }
     }
-
+    
     var debugDescription: String {
         return description
     }
@@ -101,7 +127,7 @@ extension SetGameModel.ColorFeature: CustomStringConvertible, CustomDebugStringC
             return "Green"
         }
     }
-
+    
     var debugDescription: String {
         return description
     }
@@ -119,7 +145,7 @@ extension SetGameModel.ShadingFeature: CustomStringConvertible, CustomDebugStrin
             return "Solid"
         }
     }
-
+    
     var debugDescription: String {
         return description
     }
@@ -131,7 +157,7 @@ extension SetGameModel.Card: CustomStringConvertible, CustomDebugStringConvertib
         let maybePlural = numberOfShapes > 1 ? "s" : ""
         return "Id: \(id) - \(numberOfShapes) of \(color) \(shading) \(shape)\(maybePlural)\n"
     }
-
+    
     var debugDescription: String {
         return description
     }

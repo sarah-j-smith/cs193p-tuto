@@ -13,57 +13,84 @@ struct CardView: View {
         ZStack {
             let shape = RoundedRectangle(cornerRadius: Constants.cornerRadius)
             shape.fill().foregroundColor(.white)
+            foregroundColor(.blue)
             shape.strokeBorder(lineWidth: Constants.borderThickness).opacity(0.6)
-            let vPad = card.shape == .Oval ? 8.0 : 0.0
-            VStack {
+            let vPad = card.shape == .Oval ? 3.0 : 0.0
+            let aspect = card.shape == .Squiggle ? Constants.aspectRatio * 0.8 : Constants.aspectRatio
+            VStack() {
                 ForEach(0 ..< 3) { ix in
                     if (card.numberOfShapes > ix) {
                         let symbol = CardSymbolPainter(shapeType: card.shape)
-                        switch card.shading {
-                        case .SolidShading:
-                            ZStack {
-                                symbol
-                                    .stroke(lineWidth: Constants.borderThickness)
-                                    .fill(card.color.uiColor)
-                                    .aspectRatio(2.0, contentMode: .fit)
-                                symbol
-                                    .fill(card.color.uiColor)
-                                    .opacity(0.6)
-                                    .aspectRatio(2.0, contentMode: .fit)
+                        let outlineSymbol = symbol
+                            .stroke(lineWidth: Constants.borderThickness)
+                            .fill(card.color.uiColor)
+                            .aspectRatio(aspect, contentMode: .fit)
+                        let filledSymbol = symbol
+                            .fill(card.color.uiColor)
+                            .aspectRatio(aspect, contentMode: .fit)
+                        ZStack {
+                            switch card.shading {
+                            case .SolidShading:
+                                filledSymbol.opacity(Constants.fillOpacity)
+                                outlineSymbol
+                            case .OpenShading:
+                                outlineSymbol
+                            case .StripedShading:
+                                StripedRectangle(
+                                    rotation: Angle(degrees: Constants.stripeAngle ),
+                                    fillColor: card.color.uiColor,
+                                    spacing: 1,
+                                    count: 8)
+                                .mask {
+                                    filledSymbol
+                                }
+                                outlineSymbol
                             }
-                        case .OpenShading:
-                            ZStack {
-                                symbol
-                                    .fill(.white)
-                                    .opacity(0.6)
-                                    .aspectRatio(2.0, contentMode: .fit)
-                                symbol
-                                    .stroke(lineWidth: Constants.borderThickness * 1.2)
-                                    .fill(card.color.uiColor)
-                                    .aspectRatio(2.0, contentMode: .fit)
-                            }
-                        case .StripedShading:
-                            ZStack {
-                                symbol
-                                    .fill(card.color.uiColor)
-                                    .opacity(0.3)
-                                    .aspectRatio(2.0, contentMode: .fit)
-                                symbol
-                                    .stroke(lineWidth: Constants.borderThickness)
-                                    .fill(card.color.uiColor)
-                                    .aspectRatio(2.0, contentMode: .fit)
-                            }
-                        }
+                        }.padding(.vertical, vPad)
                     }
-                }.padding(
-                    EdgeInsets(top: vPad, leading: 0.0, bottom: vPad, trailing: 0.0))
-            }.padding(20.0)
+                }
+            }.padding(15.0)
         }
     }
-
+    
     struct Constants {
         static let cornerRadius: CGFloat = 10.0
         static let borderThickness: CGFloat = 3.0
+        static let aspectRatio: CGFloat = 2.2
+        static let fillOpacity: CGFloat = 0.7
+        static let stripeAngle: CGFloat = 20.0
+    }
+}
+
+struct StripedRectangle: View {
+    
+    var rotation: Angle
+    var fillColor: Color
+    
+    /** Ratio of stripes to spaces. eg 1 means the stripes are equal to the spaces */
+    var spacing: CGFloat = 1
+    var count: Int = 6
+    
+    var body: some View {
+        GeometryReader { geometry in
+            let w = geometry.size.width
+            let h = geometry.size.height
+            let cr = cos(rotation.radians)
+            let sr = sin(rotation.radians)
+            let stripeWidth = w / (CGFloat(count) + (CGFloat(count - 1) * spacing) - spacing)
+            let rotatedWidth = cr * w + sr * h
+            let rotatedHeight = cr * h + sr * w
+            HStack(spacing: stripeWidth * spacing) {
+                ForEach(0 ..< count, id:\.self) { ix in
+                    Rectangle()
+                        .fill(fillColor)
+                        .frame(width: stripeWidth, height: rotatedHeight)
+                }
+            }.border(.blue)
+            .frame(width: rotatedWidth, height: rotatedHeight, alignment: .center)
+            .offset(CGSize(width: (w - rotatedWidth) / 2.0, height: (h - rotatedHeight) / 2.0))
+            .rotationEffect(rotation)
+        }
     }
 }
 
@@ -96,7 +123,7 @@ struct CardSymbolPainter: Shape {
         p.addLine(to: threeOClock)
         return p
     }
-
+    
     private func wigglyLinePath(in rect: CGRect) -> Path {
         // Wavy line is made up of 4 equal arcs - so divide width by 4
         let arcWidth = (rect.width/CGFloat(4.0))
@@ -141,32 +168,24 @@ extension SetGameModel.ColorFeature {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-        let gamePreviewModel = SetGameViewModel()
-        Group {
-            ZStack {
-                Rectangle().fill(.gray).opacity(0.3).ignoresSafeArea()
-                HStack {
-                    VStack {
-                        // 1 of Green Solid Squiggle
-                        CardView(card: gamePreviewModel.cards[1])
-                            .aspectRatio(2/3, contentMode: .fit)
-                            .padding(.horizontal)
-                        // 2 of Purple Striped Diamonds
-                        CardView(card: gamePreviewModel.cards[40])
-                            .aspectRatio(2/3, contentMode: .fit)
-                            .padding(.horizontal)
-                    }.padding(EdgeInsets(top: 10.0, leading: 0, bottom: 10.0, trailing: 0.0))
-                    VStack {
-                        // 3 of Red Solid Ovals
-                        CardView(card: gamePreviewModel.cards[74])
-                            .aspectRatio(2/3, contentMode: .fit)
-                            .padding(.horizontal)
-                        // 1 of Purple Solid Diamond
-                        CardView(card: gamePreviewModel.cards[15])
-                            .aspectRatio(2/3, contentMode: .fit)
-                            .padding(.horizontal)
-                    }.padding(EdgeInsets(top: 10.0, leading: 0, bottom: 10.0, trailing: 0.0))
-                }
+        let a = SetGameViewModel.Card(id: 0, numberOfShapes: 1, shading: .StripedShading, shape: .Oval, color: .Red, selected: false)
+        let b = SetGameViewModel.Card(id: 1, numberOfShapes: 2, shading: .StripedShading, shape: .Oval, color: .Green, selected: false)
+        let c = SetGameViewModel.Card(id: 2, numberOfShapes: 3, shading: .OpenShading, shape: .Oval, color: .Purple, selected: false)
+        let d = SetGameViewModel.Card(id: 3, numberOfShapes: 1, shading: .StripedShading, shape: .Squiggle, color: .Red, selected: false)
+        let e = SetGameViewModel.Card(id: 4, numberOfShapes: 1, shading: .SolidShading, shape: .Oval, color: .Red, selected: false)
+        let f = SetGameViewModel.Card(id: 5, numberOfShapes: 2, shading: .StripedShading, shape: .Oval, color: .Green, selected: false)
+        let g = SetGameViewModel.Card(id: 6, numberOfShapes: 3, shading: .SolidShading, shape: .Squiggle, color: .Purple, selected: false)
+        let h = SetGameViewModel.Card(id: 7, numberOfShapes: 1, shading: .StripedShading, shape: .Oval, color: .Red, selected: false)
+        let i = SetGameViewModel.Card(id: 8, numberOfShapes: 3, shading: .StripedShading, shape: .Oval, color: .Red, selected: false)
+        let j = SetGameViewModel.Card(id: 9, numberOfShapes: 2, shading: .StripedShading, shape: .Oval, color: .Green, selected: false)
+        let k = SetGameViewModel.Card(id: 10, numberOfShapes: 3, shading: .OpenShading, shape: .Squiggle, color: .Purple, selected: false)
+        let l = SetGameViewModel.Card(id: 11, numberOfShapes: 1, shading: .StripedShading, shape: .Oval, color: .Red, selected: false)
+        let items = [a, b, c, d, e, f, g, h, i, j, k, l]
+//        let items = [a, b, c]
+        ZStack {
+            Rectangle().fill(.gray).opacity(0.3).ignoresSafeArea()
+            AspectVGrid(items: items, aspectRatio: 2/3) { card in
+                CardView(card: card).padding(3.0)
             }
         }
     }

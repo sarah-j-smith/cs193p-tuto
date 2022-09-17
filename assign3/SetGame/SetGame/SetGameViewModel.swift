@@ -14,11 +14,22 @@ class SetGameViewModel: ObservableObject {
     @Published private var model = SetGameModel()
     
     var cards: [ Card ] {
-        return model.cards
+        return model.dealtCards
     }
     
     // - MARK: Intents
     //
     
+    func newGamePressed() {
+        model = SetGameModel()
+    }
     
+    func dealThreeMorePressed() {
+        model.dealCards(cardCount: 3)
+    }
+    
+    func cardTapped(cardId: Int) {
+        print("Selected: \(cardId)")
+        model.selectCards(cardId: cardId)
+    }
 }
