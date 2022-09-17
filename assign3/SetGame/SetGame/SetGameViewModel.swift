@@ -30,6 +30,6 @@ class SetGameViewModel: ObservableObject {
     
     func cardTapped(cardId: Int) {
         print("Selected: \(cardId)")
-        model.selectCards(cardId: cardId)
+        model.toggleCardSelection(cardId: cardId)
     }
 }

@@ -12,20 +12,22 @@ struct ContentView: View {
     @ObservedObject var game: SetGameViewModel
     
     var body: some View {
-        VStack {
-            gameHeader.padding(10.0)
-            let cardsDealt = Array( game.cards[0 ..< 12] )
-            AspectVGrid(items: cardsDealt, aspectRatio: 2/3) { card in
-                CardView(card: card).padding(4.0).onTapGesture {
-                    game.cardTapped(cardId: card.id)
-                }
-            }.padding(.horizontal, 3.0)
-            HStack {
-                newGameButton
-                Spacer()
-                dealThreeMoreButton
-            }.padding()
-                .labelStyle(VerticalLabelStyle())
+        ZStack {
+            VStack {
+                gameHeader.padding(10.0)
+                let cardsDealt = Array( game.cards[0 ..< 12] )
+                AspectVGrid(items: cardsDealt, aspectRatio: 2/3) { card in
+                    CardView(card: card).padding(4.0).onTapGesture {
+                        game.cardTapped(cardId: card.id)
+                    }
+                }.padding(.horizontal, 3.0)
+                HStack {
+                    newGameButton
+                    Spacer()
+                    dealThreeMoreButton
+                }.padding()
+                    .labelStyle(VerticalLabelStyle())
+            }
         }
     }
     

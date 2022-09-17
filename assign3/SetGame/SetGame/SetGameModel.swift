@@ -40,9 +40,9 @@ struct SetGameModel {
         indexOfFirstUndealtCard += cardCount
     }
     
-    mutating func selectCards(cardId: Int) {
+    mutating func toggleCardSelection(cardId: Int) {
         if let haveCard = cards.firstIndex(where: { $0.id == cardId }) {
-            cards[haveCard].selected = true
+            cards[haveCard].selected = !cards[haveCard].selected
         }
     }
     
