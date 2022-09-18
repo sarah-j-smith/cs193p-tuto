@@ -10,63 +10,70 @@ import SwiftUI
 struct CardView: View {
     let card: SetGameViewModel.Card
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            ZStack {
-                let shape = RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                shape.fill().foregroundColor(.white)
-                shape
-                    .strokeBorder(lineWidth: Constants.borderThickness)
-                    .foregroundColor(card.selected ? .red : .gray)
-                    .opacity(card.selected ? 1.0 : 0.2)
-                let vPad = card.shape == .Oval ? 3.0 : 0.0
-                let aspect = card.shape == .Squiggle ? Constants.aspectRatio * 0.8 : Constants.aspectRatio
-                VStack() {
-                    ForEach(0 ..< 3) { ix in
-                        if (card.numberOfShapes > ix) {
-                            let symbol = CardSymbolPainter(shapeType: card.shape)
-                            let outlineSymbol = symbol
-                                .stroke(lineWidth: Constants.shapeBorderThickness)
-                                .fill(card.color.uiColor)
-                                .aspectRatio(aspect, contentMode: .fit)
-                            let filledSymbol = symbol
-                                .fill(card.color.uiColor)
-                                .aspectRatio(aspect, contentMode: .fit)
-                            ZStack {
-                                switch card.shading {
-                                case .SolidShading:
-                                    filledSymbol.opacity(Constants.fillOpacity)
-                                    outlineSymbol
-                                case .OpenShading:
-                                    outlineSymbol
-                                case .StripedShading:
-                                    StripedRectangle(
-                                        rotation: Angle(degrees: Constants.stripeAngle ),
-                                        fillColor: card.color.uiColor,
-                                        spacing: 1,
-                                        count: 8)
-                                    .mask {
-                                        filledSymbol
-                                    }
-                                    outlineSymbol
-                                }
-                            }.padding(.vertical, vPad)
-                        }
-                    }
-                }.padding(15.0)
-            }
-            if (card.selected) {
-                selectionBadge
+        GeometryReader { geometry in
+            let scaleFactor = geometry.size.width / 100.0
+            ZStack(alignment: .topTrailing) {
+                ZStack {
+                    let shape = RoundedRectangle(cornerRadius: Constants.cornerRadius * scaleFactor )
+                    shape.fill().foregroundColor(.white)
+                    shape
+                        .strokeBorder(lineWidth: Constants.borderThickness * scaleFactor)
+                        .foregroundColor(card.selected ? .red : .gray)
+                        .opacity(card.selected ? 1.0 : 0.2)
+                    drawContent(card: card, scaledBy: scaleFactor)
+                }
+                if (card.selected) {
+                    selectionBadge(scaledBy: scaleFactor)
+                }
             }
         }
     }
+    
+    func drawContent(card: SetGameViewModel.Card, scaledBy scaleFactor: CGFloat) -> some View {
+        print("Padding: \(scaleFactor)")
+        return VStack() {
+            ForEach(0 ..< card.numberOfShapes, id: \.self) { ix in
+                let symbol = CardSymbolPainter(shapeType: card.shape)
+                let outlineSymbol = symbol
+                    .stroke(lineWidth: Constants.shapeBorderThickness * scaleFactor)
+                    .fill(card.color.uiColor)
+                    .aspectRatio(symbol.aspect, contentMode: .fit)
+                let filledSymbol = symbol
+                    .fill(card.color.uiColor)
+                    .aspectRatio(symbol.aspect, contentMode: .fit)
+                ZStack {
+                    switch card.shading {
+                    case .SolidShading:
+                        filledSymbol.opacity(Constants.fillOpacity)
+                        outlineSymbol
+                    case .OpenShading:
+                        outlineSymbol
+                    case .StripedShading:
+                        StripedRectangle(
+                            rotation: Angle(degrees: Constants.stripeAngle ),
+                            fillColor: card.color.uiColor,
+                            spacing: Constants.stripeSpacing,
+                            count: Constants.stripeCount)
+                        .mask {
+                            filledSymbol
+                        }
+                        outlineSymbol
+                    }
+                }.padding(.vertical, symbol.vPad * scaleFactor)
+            }
+        }.padding(15.0 * scaleFactor)
+    }
 
-    var selectionBadge: some View {
+    func selectionBadge(scaledBy scaleFactor: CGFloat) -> some View {
         ZStack {
             Circle()
                 .fill().foregroundColor(.white)
-                .frame(width: 32, height: 32)
-            Image(systemName: "checkmark.circle.fill").font(.title).foregroundColor(.green).padding(2.0)
-        }.padding(5.0)
+                .frame(width: 32 * scaleFactor, height: 32 * scaleFactor)
+            Image(systemName: "checkmark.circle.fill")
+                .font(scaleFactor < 0.5 ?  .body : .title)
+                .foregroundColor(.green)
+                .padding(2.0 * scaleFactor)
+        }.padding(5.0 * scaleFactor)
     }
     
     struct Constants {
@@ -76,6 +83,8 @@ struct CardView: View {
         static let aspectRatio: CGFloat = 2.2
         static let fillOpacity: CGFloat = 0.7
         static let stripeAngle: CGFloat = 20.0
+        static let stripeSpacing: CGFloat = 1
+        static let stripeCount = 8
     }
 }
 
@@ -114,6 +123,7 @@ struct StripedRectangle: View {
 struct CardSymbolPainter: Shape {
     
     let shapeType: SetGameModel.ShapeFeature
+    
     private let baseShape = Capsule()
     
     func path(in rect: CGRect) -> Path {
@@ -125,6 +135,14 @@ struct CardSymbolPainter: Shape {
         case .Oval:
             return baseShape.path(in: rect)
         }
+    }
+    
+    var vPad: CGFloat {
+        shapeType == .Oval ? 3.0 : 0.0
+    }
+    
+    var aspect: CGFloat {
+        shapeType == .Squiggle ? CardView.Constants.aspectRatio * 0.8 : CardView.Constants.aspectRatio
     }
     
     private func diamondPath(in rect: CGRect) -> Path {

@@ -21,12 +21,21 @@ struct SetGameModel {
     
     static let UniqueCardCount = 81
     static let NumberOfShapesMax = 3
+    static let MaxSelectionCount = 3
+    
+    enum SetGameErrors: Error {
+        case ExceededMaxSelectionCount
+    }
 
     // When the game starts we have 12 cards dealt out - indexes
     // This index partitions the array of cards into two: those
     // that have been dealt out and those that have not
     // If this value is >= UniqueCardCount, then all cards are dealt
     private var indexOfFirstUndealtCard: Int = 12
+    
+    var selectionCount: Int {
+        return dealtCards.filter({ $0.selected }).count
+    }
     
     var deckCards: [ Card ] {
         return Array( cards[ indexOfFirstUndealtCard... ] )
@@ -40,9 +49,12 @@ struct SetGameModel {
         indexOfFirstUndealtCard += cardCount
     }
     
-    mutating func toggleCardSelection(cardId: Int) {
+    mutating func toggleCardSelection(cardId: Int) throws {
         if let haveCard = cards.firstIndex(where: { $0.id == cardId }) {
             cards[haveCard].selected = !cards[haveCard].selected
+            if selectionCount > SetGameModel.MaxSelectionCount {
+                throw SetGameErrors.ExceededMaxSelectionCount
+            }
         }
     }
     

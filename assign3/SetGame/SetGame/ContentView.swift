@@ -15,12 +15,15 @@ struct ContentView: View {
         ZStack {
             VStack {
                 gameHeader.padding(10.0)
-                let cardsDealt = Array( game.cards[0 ..< 12] )
+                let cardsDealt = Array( game.cards )
+                let cardPadding = floor(CGFloat(60) / CGFloat(cardsDealt.count))
                 AspectVGrid(items: cardsDealt, aspectRatio: 2/3) { card in
-                    CardView(card: card).padding(4.0).onTapGesture {
-                        game.cardTapped(cardId: card.id)
+                    CardView(card: card).padding(cardPadding).onTapGesture {
+                        if (card.selected || game.selectionCount < SetGameModel.MaxSelectionCount) {
+                            game.cardTapped(cardId: card.id)
+                        }
                     }
-                }.padding(.horizontal, 3.0)
+                }.padding(.horizontal, cardPadding)
                 HStack {
                     newGameButton
                     Spacer()
@@ -44,7 +47,7 @@ struct ContentView: View {
             game.dealThreeMorePressed()
         } label: {
             Label("Deal 3", systemImage: "square.3.stack.3d")
-        }
+        }.disabled(game.cards.count >= SetGameModel.UniqueCardCount)
     }
     
     private var gameHeader: some View {

@@ -17,6 +17,10 @@ class SetGameViewModel: ObservableObject {
         return model.dealtCards
     }
     
+    var selectionCount: Int {
+        return model.selectionCount
+    }
+    
     // - MARK: Intents
     //
     
@@ -25,11 +29,13 @@ class SetGameViewModel: ObservableObject {
     }
     
     func dealThreeMorePressed() {
-        model.dealCards(cardCount: 3)
+        if cards.count < SetGameModel.UniqueCardCount {
+            model.dealCards(cardCount: 3)
+        }
     }
     
     func cardTapped(cardId: Int) {
         print("Selected: \(cardId)")
-        model.toggleCardSelection(cardId: cardId)
+        try! model.toggleCardSelection(cardId: cardId)
     }
 }
