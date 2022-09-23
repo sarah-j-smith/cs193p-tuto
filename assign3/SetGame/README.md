@@ -74,3 +74,13 @@ among the three cards are all different.
 * Set icon [from Wikipedia By Jeff Dahl, CC BY-SA 4.0](https://commons.wikimedia.org/w/index.php?curid=3306905]
 
 [Set is a real-time card game]: https://en.wikipedia.org/wiki/Set_(card_game)
+
+```mermaid
+stateDiagram-v2
+    [*] --> Still
+    Still --> [*]
+    Still --> Moving
+    Moving --> Still
+    Moving --> Crash
+    Crash --> [*]
+```
