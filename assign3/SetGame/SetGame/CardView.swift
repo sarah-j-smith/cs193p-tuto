@@ -30,7 +30,6 @@ struct CardView: View {
     }
     
     func drawContent(card: SetGameViewModel.Card, scaledBy scaleFactor: CGFloat) -> some View {
-        print("Padding: \(scaleFactor)")
         return VStack() {
             ForEach(0 ..< card.numberOfShapes, id: \.self) { ix in
                 let symbol = CardSymbolPainter(shapeType: card.shape)

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GameplayKit
 
 /**
  The deck consists of 81 unique cards that vary in four features across three possibilities
@@ -26,7 +27,7 @@ struct SetGameModel {
     enum SetGameErrors: Error {
         case ExceededMaxSelectionCount
     }
-
+    
     // When the game starts we have 12 cards dealt out - indexes
     // This index partitions the array of cards into two: those
     // that have been dealt out and those that have not
@@ -35,6 +36,51 @@ struct SetGameModel {
     
     var selectionCount: Int {
         return dealtCards.filter({ $0.selected }).count
+    }
+    
+    var selectedCards: [ Card ] {
+        dealtCards.filter { $0.selected }
+    }
+    
+    /**
+     In the game, certain combinations of three cards are said to make up a set. For each
+     one of the four categories of features — color, number, shape, and shading — the
+     three cards must display that feature as either a) all the same, or b) all different.
+     */
+    var isMatchedSet: Bool {
+        // try for all the same
+        var denominations = Set<Int>()
+        var shapes = Set<ShapeFeature>()
+        var colours = Set<ColorFeature>()
+        var shadings = Set<ShadingFeature>()
+        for c in selectedCards {
+            denominations.insert(c.numberOfShapes)
+            shapes.insert(c.shape)
+            colours.insert(c.color)
+            shadings.insert(c.shading)
+        }
+        print("Checking for set:")
+        if denominations.count == 2 {
+            print("Not a set: denominations are \(denominations)")
+            return false
+        }
+        if (shapes.count == 2) {
+            print("Not a set: shapes are \(shapes)")
+            return false
+        }
+        if (colours.count == 2) {
+            print("Not a set: colours are \(colours)")
+            return false
+        }
+        if (shadings.count == 2) {
+            print("Not a set: shadings are \(shadings)")
+        }
+        print("Yes! Its a set")
+        print("  denominations are \(denominations)")
+        print("  shapes are \(shapes)")
+        print("  colours are \(colours)")
+        print("  shadings are \(shadings)")
+        return true
     }
     
     var deckCards: [ Card ] {
@@ -47,6 +93,20 @@ struct SetGameModel {
     
     mutating func dealCards(cardCount: Int) {
         indexOfFirstUndealtCard += cardCount
+    }
+    
+    /**
+     If there's a set of 3 cards selected that constitutes a match
+     8. When any card is touched on
+     c. if the touched card was not part of the matching Set, then select that card
+     d. if the touched card was part of a matching Set, then select no card
+     a. as per the rules of Set, replace those 3 matching Set cards with new ones from the deck
+     b. if the deck is empty then the space vacated by the matched cards (which cannot be replaced
+     since there are no more cards) should be made available to the remaining cards
+     (i.e. which may well then get bigger)
+     */
+    mutating func acknowledgeMatch(cardId: Int) {
+        
     }
     
     mutating func toggleCardSelection(cardId: Int) throws {

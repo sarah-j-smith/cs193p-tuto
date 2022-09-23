@@ -1,5 +1,7 @@
 # Set Game
 
+[Set] is a real-time card game.  These rules below come from the CS193p course, [Assignment 3].
+
 ## Requirements
 
 1. ❌ Implement a game of solo (i.e. one player) Set.
@@ -71,18 +73,93 @@ among the three cards are all different.
 
 ## Attributions
 
-* Set icon [from Wikipedia By Jeff Dahl, CC BY-SA 4.0](https://commons.wikimedia.org/w/index.php?curid=3306905]
+* Set (Egyptian god) [Set illustration] By Jeff Dahl, CC BY-SA 4.0 
 
-[Set is a real-time card game]: https://en.wikipedia.org/wiki/Set_(card_game)
+![pic](SetGame/SetGame/Assets.xcassets/AppIcon.appiconset/set-180x180.png)
+
+# Design
+
+## Selecting Cards
+
+This first diagram covers game states while selecting cards & trying to make a set. 
+
+These are the rules:
+
+5. Users must be able to select ✅ up to 3 cards by touching on them in an attempt to make a Set (i.e. 3 cards which match, per the rules of Set). It must be clearly visible to the user which cards have been selected so far.
+6. After 3 cards have been selected, you must indicate whether those 3 cards are a match or mismatch. You can show this any way you want (colors, borders, backgrounds, whatever). Anytime there are 3 cards currently selected, it must be clear to the user whether they are a match or not (and the cards involved in a non-matching trio must look different than the cards look when there are only 1 or 2 cards in the selection).
+7. Support “deselection” ❌ by touching already-selected cards (but only if there are 1 or 2 cards (not 3) currently selected).
 
 ```mermaid
- stateDiagram-v2
-     [*] --> NoCardsSelected
-     NoCardsSelected --> CardsBeingSelected
-     CardsBeingSelected --> IsMatchSelection
-     CardsBeingSelected --> NotMatchSelection
-     NotMatchSelection --> CardsBeingSelected
-     IsMatchSelection --> CardsBeingSelected
-     IsMatchSelection --> NoCardsSelected
-     IsMatchSelection --> [*]
+stateDiagram-v2
+    state if_state <<choice>>
+    state join_state_a <<join>>
+    state join_state_b <<join>>
+    state "0 picked" as a
+    state "1 picked" as b
+    state "2 picked" as c
+    state "3 picked" as d
+    state "is a set" as e
+    state "not a set" as f
+    [*] --> a
+    a --> b: ✅
+    b --> a: ❌
+    b --> c: ✅
+    c --> b: ❌
+    c --> d: ✅
+    d --> if_state
+    if_state --> e: matches
+    if_state --> f : unmatched
+    e --> join_state_a
+    f --> join_state_b
 ```
+
+## Match / No-match display
+
+At this point the match / no-match display is shown to the player.  The game waits for them to 
+acknowledge the match / no-match to then continue playing the game.
+
+This second diagram (logically a continuation of the first, but shown seperately for clarity) covers game states once three cards are selected. 
+
+These are the rules:
+
+8. When any card is touched on and there are **already 3 matching Set cards selected**, then ...
+
+ * as per the rules of Set, replace those 3 matching Set cards with new ones from the deck
+
+ * if the deck is empty then the space vacated by the matched cards (which cannot be replaced since there are no more cards) should be made available to the remaining cards (i.e. which may well then get bigger)
+
+ * if the touched card was not part of the matching Set, then **select that card**
+
+ * if the touched card was part of a matching Set, then **select no card**
+
+9. When any card is touched and there are **already 3 non-matching Set cards selected**, deselect those 3 non-matching cards and select the touched-on card (whether or not it was part of the non-matching trio of cards).
+
+```mermaid
+stateDiagram-v2
+    state join_state_a <<join>>
+    state join_state_b <<join>>
+    state join_state_c <<join>>
+    state join_state_d <<join>>
+    state "0 picked" as a
+    state "1 picked" as b
+    state "is a set" as e
+    state "not a set" as f
+    join_state_b --> f : unmatched
+    join_state_a --> e : matches
+    e --> a : tap ✅ card
+    e --> b : tap new card
+    f --> b : tap any card
+    a --> join_state_c
+    b --> join_state_d
+```
+
+## Deal 3 More
+
+10. You will need to have a “Deal 3 More Cards” button (per the rules of Set).
+a. when it is touched, replace the selected cards if the selected cards make a Set
+b. or, if the selected cards do not make a Set (or if there are fewer than 3 cards selected, including none), add 3 new cards to join the ones already on screen (and do not affect the selection)
+c. disable this button if the deck is empty
+
+[Set]: https://en.wikipedia.org/wiki/Set_(card_game)
+[Set illustration]: https://commons.wikimedia.org/w/index.php?curid=3306905
+[Assignment 3]: https://cs193p.sites.stanford.edu/sites/g/files/sbiybj16636/files/media/file/assignment_3_0.pdf

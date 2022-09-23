@@ -6,19 +6,28 @@
 //
 
 import Foundation
+import GameKit
 
 class SetGameViewModel: ObservableObject {
     
     typealias Card = SetGameModel.Card
     
     @Published private var model = SetGameModel()
-    
+        
     var cards: [ Card ] {
         return model.dealtCards
     }
     
     var selectionCount: Int {
         return model.selectionCount
+    }
+    
+    var selectedCards: [ Card ] {
+        return model.selectedCards
+    }
+    
+    var isMatch: Bool {
+        return model.isMatchedSet
     }
     
     // - MARK: Intents
@@ -36,6 +45,10 @@ class SetGameViewModel: ObservableObject {
     
     func cardTapped(cardId: Int) {
         print("Selected: \(cardId)")
-        try! model.toggleCardSelection(cardId: cardId)
+        
+        if model.selectionCount < SetGameModel.MaxSelectionCount {
+            try! model.toggleCardSelection(cardId: cardId)
+        }
     }
 }
+
