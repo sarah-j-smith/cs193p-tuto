@@ -76,7 +76,6 @@ among the three cards are all different.
 [Set is a real-time card game]: https://en.wikipedia.org/wiki/Set_(card_game)
 
 ```mermaid
- ```mermaid
  stateDiagram-v2
      [*] --> NoCardsSelected
      NoCardsSelected --> CardsBeingSelected
@@ -85,5 +84,4 @@ among the three cards are all different.
      NotMatchSelection --> CardsBeingSelected
      IsMatchSelection --> CardsBeingSelected
      IsMatchSelection --> NoCardsSelected
- ```
 ```
