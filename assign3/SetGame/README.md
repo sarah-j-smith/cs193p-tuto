@@ -84,4 +84,5 @@ among the three cards are all different.
      NotMatchSelection --> CardsBeingSelected
      IsMatchSelection --> CardsBeingSelected
      IsMatchSelection --> NoCardsSelected
+     IsMatchSelection --> [*]
 ```
