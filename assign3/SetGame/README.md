@@ -76,11 +76,14 @@ among the three cards are all different.
 [Set is a real-time card game]: https://en.wikipedia.org/wiki/Set_(card_game)
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Still
-    Still --> [*]
-    Still --> Moving
-    Moving --> Still
-    Moving --> Crash
-    Crash --> [*]
+ ```mermaid
+ stateDiagram-v2
+     [*] --> NoCardsSelected
+     NoCardsSelected --> CardsBeingSelected
+     CardsBeingSelected --> IsMatchSelection
+     CardsBeingSelected --> NotMatchSelection
+     NotMatchSelection --> CardsBeingSelected
+     IsMatchSelection --> CardsBeingSelected
+     IsMatchSelection --> NoCardsSelected
+ ```
 ```
