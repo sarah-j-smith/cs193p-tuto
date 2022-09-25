@@ -18,6 +18,12 @@ import GameplayKit
  */
 struct SetGameModel {
     
+#if DEBUG
+    var debug = true
+#else
+    var debug = false
+#endif
+    
     var cards: [ Card ] = fillDeck().shuffled()
     
     static let UniqueCardCount = 81
@@ -35,7 +41,7 @@ struct SetGameModel {
     private var indexOfFirstUndealtCard: Int = 12
     
     var selectionCount: Int {
-        return dealtCards.filter({ $0.selected }).count
+        return selectedCards.count
     }
     
     var selectedCards: [ Card ] {
@@ -48,6 +54,53 @@ struct SetGameModel {
      three cards must display that feature as either a) all the same, or b) all different.
      */
     var isMatchedSet: Bool {
+        var denominations = Set<Int>()
+        var shapes = Set<ShapeFeature>()
+        var colours = Set<ColorFeature>()
+        var shadings = Set<ShadingFeature>()
+        for c in selectedCards {
+            denominations.insert(c.numberOfShapes)
+            shapes.insert(c.shape)
+            colours.insert(c.color)
+            shadings.insert(c.shading)
+        }
+        if debug {
+            print("Checking for set:")
+        }
+        if denominations.count == 2 {
+            if debug {
+                print("Not a set: denominations are \(denominations)")
+            }
+            return false
+        }
+        if (shapes.count == 2) {
+            if debug {
+                print("Not a set: shapes are \(shapes)")
+            }
+            return false
+        }
+        if (colours.count == 2) {
+            if debug {
+                print("Not a set: colours are \(colours)")
+            }
+            return false
+        }
+        if (shadings.count == 2) {
+            if debug {
+                print("Not a set: shadings are \(shadings)")
+            }
+        }
+        if debug {
+            print("Yes! Its a set")
+            print("  denominations are \(denominations)")
+            print("  shapes are \(shapes)")
+            print("  colours are \(colours)")
+            print("  shadings are \(shadings)")
+        }
+        return true
+    }
+    
+    var matchResultExplanation: String {
         // try for all the same
         var denominations = Set<Int>()
         var shapes = Set<ShapeFeature>()
@@ -59,28 +112,19 @@ struct SetGameModel {
             colours.insert(c.color)
             shadings.insert(c.shading)
         }
-        print("Checking for set:")
         if denominations.count == 2 {
-            print("Not a set: denominations are \(denominations)")
-            return false
+            return "Not a set: denominations are \(denominations)"
         }
         if (shapes.count == 2) {
-            print("Not a set: shapes are \(shapes)")
-            return false
+            return "Not a set: shapes are \(shapes)"
         }
         if (colours.count == 2) {
-            print("Not a set: colours are \(colours)")
-            return false
+            return "Not a set: colours are \(colours)"
         }
         if (shadings.count == 2) {
-            print("Not a set: shadings are \(shadings)")
+            return "Not a set: shadings are \(shadings)"
         }
-        print("Yes! Its a set")
-        print("  denominations are \(denominations)")
-        print("  shapes are \(shapes)")
-        print("  colours are \(colours)")
-        print("  shadings are \(shadings)")
-        return true
+        return "Set! Denominations: \(denominations), shapes: \(shapes), colours: \(colours) & shading: \(shadings)"
     }
     
     var deckCards: [ Card ] {
@@ -92,26 +136,35 @@ struct SetGameModel {
     }
     
     mutating func dealCards(cardCount: Int) {
-        indexOfFirstUndealtCard += cardCount
+        indexOfFirstUndealtCard = min(indexOfFirstUndealtCard + cardCount, SetGameModel.UniqueCardCount)
     }
     
     /**
-     If there's a set of 3 cards selected that constitutes a match
-     8. When any card is touched on
-     c. if the touched card was not part of the matching Set, then select that card
-     d. if the touched card was part of a matching Set, then select no card
-     a. as per the rules of Set, replace those 3 matching Set cards with new ones from the deck
-     b. if the deck is empty then the space vacated by the matched cards (which cannot be replaced
-     since there are no more cards) should be made available to the remaining cards
-     (i.e. which may well then get bigger)
+     8. When any card is touched on and there are already 3 matching Set cards selected, then ...
+         * as per the rules of Set, replace those 3 matching Set cards with new ones from the deck
+         *  if the deck is empty then the space vacated by the matched cards (which cannot be replaced since there are no more
+              cards) should be made available to the remaining cards (i.e. which may well then get bigger)
      */
-    mutating func acknowledgeMatch(cardId: Int) {
-        
+    mutating func acknowledgeMatch(cardIds: [ Int ]) {
+        var newCardsIx = indexOfFirstUndealtCard
+        dealCards(cardCount: 3)
+        for c in cardIds {
+            if let haveCard = cards.firstIndex(where: { $0.id == c }) {
+                cards[haveCard].matched = true
+                cards[haveCard].selected = false
+                if newCardsIx < SetGameModel.UniqueCardCount {
+                    cards.swapAt(haveCard, newCardsIx)
+                }
+                newCardsIx += 1
+            }
+        }
     }
     
     mutating func toggleCardSelection(cardId: Int) throws {
+        print("Toggling \(cardId)")
         if let haveCard = cards.firstIndex(where: { $0.id == cardId }) {
-            cards[haveCard].selected = !cards[haveCard].selected
+            cards[haveCard].selected.toggle()
+            print("   toggled \(haveCard)")
             if selectionCount > SetGameModel.MaxSelectionCount {
                 throw SetGameErrors.ExceededMaxSelectionCount
             }
@@ -143,6 +196,8 @@ struct SetGameModel {
         let shape: ShapeFeature
         let color: ColorFeature
         var selected: Bool
+        var matched: Bool
+        var newlyPlaced: Bool = true
     }
     
     static func fillDeck() -> [ Card ] {
@@ -155,7 +210,8 @@ struct SetGameModel {
                         newDeck.append(Card(id: cardIndex,
                                             numberOfShapes: numShapes,
                                             shading: shadingFeature, shape: shapeFeature, color: colorFeature,
-                                            selected: false))
+                                            selected: false,
+                                           matched: false))
                         cardIndex += 1
                     }
                 }

@@ -11,66 +11,51 @@ struct ContentView: View {
     
     @ObservedObject var game: SetGameViewModel
     
-    @ObservedObject var gameState: GamePlayState
-    
     var body: some View {
         ZStack {
             VStack {
-                gameHeader.padding(10.0)
-                let cardsDealt = Array( game.cards )
-                let cardPadding = floor(CGFloat(60) / CGFloat(cardsDealt.count))
-                AspectVGrid(items: cardsDealt, aspectRatio: 2/3) { card in
-                    CardView(card: card).padding(cardPadding).onTapGesture {
-                        if (card.selected) {
-                            if gameState.deselectionEnabled {
-                                game.cardTapped(cardId: card.id)
-                                gameState.deselectCard()
-                            }
-                        } else {
-                            if (gameState.selectionEnabled) {
-                                game.cardTapped(cardId: card.id)
-                                gameState.selectCard()
-                            }
-                            if (gameState.flag == .ThreeCardsSelected) {
-                                gameState.evaluate(isMatch: game.isMatch)
-                            }
-                        }
-                    }
-                }.padding(.horizontal, cardPadding)
+                gameHeader.padding(Constants.GameHeaderPadding)
+                mainCardsView.padding(.horizontal, cardPadding)
                 HStack {
                     newGameButton
                     Spacer()
+                    Text("Deck: \(game.deck.count)")
                     dealThreeMoreButton
                 }.padding()
                     .labelStyle(VerticalLabelStyle())
             }
-            if gameState.shouldDisplayEvaluationPanel {
-                VStack(alignment: .trailing) {
-                    HStack {
-                        ForEach(game.selectedCards) { c in
-                            CardView(card: c)
-                        }
-                    }
-                    switch gameState.flag {
-                    case .IsMatchSelection:
-                        Text("Yes! It's a Match!")
-                    default:
-                        Text("Not a Match!")
-                    }
-                }.padding()
-                    .font(.largeTitle)
-                    .background {
-                        RoundedRectangle(cornerSize: CGSize(width: 20.0, height: 20.0))
-                            .fill(.black)
-                            .opacity(0.7)
-                    }
+            if game.shouldShowEvaluationPanel {
+                Rectangle().fill(.black).opacity(0.7).ignoresSafeArea()
+                setEvaluationPanel
+                    .padding(30.0)
             }
         }
     }
     
+    private var cardPadding: CGFloat {
+        return floor(Constants.CardPaddingBase / CGFloat(game.cards.count))
+    }
+    
+    private var mainCardsView: some View {
+        AspectVGrid(items: game.cards, aspectRatio: Constants.CardsAspect) { card in
+            CardView(card: card).padding(cardPadding).onTapGesture {
+                game.cardTapped(cardId: card.id)
+            }
+        }
+    }
+    
+    var setEvaluationPanel: some View {
+        return CardInfoView(
+            cards: game.selectedCards,
+            title: game.isMatch ? "Yes! It's a Match!" : "Not a Match!",
+            message: game.matchResultExplanation,
+            infoType: game.isMatch ? .Information : .Warning, handler: {
+                game.dismissEvaluationPanel()
+            })
+    }
+    
     private var newGameButton: some View {
         Button {
-            gameState.beginGame()
             game.newGamePressed()
         } label: {
             Label("New Game", systemImage: "shuffle.circle")
@@ -90,6 +75,14 @@ struct ContentView: View {
             Text("Set Game")
         }
     }
+    
+    struct Constants {
+        static let CardsAspect: CGFloat = 2/3
+        static let EvalPanelRadius: CGSize = CGSize(width: 20, height: 20)
+        static let EvalPanelOpacity: CGFloat = 0.7
+        static let GameHeaderPadding: CGFloat = 10
+        static let CardPaddingBase: CGFloat = 60
+    }
 }
 
 struct VerticalLabelStyle: LabelStyle {
@@ -104,8 +97,7 @@ struct VerticalLabelStyle: LabelStyle {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let gameVM = SetGameViewModel()
-        let gamePlayState = GamePlayState()
 
-        ContentView(game: gameVM, gameState: gamePlayState)
+        ContentView(game: gameVM)
     }
 }

@@ -19,7 +19,7 @@ struct CardView: View {
                     shape
                         .strokeBorder(lineWidth: Constants.borderThickness * scaleFactor)
                         .foregroundColor(card.selected ? .red : .gray)
-                        .opacity(card.selected ? 1.0 : 0.2)
+                        .opacity(card.selected ? 1.0 : 0.4)
                     drawContent(card: card, scaledBy: scaleFactor)
                 }
                 if (card.selected) {
@@ -202,23 +202,10 @@ extension SetGameModel.ColorFeature {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-        let a = SetGameViewModel.Card(id: 0, numberOfShapes: 1, shading: .StripedShading, shape: .Oval, color: .Red, selected: false)
-        let b = SetGameViewModel.Card(id: 1, numberOfShapes: 2, shading: .StripedShading, shape: .Oval, color: .Green, selected: false)
-        let c = SetGameViewModel.Card(id: 2, numberOfShapes: 3, shading: .OpenShading, shape: .Oval, color: .Purple, selected: true)
-        let d = SetGameViewModel.Card(id: 3, numberOfShapes: 1, shading: .StripedShading, shape: .Squiggle, color: .Red, selected: false)
-        let e = SetGameViewModel.Card(id: 4, numberOfShapes: 1, shading: .SolidShading, shape: .Oval, color: .Red, selected: true)
-        let f = SetGameViewModel.Card(id: 5, numberOfShapes: 2, shading: .StripedShading, shape: .Oval, color: .Green, selected: false)
-        let g = SetGameViewModel.Card(id: 6, numberOfShapes: 3, shading: .SolidShading, shape: .Squiggle, color: .Purple, selected: true)
-        let h = SetGameViewModel.Card(id: 7, numberOfShapes: 1, shading: .StripedShading, shape: .Oval, color: .Red, selected: false)
-        let i = SetGameViewModel.Card(id: 8, numberOfShapes: 3, shading: .StripedShading, shape: .Oval, color: .Red, selected: false)
-        let j = SetGameViewModel.Card(id: 9, numberOfShapes: 2, shading: .StripedShading, shape: .Oval, color: .Green, selected: false)
-        let k = SetGameViewModel.Card(id: 10, numberOfShapes: 3, shading: .OpenShading, shape: .Squiggle, color: .Purple, selected: false)
-        let l = SetGameViewModel.Card(id: 11, numberOfShapes: 1, shading: .StripedShading, shape: .Oval, color: .Red, selected: true)
-        let items = [a, b, c, d, e, f, g, h, i, j, k, l]
-//        let items = [a, b, c]
+        let game = SetGameViewModel()
         ZStack {
             Rectangle().fill(.gray).opacity(0.3).ignoresSafeArea()
-            AspectVGrid(items: items, aspectRatio: 2/3) { card in
+            AspectVGrid(items: game.cards, aspectRatio: 2/3) { card in
                 CardView(card: card).padding(3.0)
             }
         }
