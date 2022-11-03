@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B23F240828FB9B8000381A58 /* StateTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23F240728FB9B8000381A58 /* StateTestHelpers.swift */; };
 		B23F240A28FBC68D00381A58 /* GameStateHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23F240928FBC68D00381A58 /* GameStateHelpers.swift */; };
 		B26F946128D2BEA90075E6D5 /* SetGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F946028D2BEA90075E6D5 /* SetGameApp.swift */; };
 		B26F946328D2BEA90075E6D5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F946228D2BEA90075E6D5 /* ContentView.swift */; };
@@ -17,34 +16,24 @@
 		B26F947528D2C3D50075E6D5 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F947428D2C3D50075E6D5 /* CardView.swift */; };
 		B26F947728D2C5FA0075E6D5 /* SetGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */; };
 		B26F947928D2C68C0075E6D5 /* SetGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F947828D2C68C0075E6D5 /* SetGameViewModel.swift */; };
-		B2778F28290004AF005FDB06 /* GameStateHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23F240928FBC68D00381A58 /* GameStateHelpers.swift */; };
 		B28ECFB328E05EBF008D2010 /* GameStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */; };
 		B2C46D5928E5723D005BCD6D /* SelectingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */; };
 		B2C46D5B28E57256005BCD6D /* EvaluatingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */; };
-		B2C46D6328E6B9A9005BCD6D /* GameStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D6228E6B9A9005BCD6D /* GameStateMachineTests.swift */; };
-		B2C46D6928E6BA28005BCD6D /* GameStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */; };
-		B2C46D6A28E6BA2F005BCD6D /* SelectingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */; };
-		B2C46D6B28E6BA33005BCD6D /* EvaluatingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */; };
 		B2C46D6D28E6C008005BCD6D /* SetGameVM+RulesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D6C28E6C008005BCD6D /* SetGameVM+RulesDelegate.swift */; };
-		B2C46D7028E95456005BCD6D /* EvaluatingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D6E28E95456005BCD6D /* EvaluatingFSMTests.swift */; };
-		B2C46D7128E95456005BCD6D /* SelectingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D6F28E95456005BCD6D /* SelectingFSMTests.swift */; };
+		B2CA9035291098CF0070E76D /* StateTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CA9031291098CF0070E76D /* StateTestHelpers.swift */; };
+		B2CA9036291098CF0070E76D /* EvaluatingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CA9032291098CF0070E76D /* EvaluatingFSMTests.swift */; };
+		B2CA9037291098CF0070E76D /* SelectingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CA9033291098CF0070E76D /* SelectingFSMTests.swift */; };
+		B2CA9038291098CF0070E76D /* GameStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CA9034291098CF0070E76D /* GameStateMachineTests.swift */; };
+		B2CA9039291098E90070E76D /* GameStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */; };
+		B2CA903A291098E90070E76D /* EvaluatingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */; };
+		B2CA903B291098E90070E76D /* GameStateHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23F240928FBC68D00381A58 /* GameStateHelpers.swift */; };
+		B2CA903C291098E90070E76D /* SelectingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */; };
 		B2E3419428DEF04C00362677 /* CardInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E3419328DEF04C00362677 /* CardInfoView.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		B2C46D6428E6B9A9005BCD6D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B26F945528D2BEA90075E6D5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B26F945C28D2BEA90075E6D5;
-			remoteInfo = SetGame;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
-		B23F240728FB9B8000381A58 /* StateTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateTestHelpers.swift; sourceTree = "<group>"; };
 		B23F240928FBC68D00381A58 /* GameStateHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateHelpers.swift; sourceTree = "<group>"; };
-		B26F945D28D2BEA90075E6D5 /* SetGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SetGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B26F945D28D2BEA90075E6D5 /* CardsOfSet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardsOfSet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B26F946028D2BEA90075E6D5 /* SetGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameApp.swift; sourceTree = "<group>"; };
 		B26F946228D2BEA90075E6D5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B26F946428D2BEAA0075E6D5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -57,11 +46,12 @@
 		B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateMachine.swift; sourceTree = "<group>"; };
 		B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectingStateMachine.swift; sourceTree = "<group>"; };
 		B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatingStateMachine.swift; sourceTree = "<group>"; };
-		B2C46D6028E6B9A9005BCD6D /* SetGameTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SetGameTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B2C46D6228E6B9A9005BCD6D /* GameStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateMachineTests.swift; sourceTree = "<group>"; };
 		B2C46D6C28E6C008005BCD6D /* SetGameVM+RulesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SetGameVM+RulesDelegate.swift"; sourceTree = "<group>"; };
-		B2C46D6E28E95456005BCD6D /* EvaluatingFSMTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EvaluatingFSMTests.swift; sourceTree = "<group>"; };
-		B2C46D6F28E95456005BCD6D /* SelectingFSMTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectingFSMTests.swift; sourceTree = "<group>"; };
+		B2CA902A291098120070E76D /* CardsOfSetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsOfSetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2CA9031291098CF0070E76D /* StateTestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateTestHelpers.swift; sourceTree = "<group>"; };
+		B2CA9032291098CF0070E76D /* EvaluatingFSMTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EvaluatingFSMTests.swift; sourceTree = "<group>"; };
+		B2CA9033291098CF0070E76D /* SelectingFSMTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectingFSMTests.swift; sourceTree = "<group>"; };
+		B2CA9034291098CF0070E76D /* GameStateMachineTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameStateMachineTests.swift; sourceTree = "<group>"; };
 		B2E3419328DEF04C00362677 /* CardInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInfoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,7 +63,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B2C46D5D28E6B9A9005BCD6D /* Frameworks */ = {
+		B2CA9027291098120070E76D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -87,7 +77,7 @@
 			isa = PBXGroup;
 			children = (
 				B26F945F28D2BEA90075E6D5 /* SetGame */,
-				B2C46D6128E6B9A9005BCD6D /* SetGameTests */,
+				B2CA902B291098120070E76D /* SetGameTests */,
 				B26F945E28D2BEA90075E6D5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -95,8 +85,8 @@
 		B26F945E28D2BEA90075E6D5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B26F945D28D2BEA90075E6D5 /* SetGame.app */,
-				B2C46D6028E6B9A9005BCD6D /* SetGameTests.xctest */,
+				B26F945D28D2BEA90075E6D5 /* CardsOfSet.app */,
+				B2CA902A291098120070E76D /* CardsOfSetTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -131,13 +121,13 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		B2C46D6128E6B9A9005BCD6D /* SetGameTests */ = {
+		B2CA902B291098120070E76D /* SetGameTests */ = {
 			isa = PBXGroup;
 			children = (
-				B2C46D6E28E95456005BCD6D /* EvaluatingFSMTests.swift */,
-				B2C46D6F28E95456005BCD6D /* SelectingFSMTests.swift */,
-				B2C46D6228E6B9A9005BCD6D /* GameStateMachineTests.swift */,
-				B23F240728FB9B8000381A58 /* StateTestHelpers.swift */,
+				B2CA9032291098CF0070E76D /* EvaluatingFSMTests.swift */,
+				B2CA9034291098CF0070E76D /* GameStateMachineTests.swift */,
+				B2CA9033291098CF0070E76D /* SelectingFSMTests.swift */,
+				B2CA9031291098CF0070E76D /* StateTestHelpers.swift */,
 			);
 			path = SetGameTests;
 			sourceTree = "<group>";
@@ -145,9 +135,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B26F945C28D2BEA90075E6D5 /* SetGame */ = {
+		B26F945C28D2BEA90075E6D5 /* CardsOfSet */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B26F946B28D2BEAA0075E6D5 /* Build configuration list for PBXNativeTarget "SetGame" */;
+			buildConfigurationList = B26F946B28D2BEAA0075E6D5 /* Build configuration list for PBXNativeTarget "CardsOfSet" */;
 			buildPhases = (
 				B26F945928D2BEA90075E6D5 /* Sources */,
 				B26F945A28D2BEA90075E6D5 /* Frameworks */,
@@ -157,27 +147,26 @@
 			);
 			dependencies = (
 			);
-			name = SetGame;
+			name = CardsOfSet;
 			productName = SetGame;
-			productReference = B26F945D28D2BEA90075E6D5 /* SetGame.app */;
+			productReference = B26F945D28D2BEA90075E6D5 /* CardsOfSet.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B2C46D5F28E6B9A9005BCD6D /* SetGameTests */ = {
+		B2CA9029291098120070E76D /* CardsOfSetTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B2C46D6628E6B9A9005BCD6D /* Build configuration list for PBXNativeTarget "SetGameTests" */;
+			buildConfigurationList = B2CA9030291098130070E76D /* Build configuration list for PBXNativeTarget "CardsOfSetTests" */;
 			buildPhases = (
-				B2C46D5C28E6B9A9005BCD6D /* Sources */,
-				B2C46D5D28E6B9A9005BCD6D /* Frameworks */,
-				B2C46D5E28E6B9A9005BCD6D /* Resources */,
+				B2CA9026291098120070E76D /* Sources */,
+				B2CA9027291098120070E76D /* Frameworks */,
+				B2CA9028291098120070E76D /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				B2C46D6528E6B9A9005BCD6D /* PBXTargetDependency */,
 			);
-			name = SetGameTests;
-			productName = SetGameTests;
-			productReference = B2C46D6028E6B9A9005BCD6D /* SetGameTests.xctest */;
+			name = CardsOfSetTests;
+			productName = SetGameMac;
+			productReference = B2CA902A291098120070E76D /* CardsOfSetTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -189,16 +178,18 @@
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1400;
 				LastUpgradeCheck = 1340;
+				ORGANIZATIONNAME = Smithsoft;
 				TargetAttributes = {
 					B26F945C28D2BEA90075E6D5 = {
 						CreatedOnToolsVersion = 13.4.1;
 					};
-					B2C46D5F28E6B9A9005BCD6D = {
+					B2CA9029291098120070E76D = {
 						CreatedOnToolsVersion = 14.0.1;
+						LastSwiftMigration = 1400;
 					};
 				};
 			};
-			buildConfigurationList = B26F945828D2BEA90075E6D5 /* Build configuration list for PBXProject "SetGame" */;
+			buildConfigurationList = B26F945828D2BEA90075E6D5 /* Build configuration list for PBXProject "CardsOfSet" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -211,8 +202,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B26F945C28D2BEA90075E6D5 /* SetGame */,
-				B2C46D5F28E6B9A9005BCD6D /* SetGameTests */,
+				B26F945C28D2BEA90075E6D5 /* CardsOfSet */,
+				B2CA9029291098120070E76D /* CardsOfSetTests */,
 			);
 		};
 /* End PBXProject section */
@@ -227,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B2C46D5E28E6B9A9005BCD6D /* Resources */ = {
+		B2CA9028291098120070E76D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -256,30 +247,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B2C46D5C28E6B9A9005BCD6D /* Sources */ = {
+		B2CA9026291098120070E76D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2C46D7028E95456005BCD6D /* EvaluatingFSMTests.swift in Sources */,
-				B2C46D7128E95456005BCD6D /* SelectingFSMTests.swift in Sources */,
-				B2C46D6328E6B9A9005BCD6D /* GameStateMachineTests.swift in Sources */,
-				B2C46D6B28E6BA33005BCD6D /* EvaluatingStateMachine.swift in Sources */,
-				B2C46D6928E6BA28005BCD6D /* GameStateMachine.swift in Sources */,
-				B2C46D6A28E6BA2F005BCD6D /* SelectingStateMachine.swift in Sources */,
-				B23F240828FB9B8000381A58 /* StateTestHelpers.swift in Sources */,
-				B2778F28290004AF005FDB06 /* GameStateHelpers.swift in Sources */,
+				B2CA9036291098CF0070E76D /* EvaluatingFSMTests.swift in Sources */,
+				B2CA9039291098E90070E76D /* GameStateMachine.swift in Sources */,
+				B2CA903C291098E90070E76D /* SelectingStateMachine.swift in Sources */,
+				B2CA9038291098CF0070E76D /* GameStateMachineTests.swift in Sources */,
+				B2CA903A291098E90070E76D /* EvaluatingStateMachine.swift in Sources */,
+				B2CA9037291098CF0070E76D /* SelectingFSMTests.swift in Sources */,
+				B2CA9035291098CF0070E76D /* StateTestHelpers.swift in Sources */,
+				B2CA903B291098E90070E76D /* GameStateHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		B2C46D6528E6B9A9005BCD6D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B26F945C28D2BEA90075E6D5 /* SetGame */;
-			targetProxy = B2C46D6428E6B9A9005BCD6D /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		B26F946928D2BEAA0075E6D5 /* Debug */ = {
@@ -407,6 +390,8 @@
 				DEVELOPMENT_TEAM = 4563WH9VE2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Game of Set";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -417,7 +402,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = au.smithsoft.SetGame;
+				PRODUCT_BUNDLE_IDENTIFIER = au.smithsoft.CardsOfSet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -436,6 +421,8 @@
 				DEVELOPMENT_TEAM = 4563WH9VE2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Game of Set";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -446,7 +433,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = au.smithsoft.SetGame;
+				PRODUCT_BUNDLE_IDENTIFIER = au.smithsoft.CardsOfSet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -454,46 +441,59 @@
 			};
 			name = Release;
 		};
-		B2C46D6728E6B9A9005BCD6D /* Debug */ = {
+		B2CA902E291098120070E76D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4563WH9VE2;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = au.smithsoft.SetGameTests;
+				PRODUCT_BUNDLE_IDENTIFIER = au.smithsoft.SetGameMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		B2C46D6828E6B9A9005BCD6D /* Release */ = {
+		B2CA902F291098120070E76D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4563WH9VE2;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = au.smithsoft.SetGameTests;
+				PRODUCT_BUNDLE_IDENTIFIER = au.smithsoft.SetGameMac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B26F945828D2BEA90075E6D5 /* Build configuration list for PBXProject "SetGame" */ = {
+		B26F945828D2BEA90075E6D5 /* Build configuration list for PBXProject "CardsOfSet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B26F946928D2BEAA0075E6D5 /* Debug */,
@@ -502,7 +502,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B26F946B28D2BEAA0075E6D5 /* Build configuration list for PBXNativeTarget "SetGame" */ = {
+		B26F946B28D2BEAA0075E6D5 /* Build configuration list for PBXNativeTarget "CardsOfSet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B26F946C28D2BEAA0075E6D5 /* Debug */,
@@ -511,11 +511,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B2C46D6628E6B9A9005BCD6D /* Build configuration list for PBXNativeTarget "SetGameTests" */ = {
+		B2CA9030291098130070E76D /* Build configuration list for PBXNativeTarget "CardsOfSetTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B2C46D6728E6B9A9005BCD6D /* Debug */,
-				B2C46D6828E6B9A9005BCD6D /* Release */,
+				B2CA902E291098120070E76D /* Debug */,
+				B2CA902F291098120070E76D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -37,108 +37,103 @@ import GameplayKit
       d --> [*]
   ```
  */
-class SelectingStateMachine: GKStateMachine, CardTriggerHandler {
+class SelectingStateMachine: GKStateMachine, TriggerHandler {
+
+    var selected = false
+    var cardId = 0
     
-    var cardJustTapped: Int?
-    var shouldUseWhenIdle: Bool = true
-    
-    func acceptCardTappedTrigger(t: InputTrigger) {
-        switch t {
+    @discardableResult func acceptTrigger(_ trigger: InputTrigger) -> GameState.Exit {
+        switch trigger {
         case .CardTapped(isSelected: let selected, hasId: let cardId):
-            cardJustTapped = cardId
-            // If the card is selected, then tapping it will deselect it
-            // moving the FSM to the previous (one less selected) state
-            // Tapping a card that is *not* selected moves
-            // it to the next (one more selected) state
+            self.selected = selected
+            self.cardId = cardId
+            let seq = currentState as? SelectionSequence
             if let tx = selected ? seq?.previousState : seq?.nextState {
-                enter(tx)
-                NotificationQueue.default.enqueue(
-                    Notification(
-                        name: selected ? .ShouldDeselectCard : .ShouldSelectCard,
-                        object: self,
-                        userInfo: [
-                            GameState.CardIndexKey: cardId
-                        ]
-                    ),
-                    postingStyle: .whenIdle)
+                let ok = enter(tx)
+                print("\(self) entered \(tx) - \(ok)")
             }
         case .DealThreeTapped:
             // Does not affect state, just pass through to RSM
             NotificationCenter.default.post(name: .ShouldDealThree, object: self)
-        case .MatchIndicatorAcknowledged:
-            fatalError("Cannot tap acknowledge match while selecting")
+        default:
+            fatalError("Selecting/\(currentState?.description ?? "nil") - cannot accept \(trigger)")
         }
-    }
-    
-    private var seq: StateSequence? {
-        return currentState as? StateSequence
+        guard let next = currentState as? ExitState else {
+            return .None
+        }
+        return next.exitCase
     }
     
     func start() {
         enter(ZeroSelected.self)
     }
     
-    weak var rsm: GameDelegate?
-    init(withDelegate rsm: GameDelegate?) {
+    init() {
         super.init(states: [
             ZeroSelected(),
             OneSelected(),
             TwoSelected(),
             ThreeSelected()
         ])
-        self.rsm = rsm
     }
 }
 
-protocol StateSequence {
+protocol SelectionSequence {
+    /** This is the next state that can be transitioned forwards into, from this one */
     var nextState: GKState.Type? { get }
+    /** This is the previous state that can be transitioned backwards into, from this one */
     var previousState: GKState.Type? { get }
 }
 
-extension StateSequence {
-    var nextState: GKState.Type? { return nil }
-    var previousState: GKState.Type? { return nil }
+extension SelectionSequence {
+    var nextState: GKState.Type? { nil }
+    var previousState: GKState.Type? { nil }
 }
 
-class ZeroSelected: GKState, StateSequence {
-    var nextState: GKState.Type? = OneSelected.self
+class SelectionNotifier: GKState {
+    override func didEnter(from previousState: GKState?) {
+        if previousState == nil { return }
+        if let selectingStateMachine = stateMachine as? SelectingStateMachine {
+            let noti = Notification(
+                name: selectingStateMachine.selected ? .ShouldDeselectCard : .ShouldSelectCard,
+                object: selectingStateMachine,
+                userInfo: [
+                    GameState.CardIndexKey: selectingStateMachine.cardId
+                ]
+            )
+            NotificationCenter.default.post(noti)
+        } else {
+            fatalError("SelectionSequence/\(self) - cannot be a state of \(stateMachine.debugDescription)")
+        }
+    }
+}
+
+class ZeroSelected: SelectionNotifier, SelectionSequence {
+    var nextState: GKState.Type? { OneSelected.self }
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return stateClass === OneSelected.self
     }
 }
 
-class OneSelected: GKState, StateSequence {
-    var nextState: GKState.Type? = TwoSelected.self
-    var previousState: GKState.Type? = ZeroSelected.self
+class OneSelected: SelectionNotifier, SelectionSequence {
+    var nextState: GKState.Type? { TwoSelected.self }
+    var previousState: GKState.Type? { ZeroSelected.self }
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return stateClass === ZeroSelected.self || stateClass === TwoSelected.self
     }
 }
 
-class TwoSelected: GKState, StateSequence {
-    var nextState: GKState.Type? = ThreeSelected.self
-    var previousState: GKState.Type? = OneSelected.self
+class TwoSelected: SelectionNotifier, SelectionSequence {
+    var nextState: GKState.Type? { ThreeSelected.self }
+    var previousState: GKState.Type? { OneSelected.self }
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return stateClass === OneSelected.self || stateClass === ThreeSelected.self
     }
 }
 
-class ThreeSelected: GKState, StateSequence {
-    var previousState: GKState.Type? = TwoSelected.self
-    
+class ThreeSelected: SelectionNotifier, SelectionSequence, ExitState {
+    var exitCase = GameState.Exit.Evaluating
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return false
-    }
-    override func didEnter(from previousState: GKState?) {
-        print("Did enter \(self) from \(String(describing: previousState))")
-        NotificationQueue.default.enqueue(
-            Notification(
-                name: .ShouldTransitionGameState,
-                object: stateMachine!,
-                userInfo: [
-                    GameState.DestinationStateKey: Evaluating.self
-                ]
-            ),
-            postingStyle: .now)
     }
 }

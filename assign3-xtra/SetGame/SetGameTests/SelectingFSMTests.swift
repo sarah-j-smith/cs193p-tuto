@@ -10,12 +10,12 @@ import GameplayKit
 
 final class SelectingFSMTests: XCTestCase {
     
-    var game: MockGameDelegate?
+    var game: MockGameFactory?
     var selFSM: SelectingStateMachine?
     
     override func setUpWithError() throws {
-        game = MockGameDelegate()
-        selFSM = SelectingStateMachine(withDelegate: game)
+        game = MockGameFactory()
+        selFSM = SelectingStateMachine()
         XCTAssertNotNil(game)
         XCTAssertNotNil(selFSM)
     }
@@ -35,29 +35,30 @@ final class SelectingFSMTests: XCTestCase {
     }
 
     func testSelectingCardZeroToOne() {
+        selFSM?.start()
         let notify = XCTNSNotificationExpectation(name: .ShouldSelectCard, object: selFSM)
         notify.handler = { (n: Notification) in
-            if let ix = n.userInfo?[ GameState.CardIndexKey ] as? NSNumber {
-                return ix.isEqual(to: 55)
+            print(n)
+            if n.userInfo?[ GameState.CardIndexKey ] != nil {
+                return n.getCardIndex() == 55
             }
             return false
         }
-        selFSM?.enter(ZeroSelected.self)
-        let selectingACard = InputTrigger.CardTapped(isSelected: false, hasId: 55)
-        selFSM?.acceptCardTappedTrigger(t: selectingACard)
+        let tx = selFSM?.acceptTrigger(.CardTapped(isSelected: false, hasId: 55))
+        XCTAssertEqual(tx, .None)
         XCTAssertIdentical(
             selFSM!.currentState,
             selFSM!.state(forClass: OneSelected.self),
             "From zero selected, selecting a card should transition to one selected state"
         )
-        wait(for: [notify], timeout: 0.1)
+        wait(for: [notify], timeout: 5.0)
     }
     
     func testSelectingCardOneToTwo() {
-        let notify = XCTNSNotificationExpectation(name: .ShouldSelectCard, object: selFSM)
         selFSM?.enter(OneSelected.self)
-        let selectingACard = InputTrigger.CardTapped(isSelected: false, hasId: 55)
-        selFSM?.acceptCardTappedTrigger(t: selectingACard)
+        let notify = XCTNSNotificationExpectation(name: .ShouldSelectCard, object: selFSM)
+        let tx = selFSM?.acceptTrigger(.CardTapped(isSelected: false, hasId: 55))
+        XCTAssertEqual(tx, .None)
         XCTAssertIdentical(
             selFSM!.currentState,
             selFSM!.state(forClass: TwoSelected.self),
@@ -66,11 +67,11 @@ final class SelectingFSMTests: XCTestCase {
         wait(for: [notify], timeout: 0.1)
     }
     
-    func testDeselectingCardOneToZero() {
+    func testDeselectingCard_OneToZero() {
         let notify = XCTNSNotificationExpectation(name: .ShouldDeselectCard, object: selFSM)
         selFSM?.enter(OneSelected.self)
-        let deselectingACard = InputTrigger.CardTapped(isSelected: true, hasId: 55)
-        selFSM?.acceptCardTappedTrigger(t: deselectingACard)
+        let tx = selFSM?.acceptTrigger(.CardTapped(isSelected: true, hasId: 55))
+        XCTAssertEqual(tx, .None)
         XCTAssertIdentical(
             selFSM!.currentState,
             selFSM!.state(forClass: ZeroSelected.self),
@@ -79,11 +80,11 @@ final class SelectingFSMTests: XCTestCase {
         wait(for: [notify], timeout: 0.1)
     }
 
-    func testSelectingCardTwoToOne() {
+    func testDeselectingCard_TwoToOne() {
         let notify = XCTNSNotificationExpectation(name: .ShouldDeselectCard, object: selFSM)
         selFSM?.enter(TwoSelected.self)
-        let deselectingACard = InputTrigger.CardTapped(isSelected: true, hasId: 55)
-        selFSM?.acceptCardTappedTrigger(t: deselectingACard)
+        let tx = selFSM?.acceptTrigger(.CardTapped(isSelected: true, hasId: 55))
+        XCTAssertEqual(tx, .None)
         XCTAssertIdentical(
             selFSM!.currentState,
             selFSM!.state(forClass: OneSelected.self),
@@ -92,30 +93,25 @@ final class SelectingFSMTests: XCTestCase {
         wait(for: [notify], timeout: 0.1)
     }
     
-    func testSelectingCardTwoToThreeFiresEvaluatingTransition() {
+    func testSelectingCard_TwoTwoSelect_GoesToThreeAndFiresEvaluatingTransition() {
         let selectNotify = XCTNSNotificationExpectation(name: .ShouldSelectCard, object: selFSM)
-        let transitionNotify = XCTNSNotificationExpectation(name: .ShouldTransitionGameState, object: selFSM)
-        transitionNotify.handler = { (n: Notification) in
-            if let destState = n.userInfo?[ GameState.DestinationStateKey ] as? GKState.Type {
-                return destState === Evaluating.self
-            }
-            return false
-        }
         selFSM?.enter(TwoSelected.self)
-        let selectingACard = InputTrigger.CardTapped(isSelected: false, hasId: 55)
-        selFSM?.acceptCardTappedTrigger(t: selectingACard)
+        let tx = selFSM?.acceptTrigger(.CardTapped(isSelected: false, hasId: 55))
+        XCTAssert(
+            tx == .Evaluating,
+            "Low level selecting FSM should return target state in evaluation FSM signalling exit"
+        )
         XCTAssertIdentical(
             selFSM!.currentState,
             selFSM!.state(forClass: ThreeSelected.self),
             "From two selected, selecting a card should transition to three selected state"
         )
-        wait(for: [selectNotify, transitionNotify], timeout: 0.1 )
+        wait(for: [selectNotify], timeout: 0.1 )
     }
     
     func testSelectingCardThreeNotAllowed() {
         selFSM?.enter(ThreeSelected.self)
-        let deselectingACard = InputTrigger.CardTapped(isSelected: true, hasId: 55)
-        selFSM?.acceptCardTappedTrigger(t: deselectingACard)
+        let _ = selFSM?.acceptTrigger(.CardTapped(isSelected: true, hasId: 55))
         XCTAssertIdentical(
             selFSM!.currentState,
             selFSM!.state(forClass: ThreeSelected.self),

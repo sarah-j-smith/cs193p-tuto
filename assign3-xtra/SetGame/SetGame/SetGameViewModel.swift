@@ -9,11 +9,20 @@ import Foundation
 import GameKit
 
 class SetGameViewModel: ObservableObject {
+    
+#if DEBUG
+    let debug = true
+#else
+    let debug = false
+#endif
+    
     typealias Card = SetGameModel.Card
     
     @Published internal var model = SetGameModel()
     
     @Published var shouldDisplayEvaluationPanel = false
+    
+    // MARK: - Model convenience accessors/facade
     
     var deck: [ Card ] {
         return model.deckCards
@@ -39,11 +48,53 @@ class SetGameViewModel: ObservableObject {
         selectionCount == SetGameModel.MaxSelectionCount
     }
     
+    var isMatch: Bool {
+        get {
+            return model.isMatchedSet
+        }
+    }
+    
     private var evalPanelTimer: Timer?
     
-    lazy private var fsm: GameStateMachine = GameStateMachine(withGameDelegate: self)
+    // MARK: - Game State
+    
+    lazy private var fsm: GameStateMachine = SetGameViewModel.createFSM(forGame: self)
+    
+    static func createFSM(forGame game: HierarchicalStateMachineFactory) -> GameStateMachine {
+        let fsm = GameStateMachine(withFactory: game)
+        NotificationCenter.default.addObserver(
+            game, selector: #selector(showEvaluationPanel),
+            name: .EvaluationAcknowledged, object: nil)
+        NotificationCenter.default.addObserver(
+            game, selector: #selector(hideEvaluationPanel),
+            name: .EvaluationCompleted, object: nil)
+        NotificationCenter.default.addObserver(
+            game, selector: #selector(shouldSelectCard),
+            name: .ShouldSelectCard, object: nil)
+        NotificationCenter.default.addObserver(
+            game, selector: #selector(shouldDeselectCard),
+            name: .ShouldDeselectCard, object: nil)
+        NotificationCenter.default.addObserver(
+            game, selector: #selector(shouldDealThreeCards),
+            name: .ShouldDealThree, object: nil)
+        NotificationCenter.default.addObserver(
+            game, selector: #selector(shouldEvaluate),
+            name: .ShouldEvaluate, object: nil)
+        NotificationCenter.default.addObserver(
+            game, selector: #selector(shouldClearMatchedCards),
+            name: .SelectionCommencing, object: nil)
+        return fsm
+    }
+    
+    static func createGame() -> SetGameViewModel {
+        let game = SetGameViewModel()
+        let fsm = createFSM(forGame: game)
+        game.fsm = fsm
+        fsm.start()
+        return game
+    }
         
-    // - MARK: Intents
+    // - MARK: Intents from UX actions
     
     func dealThreeMorePressed() {
         fsm.acceptDealThreeTapped()
@@ -53,72 +104,126 @@ class SetGameViewModel: ObservableObject {
         fsm.acceptCardTapped(cardId, isSelected: selected)
     }
     
+    func evaluationAcknowledged() {
+        fsm.acceptAcknowledgeEval()
+    }
+    
     func showGameOver() {
         print("Game over")
     }
     
-    func showEvaluationPanel() {
-        self.shouldDisplayEvaluationPanel = true
+    // - MARK: FSM output receivers
+    
+    @MainActor
+    @objc func showEvaluationPanel(_: Notification) {
+        shouldDisplayEvaluationPanel = true
+        startEvalPanelTimer()
     }
     
-    func hideEvaluationPanel() {
-        self.shouldDisplayEvaluationPanel = false
+    @MainActor
+    @objc func hideEvaluationPanel(_: Notification) {
+        shouldDisplayEvaluationPanel = false
+        stopEvalPanelTimer()
     }
     
-    func selectCard(cardId: Int) {
-#if DEBUG
-        let card = self.model.dealtCards.firstIndex { $0.id == cardId }
-        guard let haveCard = card else {
-            assertionFailure("Tried to select invalid card")
-            return
-        }
-        let shouldBeDeSelected = self.model.dealtCards[haveCard]
-        assert(shouldBeDeSelected.selected == false)
-#endif
-        self.model.toggleCardSelection(cardId)
+    @MainActor
+    @objc func shouldSelectCard(notifier: Notification) {
+        selectCard(cardId: notifier.getCardIndex())
     }
     
-    func deselectCard(cardId: Int) {
-#if DEBUG
-        let card = self.model.dealtCards.firstIndex { $0.id == cardId }
-        guard let haveCard = card else {
-            assertionFailure("Tried to deselect invalid card")
-            return
-        }
-        let shouldBeSelected = self.model.dealtCards[haveCard]
-        assert(shouldBeSelected.selected)
-#endif
-        self.model.toggleCardSelection(cardId)
+    @MainActor
+    @objc func shouldDeselectCard(notifier: Notification) {
+        deselectCard(cardId: notifier.getCardIndex())
     }
     
-    func dealThreeCards() {
-#if DEBUG
-        let cardsInDeck = self.model.deckCards.count
-        assert(cardsInDeck >= 3)
-#endif
-        self.model.dealCards(cardCount: 3)
+    @MainActor
+    @objc func shouldDealThreeCards(_: Notification) {
+        dealThreeCards()
+    }
+    
+    @MainActor
+    @objc func shouldEvaluate(notifier: Notification) {
+        fsm.acceptSetEvaluated(matchState: model.isMatchedSet)
+    }
+    
+    @MainActor
+    @objc func shouldClearMatchedCards(notifier: Notification) {
+        clearMatchedCards()
+    }
+    
+    // - MARK: Game Model actuators
+    
+    func newGamePressed() {
+        model = SetGameModel()
+        fsm = SetGameViewModel.createFSM(forGame: self)
+        fsm.start()
     }
     
     func startEvalPanelTimer() {
+        weak var setGameModel = self
         evalPanelTimer = Timer.scheduledTimer(
             withTimeInterval: Constants.EvalPanelDelay,
             repeats: false) { _ in
-                self.dismissEvaluationPanel()
+                DispatchQueue.main.async {
+                    setGameModel?.shouldDisplayEvaluationPanel = false
+                    setGameModel?.stopEvalPanelTimer()
+                    setGameModel?.evaluationAcknowledged()
+                }
             }
     }
     
-    func dismissEvaluationPanel() {
+    func stopEvalPanelTimer() {
         evalPanelTimer?.invalidate()
         evalPanelTimer = nil
     }
     
-    struct Constants {
-        static let EvalPanelDelay = 10.0 // seconds to display panel
+    func selectCard(cardId: Int) {
+        print("### Select card \(cardId)")
+        if debug {
+            let card = model.dealtCards.firstIndex { $0.id == cardId }
+            guard let haveCard = card else {
+                assertionFailure("Tried to select invalid card")
+                return
+            }
+            let shouldBeDeSelected = model.dealtCards[haveCard]
+            assert(shouldBeDeSelected.selected == false)
+        }
+        model.toggleCardSelection(cardId)
+        print("### DONE Select card \(cardId)")
     }
     
-    func newGamePressed() {
-        model = SetGameModel()
-        fsm = GameStateMachine(withGameDelegate: self)
-        fsm.start()
+    func deselectCard(cardId: Int) {
+        print("### deselectCard card \(cardId)")
+        if debug {
+            let card = model.dealtCards.firstIndex { $0.id == cardId }
+            guard let haveCard = card else {
+                assertionFailure("Tried to deselect invalid card")
+                return
+            }
+            let shouldBeSelected = model.dealtCards[haveCard]
+            assert(shouldBeSelected.selected)
+        }
+        model.toggleCardSelection(cardId)
+        print("### DONE deselectCard card \(cardId)")
+    }
+    
+    func clearMatchedCards() {
+        let cardIds = selectedCards.map(\.id)
+        model.replaceMatched(cardIds: cardIds)
+        if deck.isEmpty {
+            fsm.acceptCardsExhausted()
+        }
+    }
+    
+    func dealThreeCards() {
+        if debug {
+            let cardsInDeck = model.deckCards.count
+            assert(cardsInDeck >= 3)
+        }
+        model.dealCards(cardCount: 3)
+    }
+    
+    struct Constants {
+        static let EvalPanelDelay = 10.0 // seconds to display panel
     }
 }

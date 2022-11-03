@@ -61,35 +61,30 @@ import GameplayKit
      q --> [*]
  ```
 */
-
-class EvaluatingStateMachine: GKStateMachine, CardTriggerHandler {
+class EvaluatingStateMachine: GKStateMachine, TriggerHandler {
     
     var lastTappedCard: Int?
-    var shouldUseWhenIdle: Bool = true
+    var wasSelected: Bool?
     
-    func acceptCardTappedTrigger(t: InputTrigger) {
-        switch t {
-        case .CardTapped(isSelected: _, hasId: let cardId):
-            lastTappedCard = cardId
-        case .MatchIndicatorAcknowledged: break
-        case .DealThreeTapped:
-            NotificationCenter.default.post(name: .ShouldDealThree, object: self)
-        }
-        enter(AcknowledgedIsASet.self)
-        enter(AcknowledgedNotASet.self)
+    private var handlerState: EvaluatingTriggerHandler? {
+        return currentState as? EvaluatingTriggerHandler
     }
-
-    weak var rsm: GameDelegate?
+    
+    @discardableResult func acceptTrigger(_ trigger: InputTrigger) -> GameState.Exit {
+        if let destState = handlerState?.acceptTrigger(trigger) {
+            enter(destState)
+        }
+        if let haveExitState = currentState as? ExitState {
+            return haveExitState.exitCase
+        }
+        return .None
+    }
     
     func start() {
         enter(ThreeSelectedForEvaluation.self)
     }
     
-    func evaluate() {
-        enter(rsm!.isMatch() ? IsASet.self : NotASet.self)
-    }
-    
-    init(withGameDelegate rsm: GameDelegate?) {
+    init() {
         super.init(states: [
             ThreeSelectedForEvaluation(),
             IsASet(), NotASet(),
@@ -98,90 +93,149 @@ class EvaluatingStateMachine: GKStateMachine, CardTriggerHandler {
             ZeroSelectedAfterEvaluation(),
             OneSelectedAfterEvaluation()
         ])
-        self.rsm = rsm
+    }
+    
+    deinit {
+        print("Evaluating statemachine deinit")
     }
 }
 
-protocol TriggerHandlerComponent {
-    func acceptTrigger(t: InputTrigger)
+protocol EvaluatingTriggerHandler {
+    func acceptTrigger(_ trigger: InputTrigger) -> GKState.Type?
 }
 
-class ThreeSelectedForEvaluation: GKState {
+class ThreeSelectedForEvaluation: GKState, EvaluatingTriggerHandler {
+    func acceptTrigger(_ trigger: InputTrigger) -> GKState.Type? {
+        switch trigger {
+        case .MatchStatusEvaluated(isMatch: let match):
+            print("check match: \(match)")
+            return match ? IsASet.self : NotASet.self
+        default:
+            fatalError("Evaluating/\(self) - cannot accept \(trigger)")
+        }
+    }
+    
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return stateClass === IsASet.self || stateClass === NotASet.self
     }
+    
     override func didEnter(from previousState: GKState?) {
-        let notify = Notification(name: .ShouldShowEvaluationPanel, object: stateMachine!)
-        NotificationQueue.default.enqueue(notify, postingStyle: .whenIdle)
+        let notify = Notification(name: .ShouldEvaluate, object: stateMachine!)
+        NotificationQueue.default.enqueue(notify, postingStyle: .asap)
+        print("Entered \(self)")
     }
 }
 
-class IsASet: GKState {
+class IsASet: GKState, EvaluatingTriggerHandler {
+    func acceptTrigger(_ inputTrigger: InputTrigger) -> GKState.Type? {
+        switch inputTrigger {
+        case .MatchIndicatorAcknowledged:
+            return AcknowledgedIsASet.self
+        default:
+            fatalError("\(self) cannot handle trigger \(inputTrigger)")
+        }
+    }
+    
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return stateClass === AcknowledgedIsASet.self
     }
+    
+    override func didEnter(from previousState: GKState?) {
+        let notify = Notification(name: .EvaluationAcknowledged, object: stateMachine!)
+        NotificationQueue.default.enqueue(notify, postingStyle: .asap)
+    }
 }
 
-class NotASet: GKState {
+class NotASet: GKState, EvaluatingTriggerHandler {
+    func acceptTrigger(_ inputTrigger: InputTrigger) -> GKState.Type? {
+        switch inputTrigger {
+        case .MatchIndicatorAcknowledged:
+            return AcknowledgedNotASet.self
+        default:
+            fatalError("\(self) cannot handle trigger \(inputTrigger)")
+        }
+    }
+    
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return stateClass === AcknowledgedNotASet.self
     }
+    
+    override func didEnter(from previousState: GKState?) {
+        let notify = Notification(name: .EvaluationAcknowledged, object: stateMachine!)
+        NotificationQueue.default.enqueue(notify, postingStyle: .asap)
+    }
 }
 
-class AcknowledgedIsASet: GKState {
+class AcknowledgedIsASet: GKState, EvaluatingTriggerHandler {
+    func acceptTrigger(_ inputTrigger: InputTrigger) -> GKState.Type? {
+        weak var esm = stateMachine as? EvaluatingStateMachine
+        switch inputTrigger {
+        case .CardTapped(isSelected: let cardWasInSet, hasId: let cardId):
+            esm?.wasSelected = cardWasInSet
+            esm?.lastTappedCard = cardId
+            return cardWasInSet ? ZeroSelectedAfterEvaluation.self : OneSelectedAfterEvaluation.self
+        case .DealThreeTapped:
+            let notify = Notification(name: .ShouldDealThree, object: stateMachine!)
+            NotificationQueue.default.enqueue(notify, postingStyle: .asap)
+            return ZeroSelectedAfterEvaluation.self
+        default:
+            fatalError("\(self) cannot handle trigger \(inputTrigger)")
+        }
+    }
+    
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return stateClass === ZeroSelectedAfterEvaluation.self || stateClass === OneSelectedAfterEvaluation.self
     }
+    
     override func didEnter(from previousState: GKState?) {
-        NotificationCenter.default.post(name: .ShouldHideEvaluationPanel, object: stateMachine!)
+        let notify = Notification(name: .EvaluationCompleted, object: stateMachine!)
+        NotificationQueue.default.enqueue(notify, postingStyle: .asap)
     }
 }
 
-class AcknowledgedNotASet: GKState {
+class AcknowledgedNotASet: GKState, EvaluatingTriggerHandler {
+    func acceptTrigger(_ inputTrigger: InputTrigger) -> GKState.Type? {
+        weak var esm = stateMachine as? EvaluatingStateMachine
+        switch inputTrigger {
+        case .CardTapped(isSelected: let cardWasInSet, hasId: let cardId):
+            esm?.wasSelected = cardWasInSet
+            esm?.lastTappedCard = cardId
+            return OneSelectedAfterEvaluation.self
+        case .DealThreeTapped:
+            let notify = Notification(name: .ShouldDealThree, object: stateMachine!)
+            NotificationQueue.default.enqueue(notify, postingStyle: .asap)
+            return AcknowledgedNotASet.self
+        default:
+            fatalError("\(self) cannot handle trigger \(inputTrigger)")
+        }
+    }
+    
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return stateClass === OneSelectedAfterEvaluation.self
     }
+    
     override func didEnter(from previousState: GKState?) {
-        NotificationCenter.default.post(name: .ShouldHideEvaluationPanel, object: stateMachine!)
+        let notify = Notification(name: .EvaluationCompleted, object: stateMachine!)
+        NotificationQueue.default.enqueue(notify, postingStyle: .asap)
     }
 }
 
-class ZeroSelectedAfterEvaluation: GKState {
+class ZeroSelectedAfterEvaluation: GKState, ExitState {
+    var exitCase: GameState.Exit = .SelectingZeroSelected
+    
+    override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+        return false
+    }
+}
+
+class OneSelectedAfterEvaluation: GKState, ExitState {
+    var exitCase: GameState.Exit = .None
+    
     override func isValidNextState(_ stateClass: AnyClass) -> Bool {
         return false
     }
     override func didEnter(from previousState: GKState?) {
-        NotificationCenter.default.post(
-            name: .ShouldTransitionGameState,
-            object: stateMachine!,
-            userInfo: [
-                GameState.DestinationStateKey: Selecting.self
-            ]
-        )
-    }
-}
-
-class OneSelectedAfterEvaluation: GKState {
-    var evaluatingStateMachine: EvaluatingStateMachine {
-        return stateMachine as! EvaluatingStateMachine
-    }
-    override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-        return false
-    }
-    override func didEnter(from previousState: GKState?) {
-        NotificationCenter.default.post(
-            name: .ShouldTransitionGameState,
-            object: evaluatingStateMachine,
-            userInfo: [
-                GameState.DestinationStateKey: Selecting.self
-            ]
-        )
-        NotificationCenter.default.post(
-            name: .ShouldSelectCard,
-            object: evaluatingStateMachine,
-            userInfo: [
-                GameState.CardIndexKey: evaluatingStateMachine.lastTappedCard!
-            ]
-        )
+        let esm = stateMachine as! EvaluatingStateMachine
+        exitCase = .SelectingOneSelected(cardId: esm.lastTappedCard ?? 0)
     }
 }

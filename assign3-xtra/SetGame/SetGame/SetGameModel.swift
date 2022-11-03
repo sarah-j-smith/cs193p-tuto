@@ -65,8 +65,14 @@ struct SetGameModel {
             shadings.insert(c.shading)
         }
         if debug {
-            print("Checking for set:")
+            print("Checking for set: \(selectedCards)")
+            assert(selectedCards.count == 3, "Must have exactly 3 selected")
         }
+        // If feature is all the same, then there is 1 kind of that feature,
+        // and if the feature is all different then there is 3 kinds of that
+        // feature. Therefore given 3 cards they are a set if there are either
+        // 1 or 3 kinds; or they are NOT a set if there are 2 kinds (among the
+        // three cards) and the ARE a set otherwise.
         if denominations.count == 2 {
             if debug {
                 print("Not a set: denominations are \(denominations)")
@@ -112,6 +118,15 @@ struct SetGameModel {
             colours.insert(c.color)
             shadings.insert(c.shading)
         }
+        if debug {
+            print("Compiling explanation for set: \(selectedCards)")
+            assert(selectedCards.count == 3, "Must have exactly 3 selected")
+        }
+        // If feature is all the same, then there is 1 kind of that feature,
+        // and if the feature is all different then there is 3 kinds of that
+        // feature. Therefore given 3 cards they are a set if there are either
+        // 1 or 3 kinds; or they are NOT a set if there are 2 kinds (among the
+        // three cards) and the ARE a set otherwise.
         if denominations.count == 2 {
             return "Not a set: denominations are \(denominations)"
         }
@@ -166,8 +181,12 @@ struct SetGameModel {
     
     mutating func toggleCardSelection(_ cardId: Int) {
         if let haveCard = cards.firstIndex(where: { $0.id == cardId }) {
+            print("Toggle card")
+            print(haveCard)
             cards[haveCard].selected.toggle()
         }
+        print("==== selected =====")
+        print(selectedCards)
     }
     
     enum ShapeFeature {

@@ -10,17 +10,18 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      systemAttachmentLifetime = "keepNever">
       <Testables>
          <TestableReference
             skipped = "NO"
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B2C46D5F28E6B9A9005BCD6D"
-               BuildableName = "SetGameTests.xctest"
-               BlueprintName = "SetGameTests"
-               ReferencedContainer = "container:SetGame.xcodeproj">
+               BlueprintIdentifier = "B2CA9029291098120070E76D"
+               BuildableName = "CardsOfSetTests.xctest"
+               BlueprintName = "CardsOfSetTests"
+               ReferencedContainer = "container:CardsOfSet.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

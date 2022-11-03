@@ -11,20 +11,26 @@ import GameplayKit
 struct GameState {
     static let DestinationStateKey = "DestinationStateKey"
     static let CardIndexKey = "CardIndexKey"
+    
+    enum Exit: Equatable {
+        case None
+        case Evaluating
+        case SelectingOneSelected(cardId: Int)
+        case SelectingZeroSelected
+    }
 }
 
 extension Notification.Name {
-    static let ShouldTransitionGameState = Notification.Name("ShouldTransitionGameState")
+    static let ShouldEvaluate = Notification.Name("ShouldEvaluate")
     static let ShouldSelectCard = Notification.Name("ShouldSelectCard")
     static let ShouldDeselectCard = Notification.Name("ShouldDeselectCard")
     static let ShouldDealThree = Notification.Name("ShouldDealThree")
+    static let GameOver = Notification.Name("GameOver")
 }
 
 extension Notification {
-    func getDestinationState() -> GKState.Type {
-        return userInfo![GameState.DestinationStateKey] as! GKState.Type
-    }
     func getCardIndex() -> Int {
         return userInfo![GameState.CardIndexKey] as! Int
     }
 }
+

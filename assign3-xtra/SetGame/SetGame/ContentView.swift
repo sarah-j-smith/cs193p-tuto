@@ -47,11 +47,13 @@ struct ContentView: View {
     var setEvaluationPanel: some View {
         return CardInfoView(
             cards: game.selectedCards,
-            title: game.isMatch() ? "Yes! It's a Match!" : "Not a Match!",
+            title: game.isMatch ? "Yes! It's a Match!" : "Not a Match!",
             message: game.matchResultExplanation,
-            infoType: game.isMatch() ? .Information : .Warning, handler: {
-                game.dismissEvaluationPanel()
-            })
+            infoType: game.isMatch ? .Information : .Warning,
+            handler: {
+                game.evaluationAcknowledged()
+            }
+        )
     }
     
     private var newGameButton: some View {

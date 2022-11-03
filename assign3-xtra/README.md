@@ -175,11 +175,11 @@ stateDiagram-v2
     a --> b
     b --> m: match
     b --> n: no match
-    m --> c: pick card
-    n --> d: pick card
-    c --> p: card was in set
-    c --> q: card was not in set
-    d --> q
+    m --> c: acknowledge
+    n --> d: acknowledge
+    c --> p: pick card in set
+    c --> q: pick card not in set
+    d --> q: pick any card
     p --> [*]
     q --> [*]
 ```

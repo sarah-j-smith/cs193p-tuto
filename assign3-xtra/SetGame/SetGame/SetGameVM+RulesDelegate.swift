@@ -8,23 +8,12 @@
 import Foundation
 
 
-extension SetGameViewModel: CardTriggerHandlerFactory {
-    func createEvaluatingFSM(withGameDataProvider gdp: GameDelegate) -> CardTriggerHandler {
-        return EvaluatingStateMachine(withGameDelegate: gdp)
+extension SetGameViewModel: HierarchicalStateMachineFactory {
+    func createEvaluatingFSM() -> TriggerHandler {
+        return EvaluatingStateMachine()
     }
     
-    func createSelectionFSM(withGameDataProvider gdp: GameDelegate) -> CardTriggerHandler {
-        return SelectingStateMachine(withDelegate: gdp)
-    }
-}
-
-extension SetGameViewModel: GameDelegate {
-    
-    func isMatch() -> Bool {
-        return self.model.isMatchedSet
-    }
-    
-    func isDeckExhausted() -> Bool {
-        return self.model.deckCards.isEmpty
+    func createSelectionFSM() -> TriggerHandler {
+        return SelectingStateMachine()
     }
 }

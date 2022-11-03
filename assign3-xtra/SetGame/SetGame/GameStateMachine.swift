@@ -8,15 +8,16 @@
 import Foundation
 import GameplayKit
 
-protocol GameDelegate: AnyObject {
-    func isMatch() -> Bool
-    func isDeckExhausted() -> Bool
-}
-
 enum InputTrigger {
     
     /** A card with current selection status `isSelected` and with id `hasId` is tapped by the player. */
     case CardTapped(isSelected: Bool, hasId: Int)
+    
+    /** The game rules evaluated whether a selection was a match */
+    case MatchStatusEvaluated(isMatch: Bool)
+    
+    /** The deck has no more cards in it */
+    case CardsExhausted
     
     /** The player acknowledged the evaluation panel indicating whether a match was made */
     case MatchIndicatorAcknowledged
@@ -28,8 +29,9 @@ enum InputTrigger {
 extension InputTrigger: Equatable { }
 
 extension Notification.Name {
-    static let ShouldHideEvaluationPanel = Notification.Name("ShouldHideEvaluationPanel")
-    static let ShouldShowEvaluationPanel = Notification.Name("ShouldShowEvaluationPanel")
+    static let EvaluationCompleted = Notification.Name("EvaluationCompleted")
+    static let EvaluationAcknowledged = Notification.Name("EvaluationAcknowledged")
+    static let SelectionCommencing = Notification.Name("SelectionCommencing")
     static let ShouldEndGame = Notification.Name("ShouldEndGame")
     static let SelectCard = Notification.Name("SelectCard")
 }
@@ -66,103 +68,120 @@ acknowledges the result by tapping a card, or by hitting the deal 3 more button.
 
 class GameStateMachine: GKStateMachine {
     
-    init(withGameDelegate rsm: CardGameStateContainer) {
+    init(withFactory factory: HierarchicalStateMachineFactory) {
         super.init(states: [
-            Selecting(withDelegate: rsm),
-            Evaluating(withDelegate: rsm) ])
+            Selecting(withFactory: factory),
+            Evaluating(withFactory: factory) ])
     }
 
     /**
      Start this FSM by moving to the Selecting state
      */
     func start() {
-        NotificationCenter.default.addObserver(self, selector: #selector(shouldTransition),
-                                               name: .ShouldTransitionGameState, object: nil)
         enter(Selecting.self)
     }
     
-    /** Will transition when signalled to do so by child states FSM's */
-    @objc private func shouldTransition(notification: Notification) {
-        print("Got notification: \(notification)")
-        enter(notification.getDestinationState())
+    private func processExit(_ tx: GameState.Exit) {
+        switch tx {
+        case .Evaluating:
+            enter(Evaluating.self)
+        case .SelectingOneSelected(cardId: let cardId):
+            enter(Selecting.self)
+            acceptCardTapped(cardId, isSelected: false)
+        case .SelectingZeroSelected:
+            enter(Selecting.self)
+        default:
+            // do nothing
+            break
+        }
     }
     
-    /** Input trigger for player tapping on a card. */
+    /** Input trigger for player tapping on a card.
+     Throws an exception if called when FSM has not been started.
+     */
     func acceptCardTapped(_ card: Int, isSelected selected: Bool) {
-        currentTriggerHandler?.acceptCardTappedTrigger(
-            t: InputTrigger.CardTapped(isSelected: selected, hasId: card))
+        if let tx = handler?.acceptTrigger(.CardTapped(isSelected: selected, hasId: card)) {
+            processExit(tx)
+        }
     }
     
-    /** Input trigger for player tapping on "deal 3" */
     func acceptDealThreeTapped() {
-        currentTriggerHandler?.acceptCardTappedTrigger(
-            t: InputTrigger.DealThreeTapped)
-    }
-
-    /** Input trigger for player acknowledging the evaluation panel */
-    func acceptAcknowledgeEval() {
-        currentTriggerHandler?.acceptCardTappedTrigger(
-            t: InputTrigger.MatchIndicatorAcknowledged)
+        if let tx = handler?.acceptTrigger(.DealThreeTapped) {
+            processExit(tx)
+        }
     }
     
-    private var currentTriggerHandler: CardTriggerHandler? {
-        return currentState as? CardTriggerHandler
+    func acceptAcknowledgeEval() {
+        if let tx = handler?.acceptTrigger(.MatchIndicatorAcknowledged) {
+            processExit(tx)
+        }
+    }
+    
+    func acceptSetEvaluated(matchState: Bool) {
+        if let tx = handler?.acceptTrigger(.MatchStatusEvaluated(isMatch: matchState)) {
+            processExit(tx)
+        }
+    }
+    
+    func acceptCardsExhausted() {
+        if let tx = handler?.acceptTrigger(.CardsExhausted) {
+            processExit(tx)
+        }
+    }
+    
+    private var handler: TriggerHandler? {
+        return currentState as? TriggerHandler
     }
 }
 
 // MARK: - States for Selecting and Evaluating
 
-/// Entry point for the high-level state machine to pass trigger inputs down to child FSM
-protocol CardTriggerHandler: AnyObject {
-    func acceptCardTappedTrigger(t inputTrigger: InputTrigger)
-    func start()
-    var shouldUseWhenIdle: Bool { get }
-}
-
-extension CardTriggerHandler {
-    func start() {}
-    var shouldUseWhenIdle: Bool { return false }
+/// Enpoint for the high-level state machine to pass trigger inputs down to lower level FSM
+protocol TriggerHandler: AnyObject {
+    func acceptTrigger(_ : InputTrigger) -> GameState.Exit
 }
 
 /// Dependency injection helper for decoupling high-level state machine from lower level
-protocol CardTriggerHandlerFactory {
-    func createEvaluatingFSM(withGameDataProvider: GameDelegate) -> CardTriggerHandler
-    
-    func createSelectionFSM(withGameDataProvider: GameDelegate) -> CardTriggerHandler
+protocol HierarchicalStateMachineFactory: AnyObject {
+    func createEvaluatingFSM() -> TriggerHandler    
+    func createSelectionFSM() -> TriggerHandler
 }
 
-/// Combine the dependency injection helper and game data delegation into a container
-typealias CardGameStateContainer = CardTriggerHandlerFactory & GameDelegate
+/// Implemented by terminal states that cause the FSM to exit & signal to be garbage collected
+protocol ExitState: AnyObject {
+    var exitCase: GameState.Exit { get }
+}
 
 /**
  Base class for Selecting and Evaluation states.
  Takes triggers and delegates them to which ever child FSM is currently executing.
  */
-class CardManagerState: GKState, CardTriggerHandler {    
-    func acceptCardTappedTrigger(t inputTrigger: InputTrigger) {
-        childFSM?.acceptCardTappedTrigger(t: inputTrigger)
+class CardManagerState: GKState, TriggerHandler {
+    func acceptTrigger(_ trigger: InputTrigger) -> GameState.Exit {
+        childFSM?.acceptTrigger(trigger) ?? .None
     }
     
-    var childFSM: CardTriggerHandler?
-    weak var rsm: CardGameStateContainer?
+    var childFSM: TriggerHandler?
+    weak var factory: HierarchicalStateMachineFactory?
     
-    init(withDelegate rsm: CardGameStateContainer?) {
-        self.rsm = rsm
+    init(withFactory factory: HierarchicalStateMachineFactory?) {
+        self.factory = factory
     }
 }
 
 /**
- State of selecting cards to try to make a set. This state delegates most of its operations to a
+ State of selecting cards to to make a set. This state delegates most of its operations to a
  child FSM.  When the top-level FSM moves into this state a `SelectingStateMachine` is
  instantiated and all inputs are forwarded to it.  This is a facade pattern for creating a HSM.
  */
 class Selecting: CardManagerState {
     override func didEnter(from previousState: GKState?) {
-        let fsm = rsm?.createSelectionFSM(withGameDataProvider: rsm!)
-        DispatchQueue.main.async {
-            fsm?.start()
-        }
-        childFSM = fsm
+        childFSM = factory?.createSelectionFSM()
+        let selectingStateMachine = childFSM as? SelectingStateMachine
+        selectingStateMachine?.start()
+    }
+    override func willExit(to nextState: GKState) {
+        childFSM = nil
     }
 }
 
@@ -171,10 +190,12 @@ class Selecting: CardManagerState {
  instantiated and all inputs are forwarded to it. */
 class Evaluating: CardManagerState {
     override func didEnter(from previousState: GKState?) {
-        let fsm = rsm?.createEvaluatingFSM(withGameDataProvider: rsm!)
-        DispatchQueue.main.async {
-            fsm?.start()
-        }
-        childFSM = fsm
+        childFSM = factory?.createEvaluatingFSM()
+        let evaluatingStateMachine = childFSM as? EvaluatingStateMachine
+        evaluatingStateMachine?.start()
+    }
+    override func willExit(to nextState: GKState) {
+        childFSM = nil
+        NotificationCenter.default.post(name: .SelectionCommencing, object: stateMachine)
     }
 }

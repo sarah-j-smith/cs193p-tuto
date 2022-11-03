@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B26F945C28D2BEA90075E6D5"
-               BuildableName = "SetGame.app"
-               BlueprintName = "SetGame"
-               ReferencedContainer = "container:SetGame.xcodeproj">
+               BuildableName = "CardsOfSet.app"
+               BlueprintName = "CardsOfSet"
+               ReferencedContainer = "container:CardsOfSet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,10 +33,10 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B2C46D5F28E6B9A9005BCD6D"
-               BuildableName = "SetGameTests.xctest"
-               BlueprintName = "SetGameTests"
-               ReferencedContainer = "container:SetGame.xcodeproj">
+               BlueprintIdentifier = "B2CA9029291098120070E76D"
+               BuildableName = "CardsOfSetTests.xctest"
+               BlueprintName = "CardsOfSetTests"
+               ReferencedContainer = "container:CardsOfSet.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B26F945C28D2BEA90075E6D5"
-            BuildableName = "SetGame.app"
-            BlueprintName = "SetGame"
-            ReferencedContainer = "container:SetGame.xcodeproj">
+            BuildableName = "CardsOfSet.app"
+            BlueprintName = "CardsOfSet"
+            ReferencedContainer = "container:CardsOfSet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -73,9 +73,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B26F945C28D2BEA90075E6D5"
-            BuildableName = "SetGame.app"
-            BlueprintName = "SetGame"
-            ReferencedContainer = "container:SetGame.xcodeproj">
+            BuildableName = "CardsOfSet.app"
+            BlueprintName = "CardsOfSet"
+            ReferencedContainer = "container:CardsOfSet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
