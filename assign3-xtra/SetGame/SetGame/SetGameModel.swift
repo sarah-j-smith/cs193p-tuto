@@ -95,6 +95,7 @@ struct SetGameModel {
             if debug {
                 print("Not a set: shadings are \(shadings)")
             }
+            return false
         }
         if debug {
             print("Yes! Its a set")

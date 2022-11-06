@@ -87,8 +87,7 @@ final class GameStateMachineTests: XCTestCase {
         let gameStateMachine = try XCTUnwrap(fsm)
         gameStateMachine.start()
         gameStateMachine.enter(Evaluating.self)
-        
-        let notifyExpectation = expectation(forNotification: .SelectionCommencing, object: gameStateMachine)
+        let clearSelectionExpectation = expectation(forNotification: .ShouldClearSelection, object: gameStateMachine)
         factory.mockAcceptResultForEvaluating(.SelectingZeroSelected)
         gameStateMachine.acceptCardTapped(1, isSelected: true)
         XCTAssertEqual(
@@ -113,7 +112,7 @@ final class GameStateMachineTests: XCTestCase {
             evaluating.childFSM,
             "Evaluating FSM will have had its child FSM deleted"
         )
-        wait(for: [ notifyExpectation ], timeout: 0.1)
+        wait(for: [ clearSelectionExpectation ], timeout: 0.1)
     }
     
     func testSelectingStatePassesTriggersToLowerLevelMachine() throws {
@@ -142,10 +141,8 @@ final class GameStateMachineTests: XCTestCase {
         gameStateMachine.enter(Evaluating.self)
         gameStateMachine.acceptCardTapped(5, isSelected: false)
         gameStateMachine.acceptDealThreeTapped()
-        gameStateMachine.acceptAcknowledgeEval()
         gameStateMachine.acceptSetEvaluated(matchState: true)
         gameStateMachine.acceptSetEvaluated(matchState: false)
-        gameStateMachine.acceptCardsExhausted()
         XCTAssertEqual(
             evaluatingFSM!.triggers[0],
             InputTrigger.CardTapped(isSelected: false, hasId: 5))
@@ -154,15 +151,9 @@ final class GameStateMachineTests: XCTestCase {
             InputTrigger.DealThreeTapped)
         XCTAssertEqual(
             evaluatingFSM!.triggers[2],
-            InputTrigger.MatchIndicatorAcknowledged)
-        XCTAssertEqual(
-            evaluatingFSM!.triggers[3],
             InputTrigger.MatchStatusEvaluated(isMatch: true))
         XCTAssertEqual(
-            evaluatingFSM!.triggers[4],
+            evaluatingFSM!.triggers[3],
             InputTrigger.MatchStatusEvaluated(isMatch: false))
-        XCTAssertEqual(
-            evaluatingFSM!.triggers[5],
-            InputTrigger.CardsExhausted)
     }
 }

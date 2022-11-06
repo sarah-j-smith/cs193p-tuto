@@ -26,62 +26,67 @@ final class EvaluatingFSMTests: XCTestCase {
 
     func testStateMachineStart() throws {
         let evaluatingStateMachine = try XCTUnwrap(evalFSM)
+        let shouldEvaluateExpectation = XCTNSNotificationExpectation(name: .ShouldEvaluate)
         evaluatingStateMachine.start()
         XCTAssertEqual(evaluatingStateMachine.currentState,
                        evaluatingStateMachine.state(forClass: ThreeSelectedForEvaluation.self))
-        let shouldEvaluateExpectation = XCTNSNotificationExpectation(name: .ShouldEvaluate)
         wait(for: [ shouldEvaluateExpectation ], timeout: 0.1)
     }
 
     func testMatchTrue_GoesTo_IsASet() throws {
         let evaluatingStateMachine = try XCTUnwrap(evalFSM)
         evaluatingStateMachine.start()
-        let expectNotify = XCTNSNotificationExpectation(name: .EvaluationAcknowledged)
         let tx = evaluatingStateMachine.acceptTrigger(.MatchStatusEvaluated(isMatch: true))
+        XCTAssertEqual(tx, .None)
         XCTAssertEqual(
             evaluatingStateMachine.currentState,
             evaluatingStateMachine.state(forClass: IsASet.self),
             "On match should transition to IsASet"
         )
-        wait(for: [ expectNotify ], timeout: 0.1)
     }
     
     func testMatchFalse_GoesTo_NotASet() throws {
         let evaluatingStateMachine = try XCTUnwrap(evalFSM)
         evaluatingStateMachine.start()
-        let expectNotify = XCTNSNotificationExpectation(name: .EvaluationAcknowledged)
         let tx = evaluatingStateMachine.acceptTrigger(.MatchStatusEvaluated(isMatch: false))
+        XCTAssertEqual(tx, .None)
         XCTAssertEqual(
             evaluatingStateMachine.currentState,
             evaluatingStateMachine.state(forClass: NotASet.self),
             "On not a match, should transition to NotASet"
         )
-        wait(for: [ expectNotify ], timeout: 1.0)
     }
     
-    func testFromIsASet_Ack_GoesTo_AckIsASet() throws {
-        let notifyExpectation = expectation(forNotification: .EvaluationCompleted, object: evalFSM!)
+    func testIsASet_Deal3_ReplacesCards() throws {
         evalFSM!.enter(IsASet.self)
-        let tx = evalFSM!.acceptTrigger(.MatchIndicatorAcknowledged)
-        XCTAssertEqual(tx, .None)
-        wait(for: [ notifyExpectation ], timeout: 0.1)
-        XCTAssertEqual(
-            evalFSM!.currentState,
-            evalFSM!.state(forClass: AcknowledgedIsASet.self))
+        let notify = XCTNSNotificationExpectation(name: .ShouldDealThree, object: evalFSM)
+        notify.handler = { (n: Notification) in
+            n.getShouldReplace()
+        }
+        let tx = evalFSM!.acceptTrigger(.DealThreeTapped)
+        XCTAssertEqual(tx, .SelectingZeroSelected)
+        XCTAssertIdentical(
+            evalFSM?.currentState,
+            evalFSM?.state(forClass: ZeroSelectedAfterEvaluation.self))
+        wait(for: [ notify ], timeout: 0.1)
     }
     
-    func testFromNotASet_Ack_GoesTo_AckNotASet() throws {
-        let notifyExpectation = expectation(forNotification: .EvaluationCompleted, object: evalFSM!)
+    func testNotASet_Deal3_DoesNotReplaceCards() throws {
         evalFSM!.enter(NotASet.self)
-        let tx = evalFSM!.acceptTrigger(.MatchIndicatorAcknowledged)
-        XCTAssertEqual(tx, .None)
-        wait(for: [ notifyExpectation ], timeout: 0.1)
-        XCTAssertEqual(evalFSM!.currentState!,
-                       evalFSM!.state(forClass: AcknowledgedNotASet.self))
+        let notify = XCTNSNotificationExpectation(name: .ShouldDealThree, object: evalFSM)
+        notify.handler = { (n: Notification) in
+            !n.getShouldReplace()
+        }
+        let tx = evalFSM!.acceptTrigger(.DealThreeTapped)
+        XCTAssertEqual(tx, .SelectingZeroSelected)
+        XCTAssertIdentical(
+            evalFSM?.currentState,
+            evalFSM?.state(forClass: ZeroSelectedAfterEvaluation.self))
+        wait(for: [ notify ], timeout: 2.0)
     }
     
     func testFromAckIsASet_PickNotInSet_GoesTo_OnePicked() throws {
-        evalFSM!.enter(AcknowledgedIsASet.self)
+        evalFSM!.enter(IsASet.self)
         let tx = evalFSM!.acceptTrigger(.CardTapped(isSelected: false, hasId: 10))
         XCTAssertEqual(tx, .SelectingOneSelected(cardId: 10))
         XCTAssertEqual(evalFSM!.currentState!,
@@ -89,7 +94,7 @@ final class EvaluatingFSMTests: XCTestCase {
     }
 
     func testFromAckIsASet_PickIsInSet_GoesTo_ZeroPicked() throws {
-        evalFSM!.enter(AcknowledgedIsASet.self)
+        evalFSM!.enter(IsASet.self)
         let tx = evalFSM!.acceptTrigger(.CardTapped(isSelected: true, hasId: 10))
         XCTAssertEqual(tx, .SelectingZeroSelected)
         XCTAssertEqual(evalFSM!.currentState!,
@@ -97,7 +102,7 @@ final class EvaluatingFSMTests: XCTestCase {
     }
 
     func testFromAckNotASet_PickAny_GoesTo_OnePicked() throws {
-        evalFSM!.enter(AcknowledgedNotASet.self)
+        evalFSM!.enter(NotASet.self)
         let tx = evalFSM!.acceptTrigger(.CardTapped(isSelected: false, hasId: 10))
         XCTAssertEqual(tx, .SelectingOneSelected(cardId: 10))
         XCTAssertEqual(evalFSM!.currentState!,

@@ -39,6 +39,17 @@
                ReferencedContainer = "container:CardsOfSet.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B29D49B72916681300B7EC1A"
+               BuildableName = "CardsOfSetIOSTests.xctest"
+               BlueprintName = "CardsOfSetIOSTests"
+               ReferencedContainer = "container:CardsOfSet.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

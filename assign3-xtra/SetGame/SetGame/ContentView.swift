@@ -18,16 +18,16 @@ struct ContentView: View {
                 mainCardsView.padding(.horizontal, cardPadding)
                 HStack {
                     newGameButton
-                    Spacer()
-                    Text("Deck: \(game.deck.count)")
+                    if game.shouldDisplayEvaluationPanel {
+                        setEvaluationPanel
+                            .padding(.horizontal)
+                    } else {
+                        Spacer()
+                    }
                     dealThreeMoreButton
+                        .disabled(game.cards.count < 3)
                 }.padding()
                     .labelStyle(VerticalLabelStyle())
-            }
-            if game.shouldDisplayEvaluationPanel {
-                Rectangle().fill(.black).opacity(0.7).ignoresSafeArea()
-                setEvaluationPanel
-                    .padding(30.0)
             }
         }
     }
@@ -45,15 +45,11 @@ struct ContentView: View {
     }
     
     var setEvaluationPanel: some View {
-        return CardInfoView(
-            cards: game.selectedCards,
-            title: game.isMatch ? "Yes! It's a Match!" : "Not a Match!",
-            message: game.matchResultExplanation,
-            infoType: game.isMatch ? .Information : .Warning,
-            handler: {
-                game.evaluationAcknowledged()
-            }
-        )
+        VStack {
+            Text(game.isMatch ? "✅ It's a Match!" : "❌ Not a Match!")
+                .font(.title2)
+            Text("Dealt: \(game.cards.count) - Deck: \(game.deck.count)")
+        }
     }
     
     private var newGameButton: some View {
@@ -69,7 +65,7 @@ struct ContentView: View {
             game.dealThreeMorePressed()
         } label: {
             Label("Deal 3", systemImage: "square.3.stack.3d")
-        }.disabled(game.cards.count >= SetGameModel.UniqueCardCount)
+        }
     }
     
     private var gameHeader: some View {

@@ -22,6 +22,8 @@ class SetGameViewModel: ObservableObject {
     
     @Published var shouldDisplayEvaluationPanel = false
     
+    private var evalPanelLastTick: Double = 0
+    
     // MARK: - Model convenience accessors/facade
     
     var deck: [ Card ] {
@@ -60,14 +62,8 @@ class SetGameViewModel: ObservableObject {
     
     lazy private var fsm: GameStateMachine = SetGameViewModel.createFSM(forGame: self)
     
-    static func createFSM(forGame game: HierarchicalStateMachineFactory) -> GameStateMachine {
+    static func createFSM(forGame game: SetGameViewModel) -> GameStateMachine {
         let fsm = GameStateMachine(withFactory: game)
-        NotificationCenter.default.addObserver(
-            game, selector: #selector(showEvaluationPanel),
-            name: .EvaluationAcknowledged, object: nil)
-        NotificationCenter.default.addObserver(
-            game, selector: #selector(hideEvaluationPanel),
-            name: .EvaluationCompleted, object: nil)
         NotificationCenter.default.addObserver(
             game, selector: #selector(shouldSelectCard),
             name: .ShouldSelectCard, object: nil)
@@ -82,7 +78,10 @@ class SetGameViewModel: ObservableObject {
             name: .ShouldEvaluate, object: nil)
         NotificationCenter.default.addObserver(
             game, selector: #selector(shouldClearMatchedCards),
-            name: .SelectionCommencing, object: nil)
+            name: .ShouldClearSelection, object: nil)
+        NotificationCenter.default.addObserver(
+            game, selector: #selector(hideEvaluationPanel),
+            name: .ShouldHideEvaluationPanel, object: nil)
         return fsm
     }
     
@@ -104,22 +103,11 @@ class SetGameViewModel: ObservableObject {
         fsm.acceptCardTapped(cardId, isSelected: selected)
     }
     
-    func evaluationAcknowledged() {
-        fsm.acceptAcknowledgeEval()
-    }
-    
     func showGameOver() {
         print("Game over")
     }
     
     // - MARK: FSM output receivers
-    
-    @MainActor
-    @objc func showEvaluationPanel(_: Notification) {
-        shouldDisplayEvaluationPanel = true
-        startEvalPanelTimer()
-    }
-    
     @MainActor
     @objc func hideEvaluationPanel(_: Notification) {
         shouldDisplayEvaluationPanel = false
@@ -137,13 +125,19 @@ class SetGameViewModel: ObservableObject {
     }
     
     @MainActor
-    @objc func shouldDealThreeCards(_: Notification) {
-        dealThreeCards()
+    @objc func shouldDealThreeCards(notifier: Notification) {
+        if notifier.getShouldReplace() {
+            clearMatchedCards()
+        } else {
+            dealThreeCards()
+        }
     }
     
     @MainActor
     @objc func shouldEvaluate(notifier: Notification) {
         fsm.acceptSetEvaluated(matchState: model.isMatchedSet)
+        shouldDisplayEvaluationPanel = true
+        startEvalPanelTimer()
     }
     
     @MainActor
@@ -160,16 +154,25 @@ class SetGameViewModel: ObservableObject {
     }
     
     func startEvalPanelTimer() {
-        weak var setGameModel = self
+        weak var welf = self
+        evalPanelLastTick = CACurrentMediaTime()
         evalPanelTimer = Timer.scheduledTimer(
-            withTimeInterval: Constants.EvalPanelDelay,
-            repeats: false) { _ in
+            withTimeInterval: 0.1,
+            repeats: true) { timer in
                 DispatchQueue.main.async {
-                    setGameModel?.shouldDisplayEvaluationPanel = false
-                    setGameModel?.stopEvalPanelTimer()
-                    setGameModel?.evaluationAcknowledged()
+                    if let haveSelf = welf {
+                        haveSelf.fsm.update(
+                            deltaTime: haveSelf.getDeltaAndUpdateEvalPanelLastTick())
+                    }
                 }
             }
+    }
+    
+    private func getDeltaAndUpdateEvalPanelLastTick() -> TimeInterval {
+        let updatedEvalPanelLastTick = CACurrentMediaTime()
+        let delta = updatedEvalPanelLastTick - evalPanelLastTick
+        evalPanelLastTick = updatedEvalPanelLastTick
+        return delta
     }
     
     func stopEvalPanelTimer() {
@@ -210,9 +213,6 @@ class SetGameViewModel: ObservableObject {
     func clearMatchedCards() {
         let cardIds = selectedCards.map(\.id)
         model.replaceMatched(cardIds: cardIds)
-        if deck.isEmpty {
-            fsm.acceptCardsExhausted()
-        }
     }
     
     func dealThreeCards() {

@@ -16,25 +16,11 @@ enum InputTrigger {
     /** The game rules evaluated whether a selection was a match */
     case MatchStatusEvaluated(isMatch: Bool)
     
-    /** The deck has no more cards in it */
-    case CardsExhausted
-    
-    /** The player acknowledged the evaluation panel indicating whether a match was made */
-    case MatchIndicatorAcknowledged
-    
     /** The player tapped the deal three button*/
     case DealThreeTapped
 }
 
 extension InputTrigger: Equatable { }
-
-extension Notification.Name {
-    static let EvaluationCompleted = Notification.Name("EvaluationCompleted")
-    static let EvaluationAcknowledged = Notification.Name("EvaluationAcknowledged")
-    static let SelectionCommencing = Notification.Name("SelectionCommencing")
-    static let ShouldEndGame = Notification.Name("ShouldEndGame")
-    static let SelectCard = Notification.Name("SelectCard")
-}
 
 // MARK: - Top level State Machine
 
@@ -81,7 +67,7 @@ class GameStateMachine: GKStateMachine {
         enter(Selecting.self)
     }
     
-    private func processExit(_ tx: GameState.Exit) {
+    private func maybeTransitionTopLevelState(_ tx: GameState.Exit) {
         switch tx {
         case .Evaluating:
             enter(Evaluating.self)
@@ -96,36 +82,24 @@ class GameStateMachine: GKStateMachine {
         }
     }
     
-    /** Input trigger for player tapping on a card.
-     Throws an exception if called when FSM has not been started.
-     */
+    /** Input trigger for player tapping on a card. */
     func acceptCardTapped(_ card: Int, isSelected selected: Bool) {
         if let tx = handler?.acceptTrigger(.CardTapped(isSelected: selected, hasId: card)) {
-            processExit(tx)
+            maybeTransitionTopLevelState(tx)
         }
     }
     
+    /** Input trigger for player tapping the deal 3 button */
     func acceptDealThreeTapped() {
         if let tx = handler?.acceptTrigger(.DealThreeTapped) {
-            processExit(tx)
+            maybeTransitionTopLevelState(tx)
         }
     }
     
-    func acceptAcknowledgeEval() {
-        if let tx = handler?.acceptTrigger(.MatchIndicatorAcknowledged) {
-            processExit(tx)
-        }
-    }
-    
+    /** Input trigger for the game model returning an evaluation of the set condition */
     func acceptSetEvaluated(matchState: Bool) {
         if let tx = handler?.acceptTrigger(.MatchStatusEvaluated(isMatch: matchState)) {
-            processExit(tx)
-        }
-    }
-    
-    func acceptCardsExhausted() {
-        if let tx = handler?.acceptTrigger(.CardsExhausted) {
-            processExit(tx)
+            maybeTransitionTopLevelState(tx)
         }
     }
     
@@ -159,6 +133,12 @@ protocol ExitState: AnyObject {
 class CardManagerState: GKState, TriggerHandler {
     func acceptTrigger(_ trigger: InputTrigger) -> GameState.Exit {
         childFSM?.acceptTrigger(trigger) ?? .None
+    }
+    
+    override func update(deltaTime seconds: TimeInterval) {
+        if let fsm = childFSM as? GKStateMachine {
+            fsm.update(deltaTime: seconds)
+        }
     }
     
     var childFSM: TriggerHandler?
@@ -196,6 +176,5 @@ class Evaluating: CardManagerState {
     }
     override func willExit(to nextState: GKState) {
         childFSM = nil
-        NotificationCenter.default.post(name: .SelectionCommencing, object: stateMachine)
     }
 }

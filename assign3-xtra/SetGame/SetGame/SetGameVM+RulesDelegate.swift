@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 extension SetGameViewModel: HierarchicalStateMachineFactory {
     func createEvaluatingFSM() -> TriggerHandler {
         return EvaluatingStateMachine()
