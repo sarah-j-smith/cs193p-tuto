@@ -2,7 +2,7 @@
 
 [Set] is a real-time card game.  These rules below come from the CS193p course, [Assignment 3].
 
-This _xtra_ version of the assignment has the following changes:
+This _xtra_ version of the assignment has the following changes (over the one in `assign3`):
 
 * The states in the game are modeled by a [FSM] using [GKStateMachine].
 
@@ -160,28 +160,45 @@ stateDiagram-v2
     state "3 picked" as a
     state "set" as m
     state "no set" as n
-    note left of m
-       show eval panel
-    end note
     state "0 picked" as p
     state "1 picked" as q
     state b <<choice>>
-    state "ok set" as c
-    state "ok no set" as d
-    note left of c
-       deal 3 to replace set
-    end note
     [*] --> a
     a --> b
     b --> m: match
     b --> n: no match
-    m --> c: acknowledge
-    n --> d: acknowledge
-    c --> p: pick card in set
-    c --> q: pick card not in set
-    d --> q: pick any card
+    m --> p: pick in set, deal 3
+    m --> q: pick not in set
+    n --> p: pick any
+    n --> q: deal 3
     p --> [*]
     q --> [*]
+```
+
+## Deal 3 More
+
+10. You will need to have a “Deal 3 More Cards” button (per the rules of Set).
+a. when it is touched, replace the selected cards if the selected cards make a Set
+b. or, if the selected cards do not make a Set (or if there are fewer than 3 cards selected, including none), add 3 new cards to join the ones already on screen (and do not affect the selection)
+c. disable this button if the deck is empty
+
+[Set]: https://en.wikipedia.org/wiki/Set_(card_game)
+[Set illustration]: https://commons.wikimedia.org/w/index.php?curid=3306905
+[Assignment 3]: https://cs193p.sites.stanford.edu/sites/g/files/sbiybj16636/files/media/file/assignment_3_0.pdf
+
+## Evaluation Panel
+
+6. ✅ After 3 cards have been selected, you must indicate whether those 3 cards are a match or mismatch. You can show this any way you want (colors, borders, backgrounds, whatever). Anytime there are 3 cards currently selected, it must be clear to the user whether they are a match or not (and the cards involved in a non-matching trio must look different than the cards look when there are only 1 or 2 cards in the selection).
+
+To acheive this requirement there is a panel that shows the status of any set of cards once it has been selected.  The panel is displayed for a time, and then auto-dismissed after a short period.  Since cards can be selected and deselected, and be matched & not matched; whether the panel is displayed or not is a bit complex.  To address this a seperate state machine is used.
+
+```mermaid
+stateDiagram-v2
+    state "visible" as a
+    state "hidden" as b
+    [*] --> a
+    a --> b: timeout/pick card/deal 3
+    b --> [*]
 ```
 
 ## Deal 3 More
