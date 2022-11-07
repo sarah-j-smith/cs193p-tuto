@@ -187,9 +187,14 @@ class NotASet: PanelControllerState, EvaluatingTriggerHandler {
     func acceptTrigger(_ inputTrigger: InputTrigger) -> GKState.Type? {
         switch inputTrigger {
         case .CardTapped(isSelected: _, hasId: _):
+            NotificationCenter.default.post(
+                name: .ShouldClearSelection, object: stateMachine,
+                userInfo: [ GameState.ShouldDeselectAllKey: true ])
             return OneSelectedAfterEvaluation.self
         case .DealThreeTapped:
-            NotificationCenter.default.post(name: .ShouldDealThree, object: stateMachine!)
+            NotificationCenter.default.post(
+                name: .ShouldDealThree, object: stateMachine,
+                userInfo: [ GameState.ShouldDeselectAllKey: true ])
             return ZeroSelectedAfterEvaluation.self
         case .MatchStatusEvaluated(isMatch: _):
             fatalError("\(self) cannot handle trigger \(inputTrigger)")

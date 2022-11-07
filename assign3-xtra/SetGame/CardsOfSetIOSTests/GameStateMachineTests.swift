@@ -87,7 +87,6 @@ final class GameStateMachineTests: XCTestCase {
         let gameStateMachine = try XCTUnwrap(fsm)
         gameStateMachine.start()
         gameStateMachine.enter(Evaluating.self)
-        let clearSelectionExpectation = expectation(forNotification: .ShouldClearSelection, object: gameStateMachine)
         factory.mockAcceptResultForEvaluating(.SelectingZeroSelected)
         gameStateMachine.acceptCardTapped(1, isSelected: true)
         XCTAssertEqual(
@@ -112,7 +111,6 @@ final class GameStateMachineTests: XCTestCase {
             evaluating.childFSM,
             "Evaluating FSM will have had its child FSM deleted"
         )
-        wait(for: [ clearSelectionExpectation ], timeout: 0.1)
     }
     
     func testSelectingStatePassesTriggersToLowerLevelMachine() throws {

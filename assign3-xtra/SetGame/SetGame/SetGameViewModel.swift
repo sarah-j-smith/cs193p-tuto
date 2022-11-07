@@ -77,10 +77,10 @@ class SetGameViewModel: ObservableObject {
             game, selector: #selector(shouldEvaluate),
             name: .ShouldEvaluate, object: nil)
         NotificationCenter.default.addObserver(
-            game, selector: #selector(shouldClearMatchedCards),
+            game, selector: #selector(shouldClearSelection),
             name: .ShouldClearSelection, object: nil)
         NotificationCenter.default.addObserver(
-            game, selector: #selector(hideEvaluationPanel),
+            game, selector: #selector(shouldHideEvaluationPanel),
             name: .ShouldHideEvaluationPanel, object: nil)
         return fsm
     }
@@ -94,6 +94,11 @@ class SetGameViewModel: ObservableObject {
     }
         
     // - MARK: Intents from UX actions
+    
+    func hideEvaluationPanel() {
+        shouldDisplayEvaluationPanel = false
+        stopEvalPanelTimer()
+    }
     
     func dealThreeMorePressed() {
         fsm.acceptDealThreeTapped()
@@ -109,9 +114,8 @@ class SetGameViewModel: ObservableObject {
     
     // - MARK: FSM output receivers
     @MainActor
-    @objc func hideEvaluationPanel(_: Notification) {
-        shouldDisplayEvaluationPanel = false
-        stopEvalPanelTimer()
+    @objc func shouldHideEvaluationPanel(_: Notification) {
+        hideEvaluationPanel()
     }
     
     @MainActor
@@ -127,7 +131,11 @@ class SetGameViewModel: ObservableObject {
     @MainActor
     @objc func shouldDealThreeCards(notifier: Notification) {
         if notifier.getShouldReplace() {
-            clearMatchedCards()
+            // In case 3 cards are a set, deal 3 will **replace** those
+            replaceSelectedCardsByDealNew()
+        } else if notifier.getShouldDeselectAll() {
+            deselectAllSelected()
+            dealThreeCards()
         } else {
             dealThreeCards()
         }
@@ -141,8 +149,12 @@ class SetGameViewModel: ObservableObject {
     }
     
     @MainActor
-    @objc func shouldClearMatchedCards(notifier: Notification) {
-        clearMatchedCards()
+    @objc func shouldClearSelection(notifier: Notification) {
+        if notifier.getShouldDeselectAll() {
+            deselectAllSelected()
+        } else {
+            replaceSelectedCardsByDealNew()
+        }
     }
     
     // - MARK: Game Model actuators
@@ -210,9 +222,16 @@ class SetGameViewModel: ObservableObject {
         print("### DONE deselectCard card \(cardId)")
     }
     
-    func clearMatchedCards() {
+    func replaceSelectedCardsByDealNew() {
         let cardIds = selectedCards.map(\.id)
         model.replaceMatched(cardIds: cardIds)
+    }
+    
+    func deselectAllSelected() {
+        let cardIds = selectedCards.map(\.id)
+        for cardId in cardIds {
+            deselectCard(cardId: cardId)
+        }
     }
     
     func dealThreeCards() {

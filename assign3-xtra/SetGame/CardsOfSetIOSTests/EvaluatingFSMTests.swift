@@ -71,11 +71,11 @@ final class EvaluatingFSMTests: XCTestCase {
         wait(for: [ notify ], timeout: 0.1)
     }
     
-    func testNotASet_Deal3_DoesNotReplaceCards() throws {
+    func testNotASet_Deal3_ShouldDeselectAll() throws {
         evalFSM!.enter(NotASet.self)
         let notify = XCTNSNotificationExpectation(name: .ShouldDealThree, object: evalFSM)
         notify.handler = { (n: Notification) in
-            !n.getShouldReplace()
+            n.getShouldDeselectAll()
         }
         let tx = evalFSM!.acceptTrigger(.DealThreeTapped)
         XCTAssertEqual(tx, .SelectingZeroSelected)
@@ -85,27 +85,36 @@ final class EvaluatingFSMTests: XCTestCase {
         wait(for: [ notify ], timeout: 2.0)
     }
     
-    func testFromAckIsASet_PickNotInSet_GoesTo_OnePicked() throws {
+    func testFromIsASet_PickNotInSet_GoesTo_OnePicked() throws {
+        let clearSelectionExpectation = expectation(forNotification: .ShouldClearSelection, object: evalFSM)
         evalFSM!.enter(IsASet.self)
         let tx = evalFSM!.acceptTrigger(.CardTapped(isSelected: false, hasId: 10))
         XCTAssertEqual(tx, .SelectingOneSelected(cardId: 10))
         XCTAssertEqual(evalFSM!.currentState!,
                        evalFSM!.state(forClass: OneSelectedAfterEvaluation.self))
+        wait(for: [ clearSelectionExpectation ], timeout: 0.1)
     }
 
-    func testFromAckIsASet_PickIsInSet_GoesTo_ZeroPicked() throws {
+    func testFromIsASet_PickIsInSet_GoesTo_ZeroPicked() throws {
+        let clearSelectionExpectation = expectation(forNotification: .ShouldClearSelection, object: evalFSM)
         evalFSM!.enter(IsASet.self)
         let tx = evalFSM!.acceptTrigger(.CardTapped(isSelected: true, hasId: 10))
         XCTAssertEqual(tx, .SelectingZeroSelected)
         XCTAssertEqual(evalFSM!.currentState!,
                        evalFSM!.state(forClass: ZeroSelectedAfterEvaluation.self))
+        wait(for: [ clearSelectionExpectation ], timeout: 0.1)
     }
 
-    func testFromAckNotASet_PickAny_GoesTo_OnePicked() throws {
+    func testFromNotASet_PickAny_GoesTo_OnePicked() throws {
+        let clearSelectionExpectation = XCTNSNotificationExpectation(name: .ShouldClearSelection, object: evalFSM)
+        clearSelectionExpectation.handler = { (n: Notification) in
+            n.getShouldDeselectAll()
+        }
         evalFSM!.enter(NotASet.self)
         let tx = evalFSM!.acceptTrigger(.CardTapped(isSelected: false, hasId: 10))
         XCTAssertEqual(tx, .SelectingOneSelected(cardId: 10))
         XCTAssertEqual(evalFSM!.currentState!,
                        evalFSM!.state(forClass: OneSelectedAfterEvaluation.self))
+        wait(for: [ clearSelectionExpectation ], timeout: 0.1)
     }
 }

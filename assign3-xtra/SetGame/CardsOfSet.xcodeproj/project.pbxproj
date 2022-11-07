@@ -24,6 +24,7 @@
 		B29D49D4291668A600B7EC1A /* GameStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */; };
 		B29D49D5291668A600B7EC1A /* SelectingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */; };
 		B29D49D6291668A600B7EC1A /* EvaluatingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */; };
+		B2A2C1E42919054E0051B539 /* CardInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A2C1E32919054E0051B539 /* CardInfoView.swift */; };
 		B2AC2E1E29176CE600A510ED /* EvaluationPanelStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E1D29176CE600A510ED /* EvaluationPanelStateMachine.swift */; };
 		B2AC2E1F29176CE600A510ED /* EvaluationPanelStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E1D29176CE600A510ED /* EvaluationPanelStateMachine.swift */; };
 		B2AC2E2229177DC300A510ED /* EvaluationPanelStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E2029177DC300A510ED /* EvaluationPanelStateMachineTests.swift */; };
@@ -61,6 +62,7 @@
 		B29D49C22916682C00B7EC1A /* StateTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateTestHelpers.swift; sourceTree = "<group>"; };
 		B29D49C32916682C00B7EC1A /* SelectingFSMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectingFSMTests.swift; sourceTree = "<group>"; };
 		B29D49C42916682C00B7EC1A /* GameStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateMachineTests.swift; sourceTree = "<group>"; };
+		B2A2C1E32919054E0051B539 /* CardInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardInfoView.swift; sourceTree = "<group>"; };
 		B2AC2E1D29176CE600A510ED /* EvaluationPanelStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluationPanelStateMachine.swift; sourceTree = "<group>"; };
 		B2AC2E2029177DC300A510ED /* EvaluationPanelStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluationPanelStateMachineTests.swift; sourceTree = "<group>"; };
 		B2AC2E252917D0D700A510ED /* SetGameVM+RulesDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SetGameVM+RulesDelegate.swift"; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 				B26F946628D2BEAA0075E6D5 /* Preview Content */,
 				B26F947228D2C2820075E6D5 /* AspectVGrid.swift */,
 				B26F947428D2C3D50075E6D5 /* CardView.swift */,
+				B2A2C1E32919054E0051B539 /* CardInfoView.swift */,
 				B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */,
 				B26F947828D2C68C0075E6D5 /* SetGameViewModel.swift */,
 				B2AC2E252917D0D700A510ED /* SetGameVM+RulesDelegate.swift */,
@@ -252,6 +255,7 @@
 				B23F240A28FBC68D00381A58 /* GameStateHelpers.swift in Sources */,
 				B26F946128D2BEA90075E6D5 /* SetGameApp.swift in Sources */,
 				B26F947928D2C68C0075E6D5 /* SetGameViewModel.swift in Sources */,
+				B2A2C1E42919054E0051B539 /* CardInfoView.swift in Sources */,
 				B2AC2E262917D0D800A510ED /* SetGameVM+RulesDelegate.swift in Sources */,
 				B28ECFB328E05EBF008D2010 /* GameStateMachine.swift in Sources */,
 				B26F947528D2C3D50075E6D5 /* CardView.swift in Sources */,

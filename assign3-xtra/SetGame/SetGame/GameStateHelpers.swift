@@ -12,6 +12,7 @@ struct GameState {
     static let DestinationStateKey = "DestinationStateKey"
     static let CardIndexKey = "CardIndexKey"
     static let ShouldReplaceKey = "ShouldReplaceKey"
+    static let ShouldDeselectAllKey = "ShouldDeselectAllKey"
     
     enum Exit: Equatable {
         case None
@@ -40,6 +41,11 @@ extension Notification {
         }
         return shouldReplace
     }
-    
+    func getShouldDeselectAll() -> Bool {
+        guard let shouldDeselectAll = userInfo?[GameState.ShouldDeselectAllKey] as? Bool else {
+            return false
+        }
+        return shouldDeselectAll
+    }
 }
 
