@@ -45,8 +45,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B29D49B72916681300B7EC1A"
-               BuildableName = "CardsOfSetIOSTests.xctest"
-               BlueprintName = "CardsOfSetIOSTests"
+               BuildableName = "CardsOfSetTests.xctest"
+               BlueprintName = "CardsOfSetTests"
                ReferencedContainer = "container:CardsOfSet.xcodeproj">
             </BuildableReference>
          </TestableReference>

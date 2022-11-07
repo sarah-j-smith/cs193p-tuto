@@ -57,7 +57,7 @@
 		B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameModel.swift; sourceTree = "<group>"; };
 		B26F947828D2C68C0075E6D5 /* SetGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameViewModel.swift; sourceTree = "<group>"; };
 		B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateMachine.swift; sourceTree = "<group>"; };
-		B29D49B82916681300B7EC1A /* CardsOfSetIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsOfSetIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B29D49B82916681300B7EC1A /* CardsOfSetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsOfSetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B29D49C12916682C00B7EC1A /* EvaluatingFSMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatingFSMTests.swift; sourceTree = "<group>"; };
 		B29D49C22916682C00B7EC1A /* StateTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateTestHelpers.swift; sourceTree = "<group>"; };
 		B29D49C32916682C00B7EC1A /* SelectingFSMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectingFSMTests.swift; sourceTree = "<group>"; };
@@ -101,7 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				B26F945D28D2BEA90075E6D5 /* CardsOfSet.app */,
-				B29D49B82916681300B7EC1A /* CardsOfSetIOSTests.xctest */,
+				B29D49B82916681300B7EC1A /* CardsOfSetTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -169,9 +169,9 @@
 			productReference = B26F945D28D2BEA90075E6D5 /* CardsOfSet.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B29D49B72916681300B7EC1A /* CardsOfSetIOSTests */ = {
+		B29D49B72916681300B7EC1A /* CardsOfSetTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B29D49C02916681300B7EC1A /* Build configuration list for PBXNativeTarget "CardsOfSetIOSTests" */;
+			buildConfigurationList = B29D49C02916681300B7EC1A /* Build configuration list for PBXNativeTarget "CardsOfSetTests" */;
 			buildPhases = (
 				B29D49B42916681300B7EC1A /* Sources */,
 				B29D49B52916681300B7EC1A /* Frameworks */,
@@ -182,9 +182,9 @@
 			dependencies = (
 				B29D49BD2916681300B7EC1A /* PBXTargetDependency */,
 			);
-			name = CardsOfSetIOSTests;
+			name = CardsOfSetTests;
 			productName = CardsOfSetIOSTests;
-			productReference = B29D49B82916681300B7EC1A /* CardsOfSetIOSTests.xctest */;
+			productReference = B29D49B82916681300B7EC1A /* CardsOfSetTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -220,7 +220,7 @@
 			projectRoot = "";
 			targets = (
 				B26F945C28D2BEA90075E6D5 /* CardsOfSet */,
-				B29D49B72916681300B7EC1A /* CardsOfSetIOSTests */,
+				B29D49B72916681300B7EC1A /* CardsOfSetTests */,
 			);
 		};
 /* End PBXProject section */
@@ -526,7 +526,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B29D49C02916681300B7EC1A /* Build configuration list for PBXNativeTarget "CardsOfSetIOSTests" */ = {
+		B29D49C02916681300B7EC1A /* Build configuration list for PBXNativeTarget "CardsOfSetTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B29D49BE2916681300B7EC1A /* Debug */,
