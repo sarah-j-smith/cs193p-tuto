@@ -67,6 +67,10 @@ class GameStateMachine: GKStateMachine {
         enter(Selecting.self)
     }
     
+    override func update(deltaTime sec: TimeInterval) {
+        currentState?.update(deltaTime: sec)
+    }
+    
     private func maybeTransitionTopLevelState(_ tx: GameState.Exit) {
         switch tx {
         case .Evaluating:

@@ -84,6 +84,10 @@ class EvaluatingStateMachine: GKStateMachine, TriggerHandler {
         enter(ThreeSelectedForEvaluation.self)
     }
     
+    override func update(deltaTime sec: TimeInterval) {
+        currentState?.update(deltaTime: sec)
+    }
+    
     private func updateCardValues(withTrigger trigger: InputTrigger) {
         switch trigger {
         case .CardTapped(isSelected: let selected, hasId: let cardId):
@@ -102,10 +106,6 @@ class EvaluatingStateMachine: GKStateMachine, TriggerHandler {
             ZeroSelectedAfterEvaluation(),
             OneSelectedAfterEvaluation()
         ])
-    }
-    
-    deinit {
-        print("Evaluating statemachine deinit")
     }
 }
 
@@ -147,6 +147,10 @@ class ThreeSelectedForEvaluation: GKState, EvaluatingTriggerHandler {
 
 class PanelControllerState: GKState {
     var panelState: EvaluationPanelStateMachine?
+    
+    override func update(deltaTime seconds: TimeInterval) {
+        panelState?.update(deltaTime: seconds)
+    }
     
     override func didEnter(from previousState: GKState?) {
         if previousState != nil {
