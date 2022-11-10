@@ -12,20 +12,22 @@ struct CardView: View {
     var body: some View {
         GeometryReader { geometry in
             let scaleFactor = geometry.size.width / 100.0
-            ZStack(alignment: .topTrailing) {
-                ZStack {
-                    let shape = RoundedRectangle(cornerRadius: Constants.cornerRadius * scaleFactor )
-                    shape.fill().foregroundColor(.white)
-                    shape
-                        .strokeBorder(lineWidth: Constants.borderThickness * scaleFactor)
-                        .foregroundColor(card.selected ? .red : .gray)
-                        .opacity(card.selected ? 1.0 : 0.4)
-                    drawContent(card: card, scaledBy: scaleFactor)
-                }
-                if (card.selected) {
-                    selectionBadge(scaledBy: scaleFactor)
-                }
-            }
+//            ZStack(alignment: .topTrailing) {
+//                ZStack {
+//                    let shape = RoundedRectangle(cornerRadius: Constants.cornerRadius * scaleFactor )
+//                    shape.fill().foregroundColor(.white)
+//                    shape
+//                        .strokeBorder(lineWidth: Constants.borderThickness * scaleFactor)
+//                        .foregroundColor(card.selected ? .red : .gray)
+//                        .opacity(card.selected ? 1.0 : 0.4)
+//                    drawContent(card: card, scaledBy: scaleFactor)
+//                }
+//                if (card.selected) {
+//                    selectionBadge(scaledBy: scaleFactor)
+//                }
+//            }
+            drawContent(card: card, scaledBy: scaleFactor)
+                .cardify(isSelected: card.selected, scaleFactor: scaleFactor)
         }
     }
     

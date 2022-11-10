@@ -19,6 +19,8 @@ struct ContentView: View {
                 HStack {
                     newGameButton
                     Spacer()
+                    hintButton
+                    Spacer()
                     dealThreeMoreButton
                         .disabled(game.cards.count < 3)
                 }.padding()
@@ -27,6 +29,11 @@ struct ContentView: View {
             if game.shouldDisplayEvaluationPanel {
                 Rectangle().fill(.black).opacity(0.7).ignoresSafeArea()
                 setEvaluationPanel
+                    .padding(30.0)
+            }
+            if game.shouldDisplayHintPanel {
+                Rectangle().fill(.black).opacity(0.7).ignoresSafeArea()
+                hintPanel
                     .padding(30.0)
             }
         }
@@ -42,6 +49,18 @@ struct ContentView: View {
                 game.cardTapped(card.id, isSelected: card.selected)
             }
         }
+    }
+    
+    var hintPanel: some View {
+        let hint = game.hintStructure
+        return HintPanel(
+            cards: hint.cards,
+            title: "Hints",
+            message: hint.message,
+            infoType: hint.cards.count == 0 ? .Warning : .Information,
+            handler: {
+                game.hideHintPanel()
+            })
     }
     
     var setEvaluationPanel: some View {
@@ -60,6 +79,14 @@ struct ContentView: View {
             game.newGamePressed()
         } label: {
             Label("New Game", systemImage: "shuffle.circle")
+        }
+    }
+    
+    private var hintButton: some View {
+        Button {
+            game.showHintPanel()
+        } label: {
+            Label("Hint", systemImage: "questionmark.circle")
         }
     }
     

@@ -16,6 +16,13 @@
 		B26F947528D2C3D50075E6D5 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F947428D2C3D50075E6D5 /* CardView.swift */; };
 		B26F947728D2C5FA0075E6D5 /* SetGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */; };
 		B26F947928D2C68C0075E6D5 /* SetGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F947828D2C68C0075E6D5 /* SetGameViewModel.swift */; };
+		B270ED7D291A770100D2EF6C /* Cardify.swift in Sources */ = {isa = PBXBuildFile; fileRef = B270ED7C291A770100D2EF6C /* Cardify.swift */; };
+		B270ED7E291A770100D2EF6C /* Cardify.swift in Sources */ = {isa = PBXBuildFile; fileRef = B270ED7C291A770100D2EF6C /* Cardify.swift */; };
+		B270ED81291B5A7300D2EF6C /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = B270ED80291B5A7300D2EF6C /* Algorithms */; };
+		B270ED83291B5FC600D2EF6C /* HintPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B270ED82291B5FC600D2EF6C /* HintPanel.swift */; };
+		B270ED85291B661A00D2EF6C /* SetGameModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B270ED84291B661A00D2EF6C /* SetGameModelTests.swift */; };
+		B270ED86291B664E00D2EF6C /* SetGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */; };
+		B270ED89291B733500D2EF6C /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = B270ED88291B733500D2EF6C /* Algorithms */; };
 		B28ECFB328E05EBF008D2010 /* GameStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */; };
 		B29D49C92916683D00B7EC1A /* EvaluatingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D49C12916682C00B7EC1A /* EvaluatingFSMTests.swift */; };
 		B29D49CA2916683D00B7EC1A /* SelectingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D49C32916682C00B7EC1A /* SelectingFSMTests.swift */; };
@@ -56,6 +63,9 @@
 		B26F947428D2C3D50075E6D5 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameModel.swift; sourceTree = "<group>"; };
 		B26F947828D2C68C0075E6D5 /* SetGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameViewModel.swift; sourceTree = "<group>"; };
+		B270ED7C291A770100D2EF6C /* Cardify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cardify.swift; sourceTree = "<group>"; };
+		B270ED82291B5FC600D2EF6C /* HintPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HintPanel.swift; sourceTree = "<group>"; };
+		B270ED84291B661A00D2EF6C /* SetGameModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameModelTests.swift; sourceTree = "<group>"; };
 		B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateMachine.swift; sourceTree = "<group>"; };
 		B29D49B82916681300B7EC1A /* CardsOfSetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsOfSetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B29D49C12916682C00B7EC1A /* EvaluatingFSMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatingFSMTests.swift; sourceTree = "<group>"; };
@@ -75,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B270ED81291B5A7300D2EF6C /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B270ED89291B733500D2EF6C /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +106,7 @@
 				B26F945F28D2BEA90075E6D5 /* SetGame */,
 				B29D49B92916681300B7EC1A /* CardsOfSetIOSTests */,
 				B26F945E28D2BEA90075E6D5 /* Products */,
+				B270ED87291B733500D2EF6C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,7 +128,9 @@
 				B26F946628D2BEAA0075E6D5 /* Preview Content */,
 				B26F947228D2C2820075E6D5 /* AspectVGrid.swift */,
 				B26F947428D2C3D50075E6D5 /* CardView.swift */,
+				B270ED7C291A770100D2EF6C /* Cardify.swift */,
 				B2A2C1E32919054E0051B539 /* CardInfoView.swift */,
+				B270ED82291B5FC600D2EF6C /* HintPanel.swift */,
 				B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */,
 				B26F947828D2C68C0075E6D5 /* SetGameViewModel.swift */,
 				B2AC2E252917D0D700A510ED /* SetGameVM+RulesDelegate.swift */,
@@ -137,6 +152,13 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		B270ED87291B733500D2EF6C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B29D49B92916681300B7EC1A /* CardsOfSetIOSTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,6 +167,7 @@
 				B29D49C32916682C00B7EC1A /* SelectingFSMTests.swift */,
 				B29D49C22916682C00B7EC1A /* StateTestHelpers.swift */,
 				B2AC2E2029177DC300A510ED /* EvaluationPanelStateMachineTests.swift */,
+				B270ED84291B661A00D2EF6C /* SetGameModelTests.swift */,
 			);
 			path = CardsOfSetIOSTests;
 			sourceTree = "<group>";
@@ -165,6 +188,9 @@
 			dependencies = (
 			);
 			name = CardsOfSet;
+			packageProductDependencies = (
+				B270ED80291B5A7300D2EF6C /* Algorithms */,
+			);
 			productName = SetGame;
 			productReference = B26F945D28D2BEA90075E6D5 /* CardsOfSet.app */;
 			productType = "com.apple.product-type.application";
@@ -183,6 +209,9 @@
 				B29D49BD2916681300B7EC1A /* PBXTargetDependency */,
 			);
 			name = CardsOfSetTests;
+			packageProductDependencies = (
+				B270ED88291B733500D2EF6C /* Algorithms */,
+			);
 			productName = CardsOfSetIOSTests;
 			productReference = B29D49B82916681300B7EC1A /* CardsOfSetTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -215,6 +244,9 @@
 				Base,
 			);
 			mainGroup = B26F945428D2BEA90075E6D5;
+			packageReferences = (
+				B270ED7F291B5A7300D2EF6C /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+			);
 			productRefGroup = B26F945E28D2BEA90075E6D5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -257,11 +289,13 @@
 				B26F947928D2C68C0075E6D5 /* SetGameViewModel.swift in Sources */,
 				B2A2C1E42919054E0051B539 /* CardInfoView.swift in Sources */,
 				B2AC2E262917D0D800A510ED /* SetGameVM+RulesDelegate.swift in Sources */,
+				B270ED7D291A770100D2EF6C /* Cardify.swift in Sources */,
 				B28ECFB328E05EBF008D2010 /* GameStateMachine.swift in Sources */,
 				B26F947528D2C3D50075E6D5 /* CardView.swift in Sources */,
 				B26F947328D2C2820075E6D5 /* AspectVGrid.swift in Sources */,
 				B2C46D5928E5723D005BCD6D /* SelectingStateMachine.swift in Sources */,
 				B2C46D5B28E57256005BCD6D /* EvaluatingStateMachine.swift in Sources */,
+				B270ED83291B5FC600D2EF6C /* HintPanel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,12 +303,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B270ED85291B661A00D2EF6C /* SetGameModelTests.swift in Sources */,
+				B270ED7E291A770100D2EF6C /* Cardify.swift in Sources */,
 				B2AC2E2229177DC300A510ED /* EvaluationPanelStateMachineTests.swift in Sources */,
 				B29D49C92916683D00B7EC1A /* EvaluatingFSMTests.swift in Sources */,
 				B29D49D4291668A600B7EC1A /* GameStateMachine.swift in Sources */,
 				B2AC2E242917CE7200A510ED /* GameStateHelpers.swift in Sources */,
 				B2AC2E1F29176CE600A510ED /* EvaluationPanelStateMachine.swift in Sources */,
 				B29D49CD2916683D00B7EC1A /* GameStateMachineTests.swift in Sources */,
+				B270ED86291B664E00D2EF6C /* SetGameModel.swift in Sources */,
 				B29D49D5291668A600B7EC1A /* SelectingStateMachine.swift in Sources */,
 				B29D49D6291668A600B7EC1A /* EvaluatingStateMachine.swift in Sources */,
 				B29D49CC2916683D00B7EC1A /* StateTestHelpers.swift in Sources */,
@@ -536,6 +573,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B270ED7F291B5A7300D2EF6C /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B270ED80291B5A7300D2EF6C /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B270ED7F291B5A7300D2EF6C /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		B270ED88291B733500D2EF6C /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B270ED7F291B5A7300D2EF6C /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B26F945528D2BEA90075E6D5 /* Project object */;
 }

@@ -21,17 +21,18 @@ class SetGameViewModel: ObservableObject {
     @Published internal var model = SetGameModel()
     
     @Published var shouldDisplayEvaluationPanel = false
+    @Published var shouldDisplayHintPanel = false
     
     private var evalPanelLastTick: Double = 0
     
     // MARK: - Model convenience accessors/facade
     
     var deck: [ Card ] {
-        return model.deckCards
+        return Array<Card>( model.deckCards )
     }
 
     var cards: [ Card ] {
-        return model.dealtCards.filter { !$0.matched }
+        return model.playableCards
     }
     
     var selectionCount: Int {
@@ -56,14 +57,26 @@ class SetGameViewModel: ObservableObject {
         }
     }
     
+    var hintStructure: (cards: [ Card ], message: String) {
+        let matches = model.matchesInPlayableCards
+        if let hint = matches.randomElement() {
+            return (
+                cards: model.cardsFromMatchRecord(hint),
+                message: "The current \(cards.count) cards dealt has \(matches.count) sets to find! Here's one to get you started."
+            )
+        } else {
+            return (
+                cards: [],
+                message: "The current \(cards.count) cards dealt do not have any Sets that can be made. Deal some more cards!"
+            )
+        }
+    }
+    
     private var evalPanelTimer: Timer?
     
     // MARK: - Game State
     
-    lazy private var fsm: GameStateMachine = SetGameViewModel.createFSM(forGame: self)
-    
-    static func createFSM(forGame game: SetGameViewModel) -> GameStateMachine {
-        let fsm = GameStateMachine(withFactory: game)
+    static func registerStateEvents(forGame game: SetGameViewModel) {
         NotificationCenter.default.addObserver(
             game, selector: #selector(shouldSelectCard),
             name: .ShouldSelectCard, object: nil)
@@ -82,18 +95,32 @@ class SetGameViewModel: ObservableObject {
         NotificationCenter.default.addObserver(
             game, selector: #selector(shouldHideEvaluationPanel),
             name: .ShouldHideEvaluationPanel, object: nil)
-        return fsm
+    }
+    
+    lazy private var fsm: GameStateMachine = SetGameViewModel.createFSM(forGame: self)
+    
+    static func createFSM(forGame game: SetGameViewModel) -> GameStateMachine {
+        return GameStateMachine(withFactory: game)
     }
     
     static func createGame() -> SetGameViewModel {
         let game = SetGameViewModel()
         let fsm = createFSM(forGame: game)
+        registerStateEvents(forGame: game)
         game.fsm = fsm
         fsm.start()
         return game
     }
-        
+
     // - MARK: Intents from UX actions
+    
+    func hideHintPanel() {
+        shouldDisplayHintPanel = false
+    }
+    
+    func showHintPanel() {
+        shouldDisplayHintPanel = true
+    }
     
     func hideEvaluationPanel() {
         shouldDisplayEvaluationPanel = false
@@ -193,33 +220,21 @@ class SetGameViewModel: ObservableObject {
     }
     
     func selectCard(cardId: Int) {
-        print("### Select card \(cardId)")
         if debug {
-            let card = model.dealtCards.firstIndex { $0.id == cardId }
-            guard let haveCard = card else {
-                assertionFailure("Tried to select invalid card")
-                return
-            }
-            let shouldBeDeSelected = model.dealtCards[haveCard]
+            let cardIndex = model.playableCards.getIndexById(cardId)!
+            let shouldBeDeSelected = model.playableCards[cardIndex]
             assert(shouldBeDeSelected.selected == false)
         }
         model.toggleCardSelection(cardId)
-        print("### DONE Select card \(cardId)")
     }
     
     func deselectCard(cardId: Int) {
-        print("### deselectCard card \(cardId)")
         if debug {
-            let card = model.dealtCards.firstIndex { $0.id == cardId }
-            guard let haveCard = card else {
-                assertionFailure("Tried to deselect invalid card")
-                return
-            }
-            let shouldBeSelected = model.dealtCards[haveCard]
+            let cardIndex = model.playableCards.getIndexById(cardId)!
+            let shouldBeSelected = model.playableCards[cardIndex]
             assert(shouldBeSelected.selected)
         }
         model.toggleCardSelection(cardId)
-        print("### DONE deselectCard card \(cardId)")
     }
     
     func replaceSelectedCardsByDealNew() {

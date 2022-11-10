@@ -49,3 +49,9 @@ extension Notification {
     }
 }
 
+/** Output the argument to stdout,  if DEBUG is a defined compile time switch, otherwise do nothing. The argument expression is not evaluated if DEBUG is not defined. */
+func debugMsg(_ output: @autoclosure () -> String) {
+#if DEBUG
+    print("DEBUG: ", msg())
+#endif
+}

@@ -50,10 +50,10 @@ class SelectingStateMachine: GKStateMachine, TriggerHandler {
             let seq = currentState as? SelectionSequence
             if let tx = selected ? seq?.previousState : seq?.nextState {
                 let ok = enter(tx)
-                print("\(self) entered \(tx) - \(ok)")
+                assert(ok)
             }
         case .DealThreeTapped:
-            // Does not affect state, just pass through to RSM
+            // Does not affect state, just pass through
             NotificationCenter.default.post(name: .ShouldDealThree, object: self)
         default:
             fatalError("Selecting/\(currentState?.description ?? "nil") - cannot accept \(trigger)")

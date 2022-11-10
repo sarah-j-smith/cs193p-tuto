@@ -5,8 +5,8 @@
 //  Created by Sarah Smith on 15/9/2022.
 //
 
-import Foundation
 import GameplayKit
+import Algorithms
 
 /**
  The deck consists of 81 unique cards that vary in four features across three possibilities
@@ -18,20 +18,34 @@ import GameplayKit
  */
 struct SetGameModel {
     
-#if DEBUG
-    var debug = true
-#else
-    var debug = false
-#endif
+    struct Constants {
+        static let indexOfFirstUndealtCard: Int = 12
+    }
     
+    /** All of the set game cards - the universe of Set game cards including dealt out, matched/removed and in the deck */
     var cards: [ Card ] = fillDeck().shuffled()
     
     static let UniqueCardCount = 81
     static let NumberOfShapesMax = 3
     static let MaxSelectionCount = 3
     
-    enum SetGameErrors: Error {
-        case ExceededMaxSelectionCount
+    
+    /**
+     All cards that have not been dealt out.  */
+    var deckCards: [ Card ] {
+        return Array( cards[ indexOfFirstUndealtCard... ] )
+    }
+    
+    /**
+     All cards that have been dealt out.  Includes cards marked as matched.
+     Filter these out to find cards that should be visible/playable . */
+    var dealtCards:  [ Card ] {
+        return Array( cards[ 0 ..< indexOfFirstUndealtCard ])
+    }
+    
+    /** All cards that have been dealt out that still remain unmatched. */
+    var playableCards:  [ Card ] {
+        return dealtCards.filter { !$0.matched }
     }
     
     // When the game starts we have 12 cards dealt out - indexes
@@ -40,115 +54,115 @@ struct SetGameModel {
     // If this value is >= UniqueCardCount, then all cards are dealt
     private var indexOfFirstUndealtCard: Int = 12
     
+    init(cards: [Card] = SetGameModel.fillDeck().shuffled(), indexOfFirstUndealtCard: Int = SetGameModel.Constants.indexOfFirstUndealtCard) {
+        self.cards = cards
+        self.indexOfFirstUndealtCard = indexOfFirstUndealtCard
+    }
+    
     var selectionCount: Int {
         return selectedCards.count
     }
     
+    // MARK: - Identifying matched Set of cards
+    
+    /** Cards currently selected by the player.  These can only be dealt non-matched cards.  */
     var selectedCards: [ Card ] {
-        dealtCards.filter { $0.selected }
+        playableCards.filter { $0.selected }
+    }
+    
+    var denominations: Set<Int> {
+        Set<Int>( selectedCards.map(\.numberOfShapes) )
+    }
+    
+    var shapes: Set<ShapeFeature> {
+        Set<ShapeFeature>( selectedCards.map(\.shape) )
+    }
+    
+    var colors: Set<ColorFeature> {
+        Set<ColorFeature>( selectedCards.map(\.color) )
+    }
+    
+    var shadings: Set<ShadingFeature> {
+        Set<ShadingFeature>( selectedCards.map(\.shading) )
     }
     
     /**
-     In the game, certain combinations of three cards are said to make up a set. For each
+     True, if the currently selected cards are a match under the rules of Set.
+     
+     In the game of Set, certain combinations of three cards are said to match. For each
      one of the four categories of features — color, number, shape, and shading — the
-     three cards must display that feature as either a) all the same, or b) all different.
+     three cards must have that feature as either a) all the same, or b) all different.
      */
     var isMatchedSet: Bool {
-        var denominations = Set<Int>()
-        var shapes = Set<ShapeFeature>()
-        var colours = Set<ColorFeature>()
-        var shadings = Set<ShadingFeature>()
-        for c in selectedCards {
-            denominations.insert(c.numberOfShapes)
-            shapes.insert(c.shape)
-            colours.insert(c.color)
-            shadings.insert(c.shading)
-        }
-        if debug {
-            print("Checking for set: \(selectedCards)")
-            assert(selectedCards.count == 3, "Must have exactly 3 selected")
-        }
+        if (selectedCards.count != 3) { return false }
         // If feature is all the same, then there is 1 kind of that feature,
         // and if the feature is all different then there is 3 kinds of that
-        // feature. Therefore given 3 cards they are a set if there are either
-        // 1 or 3 kinds; or they are NOT a set if there are 2 kinds (among the
-        // three cards) and the ARE a set otherwise.
-        if denominations.count == 2 {
-            if debug {
-                print("Not a set: denominations are \(denominations)")
-            }
-            return false
-        }
-        if (shapes.count == 2) {
-            if debug {
-                print("Not a set: shapes are \(shapes)")
-            }
-            return false
-        }
-        if (colours.count == 2) {
-            if debug {
-                print("Not a set: colours are \(colours)")
-            }
-            return false
-        }
-        if (shadings.count == 2) {
-            if debug {
-                print("Not a set: shadings are \(shadings)")
-            }
-            return false
-        }
-        if debug {
-            print("Yes! Its a set")
-            print("  denominations are \(denominations)")
-            print("  shapes are \(shapes)")
-            print("  colours are \(colours)")
-            print("  shadings are \(shadings)")
-        }
+        // feature. Therefore given 3 cards (precondition) they are a set if
+        // there are either 1 or 3 kinds; or they are NOT a set if there are
+        // 2 kinds (among the three cards) and they ARE a set otherwise.
+        if denominations.count == 2 { return false }
+        if (shapes.count == 2) { return false }
+        if (colors.count == 2) { return false }
+        if (shadings.count == 2) { return false }
         return true
     }
     
+    /**
+     A string describing if the 3 currently selected cards are a match under the rules of Set.
+     
+     The string return provides this description of whether for each
+     one of the four categories of features — color, number, shape, and shading — the
+     three cards must have that feature as either a) all the same, or b) all different.
+
+     - Precondition: must have exactly 3 cards selected before calling this property.
+     */
     var matchResultExplanation: String {
-        // try for all the same
-        var denominations = Set<Int>()
-        var shapes = Set<ShapeFeature>()
-        var colours = Set<ColorFeature>()
-        var shadings = Set<ShadingFeature>()
-        for c in selectedCards {
-            denominations.insert(c.numberOfShapes)
-            shapes.insert(c.shape)
-            colours.insert(c.color)
-            shadings.insert(c.shading)
-        }
-        if debug {
-            print("Compiling explanation for set: \(selectedCards)")
-            assert(selectedCards.count == 3, "Must have exactly 3 selected")
-        }
-        // If feature is all the same, then there is 1 kind of that feature,
-        // and if the feature is all different then there is 3 kinds of that
-        // feature. Therefore given 3 cards they are a set if there are either
-        // 1 or 3 kinds; or they are NOT a set if there are 2 kinds (among the
-        // three cards) and the ARE a set otherwise.
+        if (selectedCards.count != 3) { return "Not a set: must have 3 cards selected" }
+        // See isMatchedSet above for this logic
         if denominations.count == 2 {
             return "Not a set: denominations are \(denominations)"
         }
         if (shapes.count == 2) {
             return "Not a set: shapes are \(shapes)"
         }
-        if (colours.count == 2) {
-            return "Not a set: colours are \(colours)"
+        if (colors.count == 2) {
+            return "Not a set: colours are \(colors)"
         }
         if (shadings.count == 2) {
             return "Not a set: shadings are \(shadings)"
         }
-        return "Set! Denominations: \(denominations), shapes: \(shapes), colours: \(colours) & shading: \(shadings)"
+        return "Set! Denominations: \(denominations), shapes: \(shapes), colours: \(colors) & shading: \(shadings)"
+    }
+
+    
+    // MARK: - Finding Matches for Hints
+    
+    /** A set of 3 indexes in to the array of playable cards, that might be a match (or not a match).  */
+    typealias MatchRecord = ( Int, Int, Int )
+    
+    func cardsFromMatchRecord(_ record: MatchRecord) -> [ Card ] {
+        return [ playableCards[record.0], playableCards[record.1], playableCards[record.2] ]
     }
     
-    var deckCards: [ Card ] {
-        return Array( cards[ indexOfFirstUndealtCard... ] )
+    func checkMatch(record: MatchRecord) -> Bool {
+        let cardsRecord = cardsFromMatchRecord(record)
+        if Set( cardsRecord.map(\.numberOfShapes) ).count == 2 { return false }
+        if Set( cardsRecord.map(\.shape) ).count == 2 { return false }
+        if Set( cardsRecord.map(\.color) ).count == 2 { return false }
+        return Set( cardsRecord.map(\.shading) ).count != 2
     }
     
-    var dealtCards: [ Card ] {
-        return Array( cards[ 0 ..< indexOfFirstUndealtCard ] )
+    var matchesInPlayableCards: [ MatchRecord ] {
+        var matches: [ MatchRecord ] = []
+        let playableIndexes = Array<Int>( playableCards.indices )
+        let combinations = playableIndexes.combinations(ofCount: 3)
+        for p in combinations {
+            let s = ( p[0], p[1], p[2] )
+            if checkMatch(record: s) {
+                matches.append(s)
+            }
+        }
+        return matches
     }
     
     // MARK: - Mutating Funcs
@@ -167,7 +181,7 @@ struct SetGameModel {
         var newCardsIx = indexOfFirstUndealtCard
         dealCards(cardCount: 3)
         for c in cardIds {
-            if let haveCard = cards.firstIndex(where: { $0.id == c }) {
+            if let haveCard = cards.getIndexById(c) {
                 // Deselect and hide the matched card
                 cards[haveCard].selected = false
                 cards[haveCard].matched = true
@@ -181,13 +195,9 @@ struct SetGameModel {
     }
     
     mutating func toggleCardSelection(_ cardId: Int) {
-        if let haveCard = cards.firstIndex(where: { $0.id == cardId }) {
-            print("Toggle card")
-            print(haveCard)
+        if let haveCard = cards.getIndexById(cardId) {
             cards[haveCard].selected.toggle()
         }
-        print("==== selected =====")
-        print(selectedCards)
     }
     
     enum ShapeFeature {
@@ -230,7 +240,7 @@ struct SetGameModel {
                                             numberOfShapes: numShapes,
                                             shading: shadingFeature, shape: shapeFeature, color: colorFeature,
                                             selected: false,
-                                           matched: false))
+                                            matched: false))
                         cardIndex += 1
                     }
                 }
@@ -242,7 +252,40 @@ struct SetGameModel {
     }
 }
 
-// - MARK: Debug extensions
+// - MARK: Collection extensions
+
+extension Array<SetGameModel.Card> {
+    
+    /** Get the index in to the cards array of the card with the given `cardId` */
+    func getIndexById(_ cardId: Int) -> Int? {
+        return self.firstIndex(where: { $0.id == cardId })
+    }
+}
+
+extension ArraySlice<SetGameModel.Card> {
+
+    /** Get the index in to the cards array of the card with the given `cardId` */
+    func getIndexById(_ cardId: Int) -> Int? {
+        return self.firstIndex(where: { $0.id == cardId })
+    }
+}
+
+extension SetGameModel.Card {
+    func selectedCopy() -> SetGameModel.Card {
+        return SetGameModel.Card(id: self.id, numberOfShapes: self.numberOfShapes, shading: self.shading, shape: self.shape, color: self.color, selected: true, matched: self.matched)
+    }
+}
+
+// - MARK: Debug & testing extensions
+
+extension SetGameModel.Card: Equatable, Hashable {
+    static func == (lhs: SetGameModel.Card, rhs: SetGameModel.Card) -> Bool {
+        return lhs.id == rhs.id
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+    }
+}
 
 extension SetGameModel.ShapeFeature: CustomStringConvertible, CustomDebugStringConvertible {
     
