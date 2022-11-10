@@ -38,7 +38,6 @@ final class SelectingFSMTests: XCTestCase {
         selFSM?.start()
         let notify = XCTNSNotificationExpectation(name: .ShouldSelectCard, object: selFSM)
         notify.handler = { (n: Notification) in
-            print(n)
             if n.userInfo?[ GameState.CardIndexKey ] != nil {
                 return n.getCardIndex() == 55
             }

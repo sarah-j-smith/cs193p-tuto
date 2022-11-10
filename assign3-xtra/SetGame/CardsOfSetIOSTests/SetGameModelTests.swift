@@ -36,8 +36,8 @@ final class SetGameModelTests: XCTestCase {
         XCTAssertTrue(game.shapes.isEmpty)
         XCTAssertTrue(game.colors.isEmpty)
         XCTAssertEqual(game.selectionCount, 0)
-        XCTAssertEqual([game.deckCards], [game.cards[ Constants.indexOfFirstUndealtCard...]])
-        XCTAssertEqual([game.dealtCards], [game.cards[0..<Constants.indexOfFirstUndealtCard]])
+        XCTAssertEqual(game.deckCards, Array( game.cards[ Constants.indexOfFirstUndealtCard...] ))
+        XCTAssertEqual(game.dealtCards, Array( game.cards[0..<Constants.indexOfFirstUndealtCard] ))
     }
     
     func testGameFillDeck() throws {
@@ -66,7 +66,6 @@ final class SetGameModelTests: XCTestCase {
         game.toggleCardSelection(game.cards[0].id)
         game.toggleCardSelection(game.cards[1].id)
         game.toggleCardSelection(game.cards[2].id)
-        print("####", game.cards[0], game.cards[1], game.cards[2])
         XCTAssertEqual(game.selectedCards, [ game.cards[0], game.cards[1], game.cards[2] ])
         XCTAssertEqual(game.denominations, Set<Int>([1, 2, 3]))
         XCTAssertEqual(game.colors, Set<SetGameModel.ColorFeature>( [ .Green ] ))
@@ -79,11 +78,11 @@ final class SetGameModelTests: XCTestCase {
     }
     
     func testClearCards() throws {
-        var game = SetGameModel(cards: SetGameModel.fillDeck().reversed(), indexOfFirstUndealtCard: Constants.indexOfFirstUndealtCard)
-        let startingDeal = [ Array( game.cards )[ 0 ..< 12 ] ]
-        let threeOnDeck = [ Array( game.deckCards )[ 0 ..< 3 ] ]
-        dump(startingDeal)
-        XCTAssertEqual(game.dealtCards, game.cards[ 0 ..< 12 ])
+        var game = SetGameModel(cards: SetGameModel.fillDeck().reversed())
+        let startingDealRemainder = game.cards[ 3 ..< 12 ]
+        let threeOnDeck = game.deckCards[ 0 ..< 3 ]
+        let expected = Array( threeOnDeck ) + Array( startingDealRemainder )
+        XCTAssertEqual(game.dealtCards, Array( game.cards[ 0 ..< 12 ] ))
         game.toggleCardSelection(game.cards[0].id)
         game.toggleCardSelection(game.cards[1].id)
         game.toggleCardSelection(game.cards[2].id)
@@ -92,9 +91,7 @@ final class SetGameModelTests: XCTestCase {
         XCTAssertEqual([ id, id - 1, id - 2 ], cardIds)
         game.replaceMatched(cardIds: cardIds)
         XCTAssertEqual(game.playableCards.count, 12)
-        var expected = threeOnDeck
-        expected.append(contentsOf: startingDeal[ 3... ])
-        XCTAssertEqual(Array(arrayLiteral: game.dealtCards), expected)
+        XCTAssertEqual( game.playableCards, expected)
     }
     
     func testGameNotMatches() throws {
@@ -103,7 +100,6 @@ final class SetGameModelTests: XCTestCase {
         game.toggleCardSelection(game.cards[0].id)
         game.toggleCardSelection(game.cards[1].id)
         game.toggleCardSelection(game.cards[5].id)
-        print("####", game.cards[0], game.cards[1], game.cards[2])
         XCTAssertFalse(game.isMatchedSet)
         let exp = "Not a set"
         let got = String(game.matchResultExplanation.prefix(exp.count))
