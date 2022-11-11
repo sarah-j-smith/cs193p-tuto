@@ -21,7 +21,7 @@ struct Cardify: ViewModifier {
                 shape
                     .strokeBorder(lineWidth: Constants.borderThickness * scaleFactor)
                     .foregroundColor(isSelected ? .red : .gray)
-                    .opacity(isSelected ? 1.0 : 0.4)
+                    .opacity(isSelected ? 1.0 : 0.8)
                 content
             }
             if (isSelected) {
