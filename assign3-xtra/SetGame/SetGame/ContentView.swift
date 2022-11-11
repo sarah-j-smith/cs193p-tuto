@@ -24,7 +24,7 @@ struct ContentView: View {
                         Spacer()
                         dealThreeMoreButton
                             .disabled(game.cards.count < 3)
-                    }.padding()
+                    }.padding(.horizontal)
                         .labelStyle(VerticalLabelStyle())
                 }.zIndex(1.0)
                 if game.shouldDisplayHintPanel {
@@ -41,6 +41,14 @@ struct ContentView: View {
                     setEvaluationPanel.transition(.offset(x: 0.0, y: geometry.size.height))
                         .padding(30.0)
                         .zIndex(3.0)
+                        .transition(.offset(x: 0.0, y: geometry.size.height))
+                }
+                if game.shouldDisplayAboutPanel {
+                    AboutSet(handler: {
+                        withAnimation {
+                            game.hideAboutPanel()
+                        }
+                    }).padding(4.0).zIndex(3.0)
                         .transition(.offset(x: 0.0, y: geometry.size.height))
                 }
             }
@@ -61,7 +69,7 @@ struct ContentView: View {
     private var mainCardsView: some View {
         AspectVGrid(items: game.cards, aspectRatio: Constants.CardsAspect) { card in
             CardView(card: card).padding(cardPadding).onTapGesture {
-                withAnimation(.easeInOut(duration: 3.0)) {
+                withAnimation(.easeInOut(duration: 1.0)) {
                     game.cardTapped(card.id, isSelected: card.selected)
                 }
             }
@@ -76,7 +84,7 @@ struct ContentView: View {
             message: hint.message,
             infoType: hint.cards.count == 0 ? .Warning : .Information,
             handler: {
-                withAnimation(.easeInOut(duration: 3.0)) {
+                withAnimation(.easeInOut(duration: 1.0)) {
                     game.hideHintPanel()
                 }
             })
@@ -89,7 +97,7 @@ struct ContentView: View {
             message: game.matchResultExplanation,
             infoType: game.isMatch ? .Information : .Warning,
             handler: {
-                withAnimation(.easeInOut(duration: 3.0)) {
+                withAnimation(.easeInOut(duration: 1.0)) {
                     game.hideEvaluationPanel()
                 }
             })
@@ -97,7 +105,7 @@ struct ContentView: View {
     
     private var newGameButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 3.0)) {
+            withAnimation(.easeInOut(duration: 1.0)) {
                 game.newGamePressed()
             }
         } label: {
@@ -107,7 +115,7 @@ struct ContentView: View {
     
     private var hintButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 3.0)) {
+            withAnimation(.easeInOut(duration: 1.0)) {
                 game.showHintPanel()
             }
         } label: {
@@ -117,7 +125,7 @@ struct ContentView: View {
     
     private var dealThreeMoreButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 3.0)) {
+            withAnimation(.easeInOut(duration: 1.0)) {
                 game.dealThreeMorePressed()
             }
         } label: {
@@ -128,6 +136,16 @@ struct ContentView: View {
     private var gameHeader: some View {
         HStack {
             Text("Set Game")
+                .font(.title).padding(EdgeInsets(top: 3.0, leading: 20.0, bottom: 3.0, trailing: 20.0))
+                .background {
+                    RoundedRectangle(cornerRadius: 12.0)
+                    .stroke(lineWidth: 2.0)
+                    .fill(.gray) }
+                .onTapGesture {
+                    withAnimation(.easeInOut(duration: 1.0)) {
+                        game.showAboutPressed()
+                    }
+                }
         }
     }
     
@@ -135,7 +153,7 @@ struct ContentView: View {
         static let CardsAspect: CGFloat = 2/3
         static let EvalPanelRadius: CGSize = CGSize(width: 20, height: 20)
         static let EvalPanelOpacity: CGFloat = 0.7
-        static let GameHeaderPadding: CGFloat = 10
+        static let GameHeaderPadding: CGFloat = 5
         static let CardPaddingBase: CGFloat = 60
     }
 }

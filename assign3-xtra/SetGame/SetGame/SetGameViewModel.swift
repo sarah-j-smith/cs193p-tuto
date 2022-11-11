@@ -22,6 +22,7 @@ class SetGameViewModel: ObservableObject {
     
     @Published var shouldDisplayEvaluationPanel = false
     @Published var shouldDisplayHintPanel = false
+    @Published var shouldDisplayAboutPanel = false
     
     private var evalPanelLastTick: Double = 0
     
@@ -125,6 +126,14 @@ class SetGameViewModel: ObservableObject {
     func hideEvaluationPanel() {
         shouldDisplayEvaluationPanel = false
         stopEvalPanelTimer()
+    }
+    
+    func showAboutPressed() {
+        shouldDisplayAboutPanel = true
+    }
+    
+    func hideAboutPanel() {
+        shouldDisplayAboutPanel = false
     }
     
     func dealThreeMorePressed() {
