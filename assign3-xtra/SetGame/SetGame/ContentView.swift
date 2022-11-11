@@ -12,31 +12,46 @@ struct ContentView: View {
     @ObservedObject var game: SetGameViewModel
     
     var body: some View {
-        ZStack {
-            VStack {
-                gameHeader.padding(Constants.GameHeaderPadding)
-                mainCardsView.padding(.horizontal, cardPadding)
-                HStack {
-                    newGameButton
-                    Spacer()
-                    hintButton
-                    Spacer()
-                    dealThreeMoreButton
-                        .disabled(game.cards.count < 3)
-                }.padding()
-                    .labelStyle(VerticalLabelStyle())
-            }
-            if game.shouldDisplayEvaluationPanel {
-                Rectangle().fill(.black).opacity(0.7).ignoresSafeArea()
-                setEvaluationPanel
-                    .padding(30.0)
-            }
-            if game.shouldDisplayHintPanel {
-                Rectangle().fill(.black).opacity(0.7).ignoresSafeArea()
-                hintPanel
-                    .padding(30.0)
+        GeometryReader { geometry in
+            ZStack {
+                VStack {
+                    gameHeader.padding(Constants.GameHeaderPadding)
+                    mainCardsView.padding(.horizontal, cardPadding)
+                    HStack {
+                        newGameButton
+                        Spacer()
+                        hintButton
+                        Spacer()
+                        dealThreeMoreButton
+                            .disabled(game.cards.count < 3)
+                    }.padding()
+                        .labelStyle(VerticalLabelStyle())
+                }.zIndex(1.0)
+                if game.shouldDisplayHintPanel {
+                    dimmingBackground
+                        .zIndex(2.0)
+                    hintPanel
+                        .padding(30.0)
+                        .zIndex(3.0)
+                        .transition(.offset(x: 0.0, y: geometry.size.height))
+                }
+                if game.shouldDisplayEvaluationPanel {
+                    dimmingBackground
+                        .zIndex(2.0)
+                    setEvaluationPanel.transition(.offset(x: 0.0, y: geometry.size.height))
+                        .padding(30.0)
+                        .zIndex(3.0)
+                        .transition(.offset(x: 0.0, y: geometry.size.height))
+                }
             }
         }
+    }
+    
+    private var dimmingBackground: some View {
+        Rectangle()
+            .fill(.black)
+            .opacity(0.7)
+            .ignoresSafeArea()
     }
     
     private var cardPadding: CGFloat {
@@ -46,7 +61,9 @@ struct ContentView: View {
     private var mainCardsView: some View {
         AspectVGrid(items: game.cards, aspectRatio: Constants.CardsAspect) { card in
             CardView(card: card).padding(cardPadding).onTapGesture {
-                game.cardTapped(card.id, isSelected: card.selected)
+                withAnimation(.easeInOut(duration: 3.0)) {
+                    game.cardTapped(card.id, isSelected: card.selected)
+                }
             }
         }
     }
@@ -59,7 +76,9 @@ struct ContentView: View {
             message: hint.message,
             infoType: hint.cards.count == 0 ? .Warning : .Information,
             handler: {
-                game.hideHintPanel()
+                withAnimation(.easeInOut(duration: 3.0)) {
+                    game.hideHintPanel()
+                }
             })
     }
     
@@ -70,13 +89,17 @@ struct ContentView: View {
             message: game.matchResultExplanation,
             infoType: game.isMatch ? .Information : .Warning,
             handler: {
-                game.hideEvaluationPanel()
+                withAnimation(.easeInOut(duration: 3.0)) {
+                    game.hideEvaluationPanel()
+                }
             })
     }
     
     private var newGameButton: some View {
         Button {
-            game.newGamePressed()
+            withAnimation(.easeInOut(duration: 3.0)) {
+                game.newGamePressed()
+            }
         } label: {
             Label("New Game", systemImage: "shuffle.circle")
         }
@@ -84,7 +107,9 @@ struct ContentView: View {
     
     private var hintButton: some View {
         Button {
-            game.showHintPanel()
+            withAnimation(.easeInOut(duration: 3.0)) {
+                game.showHintPanel()
+            }
         } label: {
             Label("Hint", systemImage: "questionmark.circle")
         }
@@ -92,7 +117,9 @@ struct ContentView: View {
     
     private var dealThreeMoreButton: some View {
         Button {
-            game.dealThreeMorePressed()
+            withAnimation(.easeInOut(duration: 3.0)) {
+                game.dealThreeMorePressed()
+            }
         } label: {
             Label("Deal 3", systemImage: "square.3.stack.3d")
         }
