@@ -103,6 +103,7 @@ struct ContentView: View {
             })
     }
     
+    
     private var newGameButton: some View {
         Button {
             withAnimation(.easeInOut(duration: 1.0)) {
@@ -136,16 +137,7 @@ struct ContentView: View {
     private var gameHeader: some View {
         HStack {
             Text("Set Game")
-                .font(.title).padding(EdgeInsets(top: 3.0, leading: 20.0, bottom: 3.0, trailing: 20.0))
-                .background {
-                    RoundedRectangle(cornerRadius: 12.0)
-                    .stroke(lineWidth: 2.0)
-                    .fill(.gray) }
-                .onTapGesture {
-                    withAnimation(.easeInOut(duration: 1.0)) {
-                        game.showAboutPressed()
-                    }
-                }
+                .font(.title2)
         }
     }
     
