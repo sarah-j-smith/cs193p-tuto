@@ -17,15 +17,7 @@ struct ContentView: View {
                 VStack {
                     gameHeader.padding(Constants.GameHeaderPadding)
                     mainCardsView.padding(.horizontal, cardPadding)
-                    HStack {
-                        newGameButton
-                        Spacer()
-                        hintButton
-                        Spacer()
-                        dealThreeMoreButton
-                            .disabled(game.cards.count < 3)
-                    }.padding(.horizontal)
-                        .labelStyle(VerticalLabelStyle())
+                    gameFooter.padding(.horizontal)
                 }.zIndex(1.0)
                 if game.shouldDisplayHintPanel {
                     dimmingBackground
@@ -66,6 +58,19 @@ struct ContentView: View {
         return floor(Constants.CardPaddingBase / CGFloat(game.cards.count))
     }
     
+    private var gameHeader: some View {
+        HStack {
+            newGameButton
+                .labelStyle(VerticalLabelStyle())
+            Spacer()
+            Text("Set Game")
+                .font(.title2)
+            Spacer()
+            settingsButton
+                .labelStyle(VerticalLabelStyle())
+        }
+    }
+
     private var mainCardsView: some View {
         AspectVGrid(items: game.cards, aspectRatio: Constants.CardsAspect) { card in
             CardView(card: card).padding(cardPadding).onTapGesture {
@@ -73,6 +78,17 @@ struct ContentView: View {
                     game.cardTapped(card.id, isSelected: card.selected)
                 }
             }
+        }
+    }
+    
+    private var gameFooter: some View {
+        HStack {
+            hintButton
+                .labelStyle(VerticalLabelStyle())
+            Spacer()
+            dealThreeMoreButton
+                .labelStyle(VerticalLabelStyle())
+                .disabled(game.cards.count < 3)
         }
     }
     
@@ -103,6 +119,15 @@ struct ContentView: View {
             })
     }
     
+    private var settingsButton: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 1.0)) {
+                game.showAboutPressed()
+            }
+        } label: {
+            Label("Settings", systemImage: "gear")
+        }
+    }
     
     private var newGameButton: some View {
         Button {
@@ -131,13 +156,6 @@ struct ContentView: View {
             }
         } label: {
             Label("Deal 3", systemImage: "square.3.stack.3d")
-        }
-    }
-    
-    private var gameHeader: some View {
-        HStack {
-            Text("Set Game")
-                .font(.title2)
         }
     }
     
