@@ -11,6 +11,13 @@ struct ContentView: View {
     
     @ObservedObject var game: SetGameViewModel
     
+    // Indexes of cards that have been moved out of the deck but are not
+    // placed into the tableau
+    @State var tabledCards = Set<Int>()
+    
+    // namespace for the dealing matchGeometryEffect
+    @Namespace private var dealingNamespace
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -84,18 +91,49 @@ struct ContentView: View {
 
     private var mainCardsView: some View {
         AspectVGrid(items: game.cards, aspectRatio: Constants.CardsAspect) { card in
-            CardView(card: card).padding(cardPadding).onTapGesture {
-                withAnimation(.easeInOut(duration: 1.0)) {
-                    game.cardTapped(card.id, isSelected: card.selected)
+            if (tabledCards.contains(card.id)) {
+                CardView(card: card)
+                    .matchedGeometryEffect(id: card.id, in: dealingNamespace)
+                    .padding(cardPadding)
+                    .onTapGesture {
+                    withAnimation(.easeInOut(duration: 1.0)) {
+                        game.cardTapped(card.id, isSelected: card.selected)
+                    }
+                }
+            } else {
+                Color.clear
+            }
+        }
+        .onAppear {
+            for card in game.cards {
+                withAnimation(dealAnimation(forCard: card)) {
+                    tabledCards.insert(card.id)
                 }
             }
         }
     }
     
+    private func dealAnimation(forCard card: SetGameViewModel.Card) -> Animation {
+        var delay = 0.0
+        if let orderInDeck = game.cards.getIndexById(card.id) {
+            delay = Double(orderInDeck) / Double(game.cards.count) * Constants.TotalDealDuration
+        }
+        return Animation.easeInOut(duration: Constants.DealDuration).delay(delay)
+    }
+    
+    private var decktop: [ SetGameViewModel.Card ] {
+        return game.cards.filter { !tabledCards.contains($0.id) }
+    }
+    
+    private var deckViewCards:  [ SetGameViewModel.Card ] {
+        return decktop + game.deck
+    }
+    
     private var deckCardsView: some View {
         ZStack {
-            ForEach(game.deck) { card in
+            ForEach(deckViewCards) { card in
                 CardView(card: card)
+                    .matchedGeometryEffect(id: card.id, in: dealingNamespace)
                     .offset(offsetForCardInDeck(card))
                     .zIndex(zOrderForCardInDeck(card))
             }
@@ -103,14 +141,14 @@ struct ContentView: View {
     }
     
     private func offsetForCardInDeck(_ card: SetGameViewModel.Card) -> CGSize {
-        if let orderInDeck = game.deck.getIndexById(card.id) {
+        if let orderInDeck = deckViewCards.getIndexById(card.id) {
             return CGSize(width: orderInDeck / 4, height: orderInDeck / 6)
         }
         return CGSize.zero
     }
     
     private func zOrderForCardInDeck(_ card: SetGameViewModel.Card) -> Double {
-        if let orderInDeck = game.deck.getIndexById(card.id) {
+        if let orderInDeck = deckViewCards.getIndexById(card.id) {
             return -Double(orderInDeck) * 0.001
         }
         return 0.0
@@ -200,6 +238,9 @@ struct ContentView: View {
         static let EvalPanelOpacity: CGFloat = 0.7
         static let GameHeaderPadding: CGFloat = 5
         static let CardPaddingBase: CGFloat = 60
+        
+        static let TotalDealDuration: Double = 5.0
+        static let DealDuration: Double = 1.0
         
         static let zTableau: Double = 0.0
         static let zDeck: Double = 100.0
