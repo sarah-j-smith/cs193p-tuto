@@ -18,21 +18,28 @@ struct ContentView: View {
                     gameHeader.padding(Constants.GameHeaderPadding)
                     mainCardsView.padding(.horizontal, cardPadding)
                     gameFooter.padding(.horizontal)
-                }.zIndex(1.0)
-                if game.shouldDisplayHintPanel {
+                }.zIndex(Constants.zTableau)
+                VStack {
+                    Spacer()
+                    deckCardsView
+                        .frame(
+                            width: geometry.size.width / 4,
+                            height: (geometry.size.width / 4) / Constants.CardsAspect)
+                }.zIndex(Constants.zDeck)
+                if shouldDisplayDimmingPanel {
                     dimmingBackground
-                        .zIndex(2.0)
+                        .zIndex(Constants.zDimmingPanel)
+                }
+                if game.shouldDisplayHintPanel {
                     hintPanel
                         .padding(30.0)
-                        .zIndex(3.0)
+                        .zIndex(Constants.zDialogs)
                         .transition(.offset(x: 0.0, y: geometry.size.height))
                 }
                 if game.shouldDisplayEvaluationPanel {
-                    dimmingBackground
-                        .zIndex(2.0)
                     setEvaluationPanel.transition(.offset(x: 0.0, y: geometry.size.height))
                         .padding(30.0)
-                        .zIndex(3.0)
+                        .zIndex(Constants.zDialogs)
                         .transition(.offset(x: 0.0, y: geometry.size.height))
                 }
                 if game.shouldDisplayAboutPanel {
@@ -40,11 +47,15 @@ struct ContentView: View {
                         withAnimation {
                             game.hideAboutPanel()
                         }
-                    }).padding(4.0).zIndex(3.0)
+                    }).padding(4.0).zIndex(Constants.zDialogs)
                         .transition(.offset(x: 0.0, y: geometry.size.height))
                 }
             }
         }
+    }
+    
+    private var shouldDisplayDimmingPanel: Bool {
+        return game.shouldDisplayAboutPanel || game.shouldDisplayHintPanel || game.shouldDisplayEvaluationPanel
     }
     
     private var dimmingBackground: some View {
@@ -79,6 +90,30 @@ struct ContentView: View {
                 }
             }
         }
+    }
+    
+    private var deckCardsView: some View {
+        ZStack {
+            ForEach(game.deck) { card in
+                CardView(card: card)
+                    .offset(offsetForCardInDeck(card))
+                    .zIndex(zOrderForCardInDeck(card))
+            }
+        }
+    }
+    
+    private func offsetForCardInDeck(_ card: SetGameViewModel.Card) -> CGSize {
+        if let orderInDeck = game.deck.getIndexById(card.id) {
+            return CGSize(width: orderInDeck / 4, height: orderInDeck / 6)
+        }
+        return CGSize.zero
+    }
+    
+    private func zOrderForCardInDeck(_ card: SetGameViewModel.Card) -> Double {
+        if let orderInDeck = game.deck.getIndexById(card.id) {
+            return -Double(orderInDeck) * 0.001
+        }
+        return 0.0
     }
     
     private var gameFooter: some View {
@@ -165,6 +200,11 @@ struct ContentView: View {
         static let EvalPanelOpacity: CGFloat = 0.7
         static let GameHeaderPadding: CGFloat = 5
         static let CardPaddingBase: CGFloat = 60
+        
+        static let zTableau: Double = 0.0
+        static let zDeck: Double = 100.0
+        static let zDimmingPanel: Double = 120.0
+        static let zDialogs: Double = 130.0
     }
 }
 
