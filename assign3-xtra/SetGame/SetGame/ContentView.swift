@@ -29,10 +29,9 @@ struct ContentView: View {
                 VStack {
                     Spacer()
                     deckCardsView
-                        .frame(
-                            width: geometry.size.width / 4,
-                            height: (geometry.size.width / 4) / Constants.CardsAspect)
-                }.zIndex(Constants.zDeck)
+                        .frame(width: (geometry.size.width / Constants.DeckWidthRatioGivenWidth),
+                               height: (geometry.size.width / Constants.DeckWidthRatioGivenWidth) / Constants.CardsAspect)
+                }
                 if shouldDisplayDimmingPanel {
                     dimmingBackground
                         .zIndex(Constants.zDimmingPanel)
@@ -88,18 +87,20 @@ struct ContentView: View {
                 .labelStyle(VerticalLabelStyle())
         }
     }
-
+    
     private var mainCardsView: some View {
         AspectVGrid(items: game.cards, aspectRatio: Constants.CardsAspect) { card in
             if (tabledCards.contains(card.id)) {
                 CardView(card: card)
                     .matchedGeometryEffect(id: card.id, in: dealingNamespace)
                     .padding(cardPadding)
+                    .transition(AnyTransition.asymmetric(insertion: .identity, removal: .scale))
+                    .zIndex(Constants.zTableau + zOffsetForCard(card, inArray: game.cards))
                     .onTapGesture {
-                    withAnimation(.easeInOut(duration: 1.0)) {
-                        game.cardTapped(card.id, isSelected: card.selected)
+                        withAnimation(.easeInOut(duration: 1.0)) {
+                            game.cardTapped(card.id, isSelected: card.selected)
+                        }
                     }
-                }
             } else {
                 Color.clear
             }
@@ -107,7 +108,7 @@ struct ContentView: View {
         .onAppear {
             for card in game.cards {
                 withAnimation(dealAnimation(forCard: card)) {
-                    tabledCards.insert(card.id)
+                    placeCardInTableau(card)
                 }
             }
         }
@@ -119,6 +120,15 @@ struct ContentView: View {
             delay = Double(orderInDeck) / Double(game.cards.count) * Constants.TotalDealDuration
         }
         return Animation.easeInOut(duration: Constants.DealDuration).delay(delay)
+    }
+    
+    private func deal3Animation(forCard card: SetGameViewModel.Card) -> Animation {
+        var delay = 0.0
+        let ary = Array( game.cards.suffix(3) )
+        if let orderInDeck = ary.getIndexById(card.id) {
+            delay = Double(orderInDeck) / Double(ary.count) * Constants.TotalDeal3Duration
+        }
+        return Animation.easeInOut(duration: Constants.Deal3Duration).delay(delay)
     }
     
     private var decktop: [ SetGameViewModel.Card ] {
@@ -134,24 +144,41 @@ struct ContentView: View {
             ForEach(deckViewCards) { card in
                 CardView(card: card)
                     .matchedGeometryEffect(id: card.id, in: dealingNamespace)
-                    .offset(offsetForCardInDeck(card))
-                    .zIndex(zOrderForCardInDeck(card))
+                    .offset(offsetForCard(card, inArray: deckViewCards))
+                    .transition(AnyTransition.asymmetric(insertion: .opacity, removal: .identity))
+                    .zIndex(Constants.zDeck + zOffsetForCard(card, inArray: deckViewCards))
             }
         }
     }
     
-    private func offsetForCardInDeck(_ card: SetGameViewModel.Card) -> CGSize {
-        if let orderInDeck = deckViewCards.getIndexById(card.id) {
+    private func offsetForCard(_ card: SetGameViewModel.Card, inArray ary: Array<SetGameViewModel.Card>) -> CGSize {
+        if let orderInDeck = ary.getIndexById(card.id) {
             return CGSize(width: orderInDeck / 4, height: orderInDeck / 6)
         }
         return CGSize.zero
     }
     
-    private func zOrderForCardInDeck(_ card: SetGameViewModel.Card) -> Double {
-        if let orderInDeck = deckViewCards.getIndexById(card.id) {
-            return -Double(orderInDeck) * 0.001
+    private func zOffsetForCard(_ card: SetGameViewModel.Card, inArray ary: Array<SetGameViewModel.Card>) -> Double {
+        if let orderInDeck = ary.getIndexById(card.id) {
+            return Double(ary.count - orderInDeck)
         }
         return 0.0
+    }
+    
+    private func placeCardInTableau(_ card: SetGameViewModel.Card) {
+        tabledCards.insert(card.id)
+    }
+    
+    private func resetTableau(withCards cards: [ SetGameViewModel.Card ]) {
+        tabledCards = Set( cards.map( \.id ) )
+    }
+    
+    private func clearTableau() {
+        tabledCards.removeAll()
+    }
+    
+    private func removeCardFromTableau(_ card: SetGameViewModel.Card) {
+        tabledCards.remove(card.id)
     }
     
     private var gameFooter: some View {
@@ -204,8 +231,12 @@ struct ContentView: View {
     
     private var newGameButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 1.0)) {
-                game.newGamePressed()
+            clearTableau()
+            game.newGamePressed()
+            for card in game.cards {
+                withAnimation(dealAnimation(forCard: card)) {
+                    placeCardInTableau(card)
+                }
             }
         } label: {
             Label("New Game", systemImage: "shuffle.circle")
@@ -224,8 +255,22 @@ struct ContentView: View {
     
     private var dealThreeMoreButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 1.0)) {
+            let countBeforeDealingThree = game.cards.count
+            withAnimation(.easeIn(duration: 0.8)) {
                 game.dealThreeMorePressed()
+            }
+            let countAfterDealingThree = game.cards.count
+            if countAfterDealingThree == countBeforeDealingThree {
+                // The deal three caused a replacement of cards
+                withAnimation {
+                    resetTableau(withCards: Array( game.cards[ 0 ..< (game.cards.count - 3) ] ))
+                }
+            }
+            let threeCardsDealt = Array( game.cards.suffix(3) )
+            for card in threeCardsDealt {
+                withAnimation(deal3Animation(forCard: card)) {
+                    placeCardInTableau(card)
+                }
             }
         } label: {
             Label("Deal 3", systemImage: "square.3.stack.3d")
@@ -239,13 +284,18 @@ struct ContentView: View {
         static let GameHeaderPadding: CGFloat = 5
         static let CardPaddingBase: CGFloat = 60
         
+        static let DeckWidthRatioGivenWidth: CGFloat = 6.0
+        
         static let TotalDealDuration: Double = 5.0
         static let DealDuration: Double = 1.0
         
-        static let zTableau: Double = 0.0
-        static let zDeck: Double = 100.0
-        static let zDimmingPanel: Double = 120.0
-        static let zDialogs: Double = 130.0
+        static let TotalDeal3Duration: Double = 5.0
+        static let Deal3Duration: Double = 1.0
+        
+        static let zTableau: Double = 100.0
+        static let zDeck: Double = 0.0
+        static let zDimmingPanel: Double = 200.0
+        static let zDialogs: Double = 220.0
     }
 }
 
@@ -261,7 +311,7 @@ struct VerticalLabelStyle: LabelStyle {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let gameVM = SetGameViewModel()
-
+        
         ContentView(game: gameVM)
     }
 }
