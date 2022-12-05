@@ -33,7 +33,7 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B2CA9029291098120070E76D"
+               BlueprintIdentifier = "B29D49B72916681300B7EC1A"
                BuildableName = "CardsOfSetTests.xctest"
                BlueprintName = "CardsOfSetTests"
                ReferencedContainer = "container:CardsOfSet.xcodeproj">
@@ -47,6 +47,17 @@
                BlueprintIdentifier = "B29D49B72916681300B7EC1A"
                BuildableName = "CardsOfSetTests.xctest"
                BlueprintName = "CardsOfSetTests"
+               ReferencedContainer = "container:CardsOfSet.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B27A8456293DAA2500E189AC"
+               BuildableName = "CardsOfSetUITests.xctest"
+               BlueprintName = "CardsOfSetUITests"
                ReferencedContainer = "container:CardsOfSet.xcodeproj">
             </BuildableReference>
          </TestableReference>

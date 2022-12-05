@@ -80,8 +80,13 @@ struct ContentView: View {
             newGameButton
                 .labelStyle(VerticalLabelStyle())
             Spacer()
-            Text("Set Game")
-                .font(.title2)
+            VStack {
+                Text("SCORE")
+                    .font(.callout)
+                Text("\(game.score)")
+                    .monospacedDigit()
+                    .font(.title3)
+            }
             Spacer()
             settingsButton
                 .labelStyle(VerticalLabelStyle())
@@ -97,8 +102,21 @@ struct ContentView: View {
                     .transition(AnyTransition.asymmetric(insertion: .identity, removal: .scale))
                     .zIndex(Constants.zTableau + zOffsetForCard(card, inArray: game.cards))
                     .onTapGesture {
-                        withAnimation(.easeInOut(duration: 1.0)) {
-                            game.cardTapped(card.id, isSelected: card.selected)
+                        if game.isMatch {
+                            let selectedIndexes = indexesOfSelectedCards
+                            let threeCardsToReplace = game.selectedCards
+                            withAnimation(.easeInOut(duration: 1.0)) {
+                                for card in threeCardsToReplace {
+                                    removeCardFromTableau(card)
+                                }
+                                game.cardTapped(card.id, isSelected: card.selected)
+                            }
+                            let newlyDealtCards = selectedIndexes.map {  game.cards[ $0 ] }
+                            dealThreeAnimation(newlyDealtCards)
+                        } else {
+                            withAnimation(.easeInOut(duration: 1.0)) {
+                                game.cardTapped(card.id, isSelected: card.selected)
+                            }
                         }
                     }
             } else {
@@ -122,9 +140,9 @@ struct ContentView: View {
         return Animation.easeInOut(duration: Constants.DealDuration).delay(delay)
     }
     
-    private func deal3Animation(forCard card: SetGameViewModel.Card) -> Animation {
+    private func deal3Animation(forCard card: SetGameViewModel.Card, inArray cardsArray: Array<SetGameViewModel.Card>? = nil) -> Animation {
         var delay = 0.0
-        let ary = Array( game.cards.suffix(3) )
+        let ary = cardsArray ?? Array( game.cards.suffix(3) )
         if let orderInDeck = ary.getIndexById(card.id) {
             delay = Double(orderInDeck) / Double(ary.count) * Constants.TotalDeal3Duration
         }
@@ -188,12 +206,14 @@ struct ContentView: View {
             Spacer()
             dealThreeMoreButton
                 .labelStyle(VerticalLabelStyle())
-                .disabled(game.cards.count < 3)
+                .disabled(game.deck.count < 3)
         }
     }
     
     var hintPanel: some View {
-        let hint = game.hintStructure
+        let hint = game.isMatch
+            ? (cards: game.selectedCards, message: "You already have a match! Just tap any card.")
+            : game.hintStructure
         return HintPanel(
             cards: hint.cards,
             title: "Hints",
@@ -253,25 +273,48 @@ struct ContentView: View {
         }
     }
     
+    private func removeSelectedCardsAnimation() {
+        let threeCardsToReplace = game.selectedCards
+        for card in threeCardsToReplace {
+            withAnimation(.easeInOut(duration: 0.8)) {
+                removeCardFromTableau(card)
+            }
+        }
+    }
+
+    private func dealThreeAnimation(_ newlyDealtCards: Array<SetGameViewModel.Card>) {
+        for card in newlyDealtCards {
+            withAnimation(deal3Animation(forCard: card, inArray: newlyDealtCards)) {
+                placeCardInTableau(card)
+            }
+        }
+    }
+    
+    private var indexesOfSelectedCards: Array<Int> {
+        let cardIdsSelected = game.selectedCards.map( \.id )
+        let cardIndexes = cardIdsSelected.map { idx in
+            return game.cards.getIndexById(idx)!
+        }
+        return cardIndexes
+    }
+    
     private var dealThreeMoreButton: some View {
         Button {
-            let countBeforeDealingThree = game.cards.count
-            withAnimation(.easeIn(duration: 0.8)) {
-                game.dealThreeMorePressed()
-            }
-            let countAfterDealingThree = game.cards.count
-            if countAfterDealingThree == countBeforeDealingThree {
-                // The deal three caused a replacement of cards
-                withAnimation {
-                    resetTableau(withCards: Array( game.cards[ 0 ..< (game.cards.count - 3) ] ))
+            var newlyDealtCards: Array<SetGameViewModel.Card> = []
+            if game.isMatch {
+                let selectedIndexes = indexesOfSelectedCards
+                removeSelectedCardsAnimation()
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    game.dealThreeMorePressed()
                 }
-            }
-            let threeCardsDealt = Array( game.cards.suffix(3) )
-            for card in threeCardsDealt {
-                withAnimation(deal3Animation(forCard: card)) {
-                    placeCardInTableau(card)
+                newlyDealtCards = selectedIndexes.map {  game.cards[ $0 ] }
+            } else {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    game.dealThreeMorePressed()
                 }
+                newlyDealtCards = Array( game.cards.suffix(3) )
             }
+            dealThreeAnimation(newlyDealtCards)
         } label: {
             Label("Deal 3", systemImage: "square.3.stack.3d")
         }
@@ -289,8 +332,8 @@ struct ContentView: View {
         static let TotalDealDuration: Double = 5.0
         static let DealDuration: Double = 1.0
         
-        static let TotalDeal3Duration: Double = 5.0
-        static let Deal3Duration: Double = 1.0
+        static let TotalDeal3Duration: Double = 1.2
+        static let Deal3Duration: Double = 0.8
         
         static let zTableau: Double = 100.0
         static let zDeck: Double = 0.0

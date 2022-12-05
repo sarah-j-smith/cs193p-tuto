@@ -87,6 +87,21 @@ struct SetGameModel {
     }
     
     /**
+     Each triple is worth 3
+     Each run is worth 6
+     Example:
+
+     1 of stripe orange diamonds
+     2 of filled orange diamonds
+     3 of outlined orange diamonds
+     The 1, 2 and 3 is a run. That is 6 pts. The stripe, fill & outlined is a run, also 6 pts. The three diamonds are a triple - 3 pts, and the 3 oranges are a triple, 3 pts.
+     */
+    var scoreForCurrentSet: Int {
+        if !isMatchedSet { return 0 }
+        return (denominations.count == 1 ? 3 : 6) + (shapes.count == 1 ? 3 : 6) + (colors.count == 1 ? 3 : 6) + (shadings.count == 1 ? 3 : 6)
+    }
+    
+    /**
      True, if the currently selected cards are a match under the rules of Set.
      
      In the game of Set, certain combinations of three cards are said to match. For each
@@ -131,7 +146,16 @@ struct SetGameModel {
         if (shadings.count == 2) {
             return "Not a set: shadings are \(shadings)"
         }
-        return "Set! Denominations: \(denominations), shapes: \(shapes), colours: \(colors) & shading: \(shadings)"
+        let denomScore = (denominations.count == 1 ? 3 : 6)
+        let shapeScore = (shapes.count == 1 ? 3 : 6)
+        let colorsScore = (colors.count == 1 ? 3 : 6)
+        let shadingsScore = (shadings.count == 1 ? 3 : 6)
+
+        let denomExplainer = (denominations.count == 1 ? "Triple:" : "Run:") + " \(denominations.description) [\(denomScore)pts]"
+        let shapesExplainer = (shapes.count == 1 ? "Triple:" : "Run:") + " \(shapes.description) [\(shapeScore)pts]"
+        let colorsExplainer = (colors.count == 1 ? "Triple:" : "Run:") + " \(colors.description) [\(colorsScore)pts]"
+        let shadingExplainer = (shadings.count == 1 ? "Triple:" : "Run:") + " \(shadings.description) [\(shadingsScore)pts]"
+        return "Set! \(denomExplainer); \(shapesExplainer); \(colorsExplainer); \(shadingExplainer)"
     }
 
     

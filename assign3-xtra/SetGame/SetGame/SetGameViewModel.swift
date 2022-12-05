@@ -23,8 +23,32 @@ class SetGameViewModel: ObservableObject {
     @Published var shouldDisplayEvaluationPanel = false
     @Published var shouldDisplayHintPanel = false
     @Published var shouldDisplayAboutPanel = false
+    @Published var score = Constants.StartScore
     
     private var evalPanelLastTick: Double = 0
+    
+    // MARK: - Scoring functions
+    
+    /**
+     Score is at the top of the screen. The best 3 scores for an installation of the game are saved in settings.
+     
+     A player gets score added whenever a match is made, and the "Its a match" dialog is displayed.
+
+     Each triple is worth 3
+     Each run is worth 6
+     Example:
+
+     1 of stripe orange diamonds
+     2 of filled orange diamonds
+     3 of outlined orange diamonds
+     The 1, 2 and 3 is a run. That is 6 pts. The stripe, fill & outlined is a run, also 6 pts. The three diamonds are a triple - 3 pts, and the 3 oranges are a triple, 3 pts.
+
+     It costs 3 points to press the deal 3 button (unless you have a set). It costs 6 points to get a hint (unless the there are no sets).
+     */
+    
+    func calculateScore() {
+        score += model.scoreForCurrentSet
+    }
     
     // MARK: - Model convenience accessors/facade
     
@@ -120,6 +144,9 @@ class SetGameViewModel: ObservableObject {
     }
     
     func showHintPanel() {
+        if !(model.isMatchedSet || model.matchesInPlayableCards.isEmpty) {
+            score -= Constants.CostOfHint
+        }
         shouldDisplayHintPanel = true
     }
     
@@ -180,6 +207,7 @@ class SetGameViewModel: ObservableObject {
     @MainActor
     @objc func shouldEvaluate(notifier: Notification) {
         fsm.acceptSetEvaluated(matchState: model.isMatchedSet)
+        calculateScore()
         shouldDisplayEvaluationPanel = true
         startEvalPanelTimer()
     }
@@ -263,10 +291,20 @@ class SetGameViewModel: ObservableObject {
             let cardsInDeck = model.deckCards.count
             assert(cardsInDeck >= 3)
         }
+        if !(model.isMatchedSet || model.matchesInPlayableCards.isEmpty) {
+            score -= Constants.CostOfDealThree
+        }
         model.dealCards(cardCount: 3)
     }
     
     struct Constants {
         static let EvalPanelDelay = 10.0 // seconds to display panel
+        
+        static let ScoreForTriple = 3
+        static let ScoreForRun = 6
+        
+        static let StartScore = 100
+        static let CostOfDealThree = 3
+        static let CostOfHint = 6
     }
 }
