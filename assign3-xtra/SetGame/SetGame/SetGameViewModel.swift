@@ -23,6 +23,7 @@ class SetGameViewModel: ObservableObject {
     @Published var shouldDisplayEvaluationPanel = false
     @Published var shouldDisplayHintPanel = false
     @Published var shouldDisplayAboutPanel = false
+    @Published var shouldDisplayWinPanel = false
     @Published var score = Constants.StartScore
     
     private var evalPanelLastTick: Double = 0
@@ -80,6 +81,10 @@ class SetGameViewModel: ObservableObject {
         get {
             return model.isMatchedSet
         }
+    }
+    
+    var isWin: Bool {
+        return model.playableCards.count == 0
     }
     
     var hintStructure: (cards: [ Card ], message: String) {
@@ -145,7 +150,12 @@ class SetGameViewModel: ObservableObject {
     
     func showHintPanel() {
         if !(model.isMatchedSet || model.matchesInPlayableCards.isEmpty) {
-            score -= Constants.CostOfHint
+            if score >= Constants.CostOfHint {
+                score -= Constants.CostOfHint
+            } else {
+                shouldDisplayWinPanel = true
+                return
+            }
         }
         shouldDisplayHintPanel = true
     }
@@ -153,6 +163,10 @@ class SetGameViewModel: ObservableObject {
     func hideEvaluationPanel() {
         shouldDisplayEvaluationPanel = false
         stopEvalPanelTimer()
+    }
+    
+    func hideWinPanel() {
+        shouldDisplayWinPanel = false
     }
     
     func showAboutPressed() {
@@ -277,6 +291,7 @@ class SetGameViewModel: ObservableObject {
     func replaceSelectedCardsByDealNew() {
         let cardIds = selectedCards.map(\.id)
         model.replaceMatched(cardIds: cardIds)
+        checkForWinCondition()
     }
     
     func deselectAllSelected() {
@@ -286,13 +301,32 @@ class SetGameViewModel: ObservableObject {
         }
     }
     
+    func checkForWinCondition() {
+        if model.deckCards.count == 0 {
+            if model.playableCards.count == 0 {
+                // player has won the game
+                shouldDisplayWinPanel = true
+            } else {
+                if model.matchesInPlayableCards.count == 0 {
+                    // stalemate - no more matches available, and no cards to deal out
+                    shouldDisplayWinPanel = true
+                }
+            }
+        }
+    }
+    
     func dealThreeCards() {
         if debug {
             let cardsInDeck = model.deckCards.count
             assert(cardsInDeck >= 3)
         }
         if !(model.isMatchedSet || model.matchesInPlayableCards.isEmpty) {
-            score -= Constants.CostOfDealThree
+            if score >= Constants.CostOfDealThree {
+                score -= Constants.CostOfDealThree
+            } else {
+                checkForWinCondition()
+                return
+            }
         }
         model.dealCards(cardCount: 3)
     }

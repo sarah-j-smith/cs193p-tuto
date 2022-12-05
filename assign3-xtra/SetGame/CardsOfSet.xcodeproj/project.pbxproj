@@ -25,6 +25,7 @@
 		B270ED89291B733500D2EF6C /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = B270ED88291B733500D2EF6C /* Algorithms */; };
 		B27A845A293DAA2500E189AC /* CardsOfSetUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27A8459293DAA2500E189AC /* CardsOfSetUITests.swift */; };
 		B27A845C293DAA2500E189AC /* CardsOfSetUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27A845B293DAA2500E189AC /* CardsOfSetUITestsLaunchTests.swift */; };
+		B27A8463293DCF6700E189AC /* GameEndPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27A8462293DCF6700E189AC /* GameEndPanel.swift */; };
 		B28ECFB328E05EBF008D2010 /* GameStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */; };
 		B29D49C92916683D00B7EC1A /* EvaluatingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D49C12916682C00B7EC1A /* EvaluatingFSMTests.swift */; };
 		B29D49CA2916683D00B7EC1A /* SelectingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D49C32916682C00B7EC1A /* SelectingFSMTests.swift */; };
@@ -80,6 +81,7 @@
 		B27A8457293DAA2500E189AC /* CardsOfSetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsOfSetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B27A8459293DAA2500E189AC /* CardsOfSetUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsOfSetUITests.swift; sourceTree = "<group>"; };
 		B27A845B293DAA2500E189AC /* CardsOfSetUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsOfSetUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		B27A8462293DCF6700E189AC /* GameEndPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEndPanel.swift; sourceTree = "<group>"; };
 		B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateMachine.swift; sourceTree = "<group>"; };
 		B29D49B82916681300B7EC1A /* CardsOfSetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsOfSetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B29D49C12916682C00B7EC1A /* EvaluatingFSMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatingFSMTests.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */,
 				B2AC2E1D29176CE600A510ED /* EvaluationPanelStateMachine.swift */,
 				B2E8C103291E167B006FB3CF /* AboutSet.swift */,
+				B27A8462293DCF6700E189AC /* GameEndPanel.swift */,
 			);
 			path = SetGame;
 			sourceTree = "<group>";
@@ -363,6 +366,7 @@
 				B26F947328D2C2820075E6D5 /* AspectVGrid.swift in Sources */,
 				B2C46D5928E5723D005BCD6D /* SelectingStateMachine.swift in Sources */,
 				B2C46D5B28E57256005BCD6D /* EvaluatingStateMachine.swift in Sources */,
+				B27A8463293DCF6700E189AC /* GameEndPanel.swift in Sources */,
 				B270ED83291B5FC600D2EF6C /* HintPanel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

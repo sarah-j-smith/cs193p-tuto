@@ -36,6 +36,9 @@ struct ContentView: View {
                     dimmingBackground
                         .zIndex(Constants.zDimmingPanel)
                 }
+                if game.shouldDisplayWinPanel {
+                    
+                }
                 if game.shouldDisplayHintPanel {
                     hintPanel
                         .padding(30.0)
@@ -207,6 +210,18 @@ struct ContentView: View {
             dealThreeMoreButton
                 .labelStyle(VerticalLabelStyle())
                 .disabled(game.deck.count < 3)
+        }
+    }
+    
+    var winPanel: some View {
+        if game.isWin {
+            return GameEndPanel(title: "You Won", message: "Nice work!", infoType: .Information) {
+                game.hideWinPanel()
+            }
+        } else {
+            return GameEndPanel(title: "You Lost", message: "Next time for sure!", infoType: .Warning) {
+                game.hideWinPanel()
+            }
         }
     }
     
