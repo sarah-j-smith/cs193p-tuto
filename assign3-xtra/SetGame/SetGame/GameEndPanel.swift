@@ -22,6 +22,10 @@ struct GameEndPanel: View {
         }.clipShape(RoundedRectangle(cornerSize: Constants.CornerRadius))
             .shadow(radius: 10.0)
             .padding(.horizontal, 30.0)
+            .accessibilityIdentifier("Game_End_\(infoType == .Warning ? "Win" : "Loss")")
+            .accessibilityLabel(message)
+            .accessibilityElement(children: .contain)
+            .accessibilityAddTraits(.isButton)
             .onTapGesture {
                 handler()
             }

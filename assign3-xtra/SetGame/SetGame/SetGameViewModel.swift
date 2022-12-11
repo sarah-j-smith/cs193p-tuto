@@ -28,6 +28,10 @@ class SetGameViewModel: ObservableObject {
     
     private var evalPanelLastTick: Double = 0
     
+    var testMode: Bool {
+        return ProcessInfo.processInfo.arguments.contains("isRunningUITests")
+    }
+    
     // MARK: - Scoring functions
     
     /**
@@ -127,19 +131,28 @@ class SetGameViewModel: ObservableObject {
             name: .ShouldHideEvaluationPanel, object: nil)
     }
     
-    lazy private var fsm: GameStateMachine = SetGameViewModel.createFSM(forGame: self)
+    private var fsm: GameStateMachine!
+    static private var fsmFactory = FSMFactory()
     
-    static func createFSM(forGame game: SetGameViewModel) -> GameStateMachine {
-        return GameStateMachine(withFactory: game)
+    static private func createModel() -> SetGameModel {
+        let testMode = ProcessInfo.processInfo.arguments.contains("isRunningUITests")
+        let mdl = testMode ? SetGameModel(cards: SetGameModel.fillDeck()) : SetGameModel()
+        return mdl
     }
     
     static func createGame() -> SetGameViewModel {
-        let game = SetGameViewModel()
-        let fsm = createFSM(forGame: game)
+        let fsm = GameStateMachine(withFactory: fsmFactory)
+        let game = SetGameViewModel(
+            model: createModel(),
+            fsm: fsm)
         registerStateEvents(forGame: game)
-        game.fsm = fsm
         fsm.start()
         return game
+    }
+    
+    init(model: SetGameModel, fsm: GameStateMachine) {
+        self.model = model
+        self.fsm = fsm
     }
 
     // - MARK: Intents from UX actions
@@ -238,8 +251,8 @@ class SetGameViewModel: ObservableObject {
     // - MARK: Game Model actuators
     
     func newGamePressed() {
-        model = SetGameModel()
-        fsm = SetGameViewModel.createFSM(forGame: self)
+        model = SetGameViewModel.createModel()
+        fsm = GameStateMachine(withFactory: SetGameViewModel.fsmFactory)
         fsm.start()
     }
     

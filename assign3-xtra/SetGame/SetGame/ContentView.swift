@@ -35,6 +35,8 @@ struct ContentView: View {
                 if shouldDisplayDimmingPanel {
                     dimmingBackground
                         .zIndex(Constants.zDimmingPanel)
+                        .accessibilityIdentifier("dimmingBackground")
+                        .accessibilityHidden(true)
                 }
                 if game.shouldDisplayWinPanel {
                     
@@ -89,11 +91,37 @@ struct ContentView: View {
                 Text("\(game.score)")
                     .monospacedDigit()
                     .font(.title3)
+                    .accessibilityIdentifier("Game_Score")
             }
+            .accessibilityElement(children: .combine)
             Spacer()
             settingsButton
                 .labelStyle(VerticalLabelStyle())
         }
+    }
+    
+    private var totalDealDuration: Double {
+        return game.testMode ? 0.01 : Constants.TotalDealDuration
+    }
+    
+    private var dealDuration: Double {
+        return game.testMode ? 0.01 : Constants.DealDuration
+    }
+    
+    private var totalDeal3Duration: Double {
+        return game.testMode ? 0.01 : Constants.TotalDeal3Duration
+    }
+    
+    private var deal3Duration: Double {
+        return game.testMode ? 0.01 : Constants.Deal3Duration
+    }
+    
+    private var removeDuration: Double {
+        return game.testMode ? 0.01 : Constants.RemoveDuration
+    }
+    
+    private var panelDuration: Double {
+        return game.testMode ? 0.01 : Constants.PanelDuration
     }
     
     private var mainCardsView: some View {
@@ -104,20 +132,26 @@ struct ContentView: View {
                     .padding(cardPadding)
                     .transition(AnyTransition.asymmetric(insertion: .identity, removal: .scale))
                     .zIndex(Constants.zTableau + zOffsetForCard(card, inArray: game.cards))
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(card.description)
+                    .accessibilityIdentifier("Card_\(card.id)")
                     .onTapGesture {
                         if game.isMatch {
                             let selectedIndexes = indexesOfSelectedCards
                             let threeCardsToReplace = game.selectedCards
-                            withAnimation(.easeInOut(duration: 1.0)) {
+                            let hasReplacements = game.deck.count >= 3
+                            withAnimation(.easeInOut(duration: removeDuration)) {
                                 for card in threeCardsToReplace {
                                     removeCardFromTableau(card)
                                 }
                                 game.cardTapped(card.id, isSelected: card.selected)
                             }
-                            let newlyDealtCards = selectedIndexes.map {  game.cards[ $0 ] }
-                            dealThreeAnimation(newlyDealtCards)
+                            if hasReplacements {
+                                let newlyDealtCards = selectedIndexes.map {  game.cards[ $0 ] }
+                                dealThreeAnimation(newlyDealtCards)
+                            }
                         } else {
-                            withAnimation(.easeInOut(duration: 1.0)) {
+                            withAnimation(.easeInOut(duration: removeDuration)) {
                                 game.cardTapped(card.id, isSelected: card.selected)
                             }
                         }
@@ -126,6 +160,9 @@ struct ContentView: View {
                 Color.clear
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Playable cards")
+        .accessibilityIdentifier("Card_Tableau")
         .onAppear {
             for card in game.cards {
                 withAnimation(dealAnimation(forCard: card)) {
@@ -138,18 +175,18 @@ struct ContentView: View {
     private func dealAnimation(forCard card: SetGameViewModel.Card) -> Animation {
         var delay = 0.0
         if let orderInDeck = game.cards.getIndexById(card.id) {
-            delay = Double(orderInDeck) / Double(game.cards.count) * Constants.TotalDealDuration
+            delay = Double(orderInDeck) / Double(game.cards.count) * totalDealDuration
         }
-        return Animation.easeInOut(duration: Constants.DealDuration).delay(delay)
+        return Animation.easeInOut(duration: dealDuration).delay(delay)
     }
     
     private func deal3Animation(forCard card: SetGameViewModel.Card, inArray cardsArray: Array<SetGameViewModel.Card>? = nil) -> Animation {
         var delay = 0.0
         let ary = cardsArray ?? Array( game.cards.suffix(3) )
         if let orderInDeck = ary.getIndexById(card.id) {
-            delay = Double(orderInDeck) / Double(ary.count) * Constants.TotalDeal3Duration
+            delay = Double(orderInDeck) / Double(ary.count) * totalDeal3Duration
         }
-        return Animation.easeInOut(duration: Constants.Deal3Duration).delay(delay)
+        return Animation.easeInOut(duration: deal3Duration).delay(delay)
     }
     
     private var decktop: [ SetGameViewModel.Card ] {
@@ -170,6 +207,9 @@ struct ContentView: View {
                     .zIndex(Constants.zDeck + zOffsetForCard(card, inArray: deckViewCards))
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(decktop.first?.description ?? "Empty deck")
+        .accessibilityIdentifier("Deck_Card_\(decktop.first?.id ?? 0)")
     }
     
     private func offsetForCard(_ card: SetGameViewModel.Card, inArray ary: Array<SetGameViewModel.Card>) -> CGSize {
@@ -235,7 +275,7 @@ struct ContentView: View {
             message: hint.message,
             infoType: hint.cards.count == 0 ? .Warning : .Information,
             handler: {
-                withAnimation(.easeInOut(duration: 1.0)) {
+                withAnimation(.easeInOut(duration: panelDuration)) {
                     game.hideHintPanel()
                 }
             })
@@ -248,15 +288,19 @@ struct ContentView: View {
             message: game.matchResultExplanation,
             infoType: game.isMatch ? .Information : .Warning,
             handler: {
-                withAnimation(.easeInOut(duration: 1.0)) {
+                withAnimation(.easeInOut(duration: panelDuration)) {
                     game.hideEvaluationPanel()
                 }
             })
+        .accessibilityIdentifier("Evaluation_Panel")
+        .accessibilityLabel(game.isMatch ? "It's a Match!" : "Not a Match!")
+        .accessibilityElement(children: .contain)
+        .accessibilityAddTraits(.isButton)
     }
     
     private var settingsButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 1.0)) {
+            withAnimation(.easeInOut(duration: panelDuration)) {
                 game.showAboutPressed()
             }
         } label: {
@@ -280,7 +324,7 @@ struct ContentView: View {
     
     private var hintButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 1.0)) {
+            withAnimation(.easeInOut(duration: panelDuration)) {
                 game.showHintPanel()
             }
         } label: {
@@ -291,7 +335,7 @@ struct ContentView: View {
     private func removeSelectedCardsAnimation() {
         let threeCardsToReplace = game.selectedCards
         for card in threeCardsToReplace {
-            withAnimation(.easeInOut(duration: 0.8)) {
+            withAnimation(.easeInOut(duration: removeDuration * 0.8)) {
                 removeCardFromTableau(card)
             }
         }
@@ -319,12 +363,12 @@ struct ContentView: View {
             if game.isMatch {
                 let selectedIndexes = indexesOfSelectedCards
                 removeSelectedCardsAnimation()
-                withAnimation(.easeInOut(duration: 0.8)) {
+                withAnimation(.easeInOut(duration: deal3Duration)) {
                     game.dealThreeMorePressed()
                 }
                 newlyDealtCards = selectedIndexes.map {  game.cards[ $0 ] }
             } else {
-                withAnimation(.easeInOut(duration: 0.8)) {
+                withAnimation(.easeInOut(duration: deal3Duration)) {
                     game.dealThreeMorePressed()
                 }
                 newlyDealtCards = Array( game.cards.suffix(3) )
@@ -350,6 +394,9 @@ struct ContentView: View {
         static let TotalDeal3Duration: Double = 1.2
         static let Deal3Duration: Double = 0.8
         
+        static let RemoveDuration: Double = 1.0
+        static let PanelDuration: Double = 1.0
+        
         static let zTableau: Double = 100.0
         static let zDeck: Double = 0.0
         static let zDimmingPanel: Double = 200.0
@@ -367,8 +414,9 @@ struct VerticalLabelStyle: LabelStyle {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    static let fsmFactory = FSMFactory()
     static var previews: some View {
-        let gameVM = SetGameViewModel()
+        let gameVM = SetGameViewModel(model: SetGameModel(), fsm: GameStateMachine(withFactory: fsmFactory))
         
         ContentView(game: gameVM)
     }

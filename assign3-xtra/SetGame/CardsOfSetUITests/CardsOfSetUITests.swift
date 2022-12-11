@@ -26,9 +26,42 @@ final class CardsOfSetUITests: XCTestCase {
     func testExample() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
+        app.launchArguments = ["isRunningUITests"]
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        let timeout: Double = 2
+
+        for ix in 0 ..< 27 {
+            
+            let c1 = ix * 3
+            let c2 = ix * 3 + 1
+            let c3 = ix * 3 + 2
+            
+            let c1Card = app.otherElements["Card_\(c1)"]
+            let c2Card = app.otherElements["Card_\(c2)"]
+            let c3Card = app.otherElements["Card_\(c3)"]
+
+            let found = c1Card.waitForExistence(timeout: timeout)
+            
+            XCTAssert(found)
+            c1Card.tap()
+            c2Card.tap()
+            c3Card.tap()
+            
+            let evaluationPanelButton = app/*@START_MENU_TOKEN@*/.buttons.containing(.image, identifier:"Evaluation_Panel").element/*[[".buttons.containing(.staticText, identifier:\"It's a Match!\").element",".buttons.containing(.staticText, identifier:\"Evaluation_Panel\").element",".buttons.containing(.image, identifier:\"It's a Match!\").element",".buttons.containing(.image, identifier:\"Evaluation_Panel\").element"],[[[-1,3],[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+            let foundPanel = evaluationPanelButton.waitForExistence(timeout: timeout)
+            
+            XCTAssertTrue(foundPanel)
+            evaluationPanelButton.tap()
+        }
+        
+        app.otherElements["Card_80"].tap()
+        
+        let winPanel = app.buttons.containing(.image, identifier: "Geme_End_Win").element
+        let foundWinPanel = winPanel.waitForExistence(timeout: timeout)
+        
+        XCTAssertTrue(foundWinPanel)
+        winPanel.tap()
     }
 
     func testLaunchPerformance() throws {

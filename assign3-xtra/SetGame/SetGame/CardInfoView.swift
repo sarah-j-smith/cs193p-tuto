@@ -99,8 +99,9 @@ struct CardInfoView: View {
 }
 
 struct CardInfoView_Previews: PreviewProvider {
+    static let fsmFactory = FSMFactory()
     static var previews: some View {
-        let gameVM = SetGameViewModel()
+        let gameVM = SetGameViewModel(model: SetGameModel(), fsm: GameStateMachine(withFactory: fsmFactory))
         let message = "Ipsem lorem quid frocktor sputum  lorem quid frocktor gilloriam"
         ZStack {
             Rectangle().fill(.white).ignoresSafeArea()

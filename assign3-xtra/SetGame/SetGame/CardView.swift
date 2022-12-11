@@ -46,9 +46,11 @@ struct CardView: View {
                         }
                         outlineSymbol
                     }
-                }.padding(.vertical, symbol.vPad * scaleFactor)
+                }
+                .padding(.vertical, symbol.vPad * scaleFactor)
             }
-        }.padding(15.0 * scaleFactor)
+        }
+        .padding(15.0 * scaleFactor)
     }
 
     func selectionBadge(scaledBy scaleFactor: CGFloat) -> some View {
@@ -189,8 +191,9 @@ extension SetGameModel.ColorFeature {
 
 
 struct CardView_Previews: PreviewProvider {
+    static let fsmFactory = FSMFactory()
     static var previews: some View {
-        let game = SetGameViewModel()
+        let game = SetGameViewModel(model: SetGameModel(), fsm: GameStateMachine(withFactory: fsmFactory))
         ZStack {
             Rectangle().fill(.gray).opacity(0.3).ignoresSafeArea()
             AspectVGrid(items: game.cards, aspectRatio: 2/3) { card in

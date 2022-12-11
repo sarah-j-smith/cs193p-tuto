@@ -39,7 +39,7 @@
 		B2AC2E1F29176CE600A510ED /* EvaluationPanelStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E1D29176CE600A510ED /* EvaluationPanelStateMachine.swift */; };
 		B2AC2E2229177DC300A510ED /* EvaluationPanelStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E2029177DC300A510ED /* EvaluationPanelStateMachineTests.swift */; };
 		B2AC2E242917CE7200A510ED /* GameStateHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23F240928FBC68D00381A58 /* GameStateHelpers.swift */; };
-		B2AC2E262917D0D800A510ED /* SetGameVM+RulesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E252917D0D700A510ED /* SetGameVM+RulesDelegate.swift */; };
+		B2AC2E262917D0D800A510ED /* FSMFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E252917D0D700A510ED /* FSMFactory.swift */; };
 		B2C46D5928E5723D005BCD6D /* SelectingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */; };
 		B2C46D5B28E57256005BCD6D /* EvaluatingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */; };
 		B2E8C102291E0EE2006FB3CF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B2E8C101291E0EE2006FB3CF /* LaunchScreen.storyboard */; };
@@ -91,7 +91,7 @@
 		B2A2C1E32919054E0051B539 /* CardInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardInfoView.swift; sourceTree = "<group>"; };
 		B2AC2E1D29176CE600A510ED /* EvaluationPanelStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluationPanelStateMachine.swift; sourceTree = "<group>"; };
 		B2AC2E2029177DC300A510ED /* EvaluationPanelStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluationPanelStateMachineTests.swift; sourceTree = "<group>"; };
-		B2AC2E252917D0D700A510ED /* SetGameVM+RulesDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SetGameVM+RulesDelegate.swift"; sourceTree = "<group>"; };
+		B2AC2E252917D0D700A510ED /* FSMFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSMFactory.swift; sourceTree = "<group>"; };
 		B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectingStateMachine.swift; sourceTree = "<group>"; };
 		B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatingStateMachine.swift; sourceTree = "<group>"; };
 		B2E8C101291E0EE2006FB3CF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -161,7 +161,7 @@
 				B270ED82291B5FC600D2EF6C /* HintPanel.swift */,
 				B26F947628D2C5FA0075E6D5 /* SetGameModel.swift */,
 				B26F947828D2C68C0075E6D5 /* SetGameViewModel.swift */,
-				B2AC2E252917D0D700A510ED /* SetGameVM+RulesDelegate.swift */,
+				B2AC2E252917D0D700A510ED /* FSMFactory.swift */,
 				B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */,
 				B23F240928FBC68D00381A58 /* GameStateHelpers.swift */,
 				B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */,
@@ -359,7 +359,7 @@
 				B26F946128D2BEA90075E6D5 /* SetGameApp.swift in Sources */,
 				B26F947928D2C68C0075E6D5 /* SetGameViewModel.swift in Sources */,
 				B2A2C1E42919054E0051B539 /* CardInfoView.swift in Sources */,
-				B2AC2E262917D0D800A510ED /* SetGameVM+RulesDelegate.swift in Sources */,
+				B2AC2E262917D0D800A510ED /* FSMFactory.swift in Sources */,
 				B270ED7D291A770100D2EF6C /* Cardify.swift in Sources */,
 				B28ECFB328E05EBF008D2010 /* GameStateMachine.swift in Sources */,
 				B26F947528D2C3D50075E6D5 /* CardView.swift in Sources */,

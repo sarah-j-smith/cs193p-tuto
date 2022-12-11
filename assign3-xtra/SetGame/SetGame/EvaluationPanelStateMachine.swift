@@ -60,7 +60,7 @@ class EvaluationPanelStateMachine: GKStateMachine {
 
     struct Constants {
         /** Default amount of time in seconds to display the eval panel.  */
-        static let EvalPanelDelay = 10.0 // seconds to display panel
+        static let EvalPanelDelay = 1000.0 // seconds to display panel
     }
 }
 
