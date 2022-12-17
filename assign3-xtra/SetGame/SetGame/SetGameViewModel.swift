@@ -57,6 +57,13 @@ class SetGameViewModel: ObservableObject {
     
     // MARK: - Model convenience accessors/facade
     
+    private let dummyCards = SetGameModel.dummyCards(amount: 12)
+    
+    var dummys: [ Card ] {
+        let dummyCount = 12 - model.playableCards.count
+        return Array<Card>( dummyCards[ 0 ..< dummyCount ])
+    }
+    
     var deck: [ Card ] {
         return Array<Card>( model.deckCards )
     }
@@ -136,7 +143,9 @@ class SetGameViewModel: ObservableObject {
     
     static private func createModel() -> SetGameModel {
         let testMode = ProcessInfo.processInfo.arguments.contains("isRunningUITests")
-        let mdl = testMode ? SetGameModel(cards: SetGameModel.fillDeck()) : SetGameModel()
+        let useShortDeck = ProcessInfo.processInfo.arguments.contains("useShortDeck")
+        let testDeck = useShortDeck ? Array(SetGameModel.fillDeck().prefix(18)) : SetGameModel.fillDeck()
+        let mdl = testMode ? SetGameModel(cards: testDeck) : SetGameModel()
         return mdl
     }
     

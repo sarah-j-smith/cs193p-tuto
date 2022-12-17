@@ -39,7 +39,14 @@ struct ContentView: View {
                         .accessibilityHidden(true)
                 }
                 if game.shouldDisplayWinPanel {
-                    
+                    winPanel
+                        .padding(30.0)
+                        .zIndex(Constants.zDialogs)
+                        .transition(.offset(x: 0.0, y: geometry.size.height))
+                        .accessibilityElement(children: .contain)
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityIdentifier("Game_End_\(game.isWin ? "Win" : "Lose")")
+                        .accessibilityLabel(game.isWin ? "Game Won" : "Game Lost")
                 }
                 if game.shouldDisplayHintPanel {
                     hintPanel
@@ -77,7 +84,7 @@ struct ContentView: View {
     }
     
     private var cardPadding: CGFloat {
-        return floor(Constants.CardPaddingBase / CGFloat(game.cards.count))
+        return floor(Constants.CardPaddingBase / CGFloat(max(game.cards.count, 12)))
     }
     
     private var gameHeader: some View {
@@ -125,7 +132,8 @@ struct ContentView: View {
     }
     
     private var mainCardsView: some View {
-        AspectVGrid(items: game.cards, aspectRatio: Constants.CardsAspect) { card in
+        let _ = print("mainCardsView: \(game.cards.count) + \(game.dummys.count)")
+        return AspectVGrid(items: game.cards + game.dummys, aspectRatio: Constants.CardsAspect) { card in
             if (tabledCards.contains(card.id)) {
                 CardView(card: card)
                     .matchedGeometryEffect(id: card.id, in: dealingNamespace)
@@ -158,6 +166,7 @@ struct ContentView: View {
                     }
             } else {
                 Color.clear
+                    .padding(cardPadding)
             }
         }
         .accessibilityElement(children: .contain)
@@ -183,8 +192,9 @@ struct ContentView: View {
     private func deal3Animation(forCard card: SetGameViewModel.Card, inArray cardsArray: Array<SetGameViewModel.Card>? = nil) -> Animation {
         var delay = 0.0
         let ary = cardsArray ?? Array( game.cards.suffix(3) )
+        assert(ary.count == 3)
         if let orderInDeck = ary.getIndexById(card.id) {
-            delay = Double(orderInDeck) / Double(ary.count) * totalDeal3Duration
+            delay = Double(orderInDeck) / 3.0 * totalDeal3Duration
         }
         return Animation.easeInOut(duration: deal3Duration).delay(delay)
     }
@@ -209,7 +219,7 @@ struct ContentView: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(decktop.first?.description ?? "Empty deck")
-        .accessibilityIdentifier("Deck_Card_\(decktop.first?.id ?? 0)")
+        .accessibilityIdentifier("Deck_ Card_\(decktop.first?.id ?? 0)")
     }
     
     private func offsetForCard(_ card: SetGameViewModel.Card, inArray ary: Array<SetGameViewModel.Card>) -> CGSize {
@@ -292,10 +302,10 @@ struct ContentView: View {
                     game.hideEvaluationPanel()
                 }
             })
-        .accessibilityIdentifier("Evaluation_Panel")
-        .accessibilityLabel(game.isMatch ? "It's a Match!" : "Not a Match!")
         .accessibilityElement(children: .contain)
         .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier("Evaluation_Panel")
+        .accessibilityLabel(game.isMatch ? "It's a Match!" : "Not a Match!")
     }
     
     private var settingsButton: some View {

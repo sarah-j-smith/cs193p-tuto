@@ -22,16 +22,62 @@ final class CardsOfSetUITests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
-    func testExample() throws {
+    
+    func testControls() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
-        app.launchArguments = ["isRunningUITests"]
+        app.launchArguments = ["isRunningUITests", "useShortDeck"]
         app.launch()
 
         let timeout: Double = 2
 
-        for ix in 0 ..< 27 {
+        let c1Card = app.otherElements["Card_1"]
+        let c2Card = app.otherElements["Card_2"]
+        let c3Card = app.otherElements["Card_3"]
+
+        let found = c1Card.waitForExistence(timeout: timeout)
+        
+        XCTAssert(found)
+        c1Card.tap()
+        c2Card.tap()
+        c3Card.tap()
+
+        let hintButton = app.buttons["Hint"]
+        XCTAssert(hintButton.exists)
+        XCTAssert(hintButton.isEnabled)
+        XCTAssert(hintButton.isHittable)
+
+        let deal3Button = app.buttons["Deal 3"]
+        XCTAssert(deal3Button.exists)
+        XCTAssert(deal3Button.isEnabled)
+        XCTAssert(deal3Button.isHittable)
+
+        let settingsButton = app.buttons["Settings"]
+        XCTAssert(settingsButton.exists)
+        XCTAssert(settingsButton.isEnabled)
+        XCTAssert(settingsButton.isHittable)
+
+        let newGameButton = app.buttons["New Game"]
+        XCTAssert(newGameButton.exists)
+        XCTAssert(newGameButton.isEnabled)
+        XCTAssert(newGameButton.isHittable)
+
+        let evaluationPanelButton = app.buttons["Evaluation_Panel"]
+        let foundPanel = evaluationPanelButton.waitForExistence(timeout: timeout)
+        XCTAssertTrue(foundPanel)
+        XCTAssertTrue(evaluationPanelButton.isHittable)
+        XCTAssertEqual(evaluationPanelButton.label, "Not a Match!")
+    }
+
+    func testGameWin() throws {
+        // UI tests must launch the application that they test.
+        let app = XCUIApplication()
+        app.launchArguments = ["isRunningUITests", "useShortDeck"]
+        app.launch()
+
+        let timeout: Double = 2
+
+        for ix in 0 ..< 6 {
             
             let c1 = ix * 3
             let c2 = ix * 3 + 1
@@ -48,16 +94,20 @@ final class CardsOfSetUITests: XCTestCase {
             c2Card.tap()
             c3Card.tap()
             
-            let evaluationPanelButton = app/*@START_MENU_TOKEN@*/.buttons.containing(.image, identifier:"Evaluation_Panel").element/*[[".buttons.containing(.staticText, identifier:\"It's a Match!\").element",".buttons.containing(.staticText, identifier:\"Evaluation_Panel\").element",".buttons.containing(.image, identifier:\"It's a Match!\").element",".buttons.containing(.image, identifier:\"Evaluation_Panel\").element"],[[[-1,3],[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+            let evaluationPanelButton = app.buttons["Evaluation_Panel"]
             let foundPanel = evaluationPanelButton.waitForExistence(timeout: timeout)
-            
             XCTAssertTrue(foundPanel)
+            XCTAssertEqual(evaluationPanelButton.label, "It's a Match!")
             evaluationPanelButton.tap()
         }
         
-        app.otherElements["Card_80"].tap()
+        let deal3Button = app.buttons["Deal 3"]
+        XCTAssert(deal3Button.exists)
+        XCTAssertFalse(deal3Button.isEnabled)
         
-        let winPanel = app.buttons.containing(.image, identifier: "Geme_End_Win").element
+        app.otherElements["Card_17"].tap()
+        
+        let winPanel = app.buttons["Game_End_Win"]
         let foundWinPanel = winPanel.waitForExistence(timeout: timeout)
         
         XCTAssertTrue(foundWinPanel)

@@ -192,7 +192,7 @@ struct SetGameModel {
     // MARK: - Mutating Funcs
     
     mutating func dealCards(cardCount: Int) {
-        indexOfFirstUndealtCard = min(indexOfFirstUndealtCard + cardCount, SetGameModel.UniqueCardCount)
+        indexOfFirstUndealtCard = min(indexOfFirstUndealtCard + cardCount, cards.count)
     }
     
     /**
@@ -203,6 +203,7 @@ struct SetGameModel {
     mutating func replaceMatched(cardIds: [ Int ]) {
         // Get the index of what will be the first newly dealt card
         var newCardsIx = indexOfFirstUndealtCard
+        let cardCount = cards.count
         dealCards(cardCount: 3)
         for c in cardIds {
             if let haveCard = cards.getIndexById(c) {
@@ -210,7 +211,7 @@ struct SetGameModel {
                 cards[haveCard].selected = false
                 cards[haveCard].matched = true
                 // Swap the newly dealt card into the position of the matched card
-                if newCardsIx < SetGameModel.UniqueCardCount {
+                if newCardsIx < cardCount {
                     cards.swapAt(haveCard, newCardsIx)
                 }
                 newCardsIx += 1
@@ -251,6 +252,12 @@ struct SetGameModel {
         var selected: Bool
         var matched: Bool
         var newlyPlaced: Bool = true
+    }
+    
+    static func dummyCards(amount: Int) -> [ Card ] {
+        return ( 0 ..< amount ).map { ix in
+            Card(id: ix + 100, numberOfShapes: 0, shading: .OpenShading, shape: .Diamond, color: .Green, selected: false, matched: false)
+        }
     }
     
     static func fillDeck() -> [ Card ] {
