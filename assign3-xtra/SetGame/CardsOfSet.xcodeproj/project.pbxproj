@@ -65,6 +65,7 @@
 
 /* Begin PBXFileReference section */
 		B23F240928FBC68D00381A58 /* GameStateHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateHelpers.swift; sourceTree = "<group>"; };
+		B26EC82A294DAAD800409AED /* CardsOfSet-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "CardsOfSet-Info.plist"; sourceTree = "<group>"; };
 		B26F945D28D2BEA90075E6D5 /* CardsOfSet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardsOfSet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B26F946028D2BEA90075E6D5 /* SetGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameApp.swift; sourceTree = "<group>"; };
 		B26F946228D2BEA90075E6D5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -128,6 +129,7 @@
 		B26F945428D2BEA90075E6D5 = {
 			isa = PBXGroup;
 			children = (
+				B26EC82A294DAAD800409AED /* CardsOfSet-Info.plist */,
 				B2E8C101291E0EE2006FB3CF /* LaunchScreen.storyboard */,
 				B26F945F28D2BEA90075E6D5 /* SetGame */,
 				B29D49B92916681300B7EC1A /* CardsOfSetIOSTests */,
@@ -541,6 +543,7 @@
 				DEVELOPMENT_TEAM = 4563WH9VE2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "CardsOfSet-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Game of Set";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -573,6 +576,7 @@
 				DEVELOPMENT_TEAM = 4563WH9VE2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "CardsOfSet-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Game of Set";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
