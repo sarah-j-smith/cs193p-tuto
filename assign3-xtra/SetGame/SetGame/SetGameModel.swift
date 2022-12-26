@@ -164,6 +164,9 @@ struct SetGameModel {
     /** A set of 3 indexes in to the array of playable cards, that might be a match (or not a match).  */
     typealias MatchRecord = ( Int, Int, Int )
     
+    /** Transform a `MatchRecord` into an array of `Card`
+     @param: 
+     */
     func cardsFromMatchRecord(_ record: MatchRecord) -> [ Card ] {
         return [ playableCards[record.0], playableCards[record.1], playableCards[record.2] ]
     }

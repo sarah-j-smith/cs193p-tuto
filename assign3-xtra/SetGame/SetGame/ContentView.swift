@@ -53,6 +53,10 @@ struct ContentView: View {
                         .padding(30.0)
                         .zIndex(Constants.zDialogs)
                         .transition(.offset(x: 0.0, y: geometry.size.height))
+                        .accessibilityElement(children: .contain)
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityIdentifier("Hint_Panel")
+                        .accessibilityLabel(hintPanelAccessibilityLabel)
                 }
                 if game.shouldDisplayEvaluationPanel {
                     setEvaluationPanel.transition(.offset(x: 0.0, y: geometry.size.height))
@@ -67,6 +71,10 @@ struct ContentView: View {
                         }
                     }).padding(4.0).zIndex(Constants.zDialogs)
                         .transition(.offset(x: 0.0, y: geometry.size.height))
+                        .accessibilityElement(children: .contain)
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityIdentifier("About_Panel")
+                        .accessibilityLabel("About Set Game")
                 }
             }
         }
@@ -132,7 +140,6 @@ struct ContentView: View {
     }
     
     private var mainCardsView: some View {
-        let _ = print("mainCardsView: \(game.cards.count) + \(game.dummys.count)")
         return AspectVGrid(items: game.cards + game.dummys, aspectRatio: Constants.CardsAspect) { card in
             if (tabledCards.contains(card.id)) {
                 CardView(card: card)
@@ -171,14 +178,21 @@ struct ContentView: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Playable cards")
-        .accessibilityIdentifier("Card_Tableau")
+        .accessibilityIdentifier("Cards_Tableau")
         .onAppear {
             for card in game.cards {
                 withAnimation(dealAnimation(forCard: card)) {
                     placeCardInTableau(card)
                 }
             }
+            DispatchQueue.main.asyncAfter(deadline: .now() + afterTableauAnimation) {
+                game.updateHintStructure()
+            }
         }
+    }
+    
+    private var afterTableauAnimation: CFTimeInterval {
+        return totalDealDuration + dealDuration + 0.1
     }
     
     private func dealAnimation(forCard card: SetGameViewModel.Card) -> Animation {
@@ -219,7 +233,7 @@ struct ContentView: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(decktop.first?.description ?? "Empty deck")
-        .accessibilityIdentifier("Deck_ Card_\(decktop.first?.id ?? 0)")
+        .accessibilityIdentifier("Deck_Card_\(decktop.first?.id ?? 0)")
     }
     
     private func offsetForCard(_ card: SetGameViewModel.Card, inArray ary: Array<SetGameViewModel.Card>) -> CGSize {
@@ -256,10 +270,11 @@ struct ContentView: View {
         HStack {
             hintButton
                 .labelStyle(VerticalLabelStyle())
+                .disabled(game.isUpdatingMatches)
             Spacer()
             dealThreeMoreButton
                 .labelStyle(VerticalLabelStyle())
-                .disabled(game.deck.count < 3)
+                .disabled(game.deck.count < 3 || game.isUpdatingMatches)
         }
     }
     
@@ -289,6 +304,12 @@ struct ContentView: View {
                     game.hideHintPanel()
                 }
             })
+    }
+    
+    var hintPanelAccessibilityLabel: String {
+        return game.isMatch
+            ? "You already have a match! Just tap any card."
+            : game.hintStructure.message
     }
     
     var setEvaluationPanel: some View {

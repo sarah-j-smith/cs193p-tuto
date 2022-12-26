@@ -20,6 +20,7 @@ final class CardsOfSetUITestsLaunchTests: XCTestCase {
 
     func testLaunch() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["isRunningUITests", "useShortDeck"]
         app.launch()
 
         // Insert steps here to perform after app launch but before taking a screenshot,

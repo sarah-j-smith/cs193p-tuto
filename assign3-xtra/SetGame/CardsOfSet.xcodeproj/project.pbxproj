@@ -27,6 +27,7 @@
 		B27A845C293DAA2500E189AC /* CardsOfSetUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27A845B293DAA2500E189AC /* CardsOfSetUITestsLaunchTests.swift */; };
 		B27A8463293DCF6700E189AC /* GameEndPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27A8462293DCF6700E189AC /* GameEndPanel.swift */; };
 		B28ECFB328E05EBF008D2010 /* GameStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */; };
+		B2981282295320AD00E942F5 /* ControlsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2981281295320AD00E942F5 /* ControlsUITests.swift */; };
 		B29D49C92916683D00B7EC1A /* EvaluatingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D49C12916682C00B7EC1A /* EvaluatingFSMTests.swift */; };
 		B29D49CA2916683D00B7EC1A /* SelectingFSMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D49C32916682C00B7EC1A /* SelectingFSMTests.swift */; };
 		B29D49CC2916683D00B7EC1A /* StateTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29D49C22916682C00B7EC1A /* StateTestHelpers.swift */; };
@@ -40,6 +41,8 @@
 		B2AC2E2229177DC300A510ED /* EvaluationPanelStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E2029177DC300A510ED /* EvaluationPanelStateMachineTests.swift */; };
 		B2AC2E242917CE7200A510ED /* GameStateHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23F240928FBC68D00381A58 /* GameStateHelpers.swift */; };
 		B2AC2E262917D0D800A510ED /* FSMFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2AC2E252917D0D700A510ED /* FSMFactory.swift */; };
+		B2BF2F732954778300D197D1 /* XCTest+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2BF2F722954778300D197D1 /* XCTest+Helpers.swift */; };
+		B2BF2F742954778300D197D1 /* XCTest+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2BF2F722954778300D197D1 /* XCTest+Helpers.swift */; };
 		B2C46D5928E5723D005BCD6D /* SelectingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */; };
 		B2C46D5B28E57256005BCD6D /* EvaluatingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */; };
 		B2E8C102291E0EE2006FB3CF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B2E8C101291E0EE2006FB3CF /* LaunchScreen.storyboard */; };
@@ -84,6 +87,7 @@
 		B27A845B293DAA2500E189AC /* CardsOfSetUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsOfSetUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		B27A8462293DCF6700E189AC /* GameEndPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEndPanel.swift; sourceTree = "<group>"; };
 		B28ECFB228E05EBF008D2010 /* GameStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateMachine.swift; sourceTree = "<group>"; };
+		B2981281295320AD00E942F5 /* ControlsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsUITests.swift; sourceTree = "<group>"; };
 		B29D49B82916681300B7EC1A /* CardsOfSetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsOfSetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B29D49C12916682C00B7EC1A /* EvaluatingFSMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatingFSMTests.swift; sourceTree = "<group>"; };
 		B29D49C22916682C00B7EC1A /* StateTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateTestHelpers.swift; sourceTree = "<group>"; };
@@ -93,6 +97,7 @@
 		B2AC2E1D29176CE600A510ED /* EvaluationPanelStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluationPanelStateMachine.swift; sourceTree = "<group>"; };
 		B2AC2E2029177DC300A510ED /* EvaluationPanelStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluationPanelStateMachineTests.swift; sourceTree = "<group>"; };
 		B2AC2E252917D0D700A510ED /* FSMFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FSMFactory.swift; sourceTree = "<group>"; };
+		B2BF2F722954778300D197D1 /* XCTest+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTest+Helpers.swift"; sourceTree = "<group>"; };
 		B2C46D5828E5723D005BCD6D /* SelectingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectingStateMachine.swift; sourceTree = "<group>"; };
 		B2C46D5A28E57256005BCD6D /* EvaluatingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatingStateMachine.swift; sourceTree = "<group>"; };
 		B2E8C101291E0EE2006FB3CF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -196,6 +201,7 @@
 			children = (
 				B27A8459293DAA2500E189AC /* CardsOfSetUITests.swift */,
 				B27A845B293DAA2500E189AC /* CardsOfSetUITestsLaunchTests.swift */,
+				B2981281295320AD00E942F5 /* ControlsUITests.swift */,
 			);
 			path = CardsOfSetUITests;
 			sourceTree = "<group>";
@@ -209,6 +215,7 @@
 				B29D49C22916682C00B7EC1A /* StateTestHelpers.swift */,
 				B2AC2E2029177DC300A510ED /* EvaluationPanelStateMachineTests.swift */,
 				B270ED84291B661A00D2EF6C /* SetGameModelTests.swift */,
+				B2BF2F722954778300D197D1 /* XCTest+Helpers.swift */,
 			);
 			path = CardsOfSetIOSTests;
 			sourceTree = "<group>";
@@ -377,8 +384,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2BF2F742954778300D197D1 /* XCTest+Helpers.swift in Sources */,
 				B27A845C293DAA2500E189AC /* CardsOfSetUITestsLaunchTests.swift in Sources */,
 				B27A845A293DAA2500E189AC /* CardsOfSetUITests.swift in Sources */,
+				B2981282295320AD00E942F5 /* ControlsUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +405,7 @@
 				B29D49CD2916683D00B7EC1A /* GameStateMachineTests.swift in Sources */,
 				B270ED86291B664E00D2EF6C /* SetGameModel.swift in Sources */,
 				B29D49D5291668A600B7EC1A /* SelectingStateMachine.swift in Sources */,
+				B2BF2F732954778300D197D1 /* XCTest+Helpers.swift in Sources */,
 				B29D49D6291668A600B7EC1A /* EvaluatingStateMachine.swift in Sources */,
 				B29D49CC2916683D00B7EC1A /* StateTestHelpers.swift in Sources */,
 				B29D49CA2916683D00B7EC1A /* SelectingFSMTests.swift in Sources */,
@@ -546,7 +556,6 @@
 				INFOPLIST_FILE = "CardsOfSet-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Game of Set";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
@@ -579,7 +588,6 @@
 				INFOPLIST_FILE = "CardsOfSet-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Game of Set";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;

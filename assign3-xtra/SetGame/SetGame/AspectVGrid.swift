@@ -20,7 +20,6 @@ struct AspectVGrid<Item, ItemView>: View where ItemView: View, Item: Identifiabl
     
     var body: some View {
         GeometryReader { geometry in
-            let _ = print("Aspcect Grid sz: \(geometry.size)")
             if geometry.size.width == 0.0 {
                 Color.clear
             } else {
@@ -46,12 +45,9 @@ struct AspectVGrid<Item, ItemView>: View where ItemView: View, Item: Identifiabl
     private func widthThatFits(itemCount: Int, in size: CGSize, itemAspectRatio: CGFloat) -> CGFloat {
         var columnCount = 1
         var rowCount = itemCount
-        print("widthThatFits - in size: \(size) - aspect: \(itemAspectRatio)")
         repeat {
-            print("widthThatFits - itemCount: \(itemCount) - rowCount: \(rowCount) - cols: \(columnCount)")
             let itemWidth = size.width / CGFloat(columnCount)
             let itemHeight = itemWidth / itemAspectRatio
-            print("   w: \(itemWidth) - h: \(itemHeight)")
             if CGFloat(rowCount) * itemHeight < size.height {
                 break
             }
@@ -62,7 +58,6 @@ struct AspectVGrid<Item, ItemView>: View where ItemView: View, Item: Identifiabl
             columnCount = itemCount
         }
         let resultWidth = floor(size.width / CGFloat(columnCount))
-        print("   resultWidth: \(resultWidth)")
         return resultWidth
     }
 }

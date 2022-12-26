@@ -86,7 +86,11 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "isRunningUITests"
-            isEnabled = "YES">
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "useShortDeck"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

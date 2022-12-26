@@ -8,8 +8,27 @@
 import Foundation
 import GameKit
 
-class SetGameViewModel: ObservableObject {
-    
+
+fileprivate func calculateNewHintStructure(on modelCopy: SetGameModel) -> SetGameViewModel.HintStructure {
+    let matches = modelCopy.matchesInPlayableCards
+    let cardCount = modelCopy.playableCards.count
+    let updatedHint: SetGameViewModel.HintStructure
+    if let hint = matches.randomElement() {
+        updatedHint = (
+            cards: modelCopy.cardsFromMatchRecord(hint),
+            message: "The current \(cardCount) cards dealt has \(matches.count) sets to find! Here's one to get you started."
+        )
+    } else {
+        updatedHint = (
+            cards: [],
+            message: "The current \(cardCount) cards dealt do not have any Sets that can be made. Deal some more cards!"
+        )
+    }
+    return updatedHint
+}
+
+final class SetGameViewModel: ObservableObject {
+
 #if DEBUG
     let debug = true
 #else
@@ -17,6 +36,7 @@ class SetGameViewModel: ObservableObject {
 #endif
     
     typealias Card = SetGameModel.Card
+    typealias HintStructure = (cards: [ Card ], message: String)
     
     @Published internal var model = SetGameModel()
     
@@ -25,6 +45,7 @@ class SetGameViewModel: ObservableObject {
     @Published var shouldDisplayAboutPanel = false
     @Published var shouldDisplayWinPanel = false
     @Published var score = Constants.StartScore
+    @Published var isUpdatingMatches = false
     
     private var evalPanelLastTick: Double = 0
     
@@ -60,6 +81,9 @@ class SetGameViewModel: ObservableObject {
     private let dummyCards = SetGameModel.dummyCards(amount: 12)
     
     var dummys: [ Card ] {
+        if model.playableCards.count >= 12 {
+            return []
+        }
         let dummyCount = 12 - model.playableCards.count
         return Array<Card>( dummyCards[ 0 ..< dummyCount ])
     }
@@ -98,19 +122,45 @@ class SetGameViewModel: ObservableObject {
         return model.playableCards.count == 0
     }
     
-    var hintStructure: (cards: [ Card ], message: String) {
-        let matches = model.matchesInPlayableCards
-        if let hint = matches.randomElement() {
-            return (
-                cards: model.cardsFromMatchRecord(hint),
-                message: "The current \(cards.count) cards dealt has \(matches.count) sets to find! Here's one to get you started."
-            )
-        } else {
-            return (
-                cards: [],
-                message: "The current \(cards.count) cards dealt do not have any Sets that can be made. Deal some more cards!"
-            )
+    private func checkForWinCondition() {
+        if model.deckCards.count == 0 {
+            if model.playableCards.count == 0 {
+                // player has won the game
+                shouldDisplayWinPanel = true
+            } else {
+                // check occurs in dealThreeCards which is disabled when updating matches
+                assert(!isUpdatingMatches)
+                if hintStructure.cards.count == 0 {
+                    // stalemate - no more matches available, and no cards to deal out
+                    shouldDisplayWinPanel = true
+                }
+            }
         }
+    }
+    
+    private var _hintStructure: HintStructure?
+    var hintStructure: HintStructure {
+        return _hintStructure ?? (cards: [], message: "")
+    }
+    
+    func updateHintStructure() {
+        print(">>> updateHintStructure")
+        let timeNow = CACurrentMediaTime()
+        if isUpdatingMatches { return }
+        _hintStructure = nil
+        self.isUpdatingMatches = true
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Work on a copy of the actual model - do in background as this is expensive
+            // computation that grows as the number of cards in the tableau
+            let result = calculateNewHintStructure(on: self.model)
+            DispatchQueue.main.async {
+                print("   >> updating isUpdatingMatches flag")
+                self._hintStructure = result
+                self.isUpdatingMatches = false
+                print("   elapsed time: \(CACurrentMediaTime() - timeNow)")
+            }
+        }
+        print("<<< updateHintStructure")
     }
     
     private var evalPanelTimer: Timer?
@@ -144,9 +194,12 @@ class SetGameViewModel: ObservableObject {
     static private func createModel() -> SetGameModel {
         let testMode = ProcessInfo.processInfo.arguments.contains("isRunningUITests")
         let useShortDeck = ProcessInfo.processInfo.arguments.contains("useShortDeck")
-        let testDeck = useShortDeck ? Array(SetGameModel.fillDeck().prefix(18)) : SetGameModel.fillDeck()
-        let mdl = testMode ? SetGameModel(cards: testDeck) : SetGameModel()
-        return mdl
+        if useShortDeck {
+            let testDeck = Array(SetGameModel.fillDeck().prefix(18))
+            return testMode ? SetGameModel(cards: testDeck) : SetGameModel(cards: testDeck.shuffled())
+        } else {
+            return testMode ? SetGameModel(cards: SetGameModel.fillDeck()) : SetGameModel()
+        }
     }
     
     static func createGame() -> SetGameViewModel {
@@ -212,22 +265,18 @@ class SetGameViewModel: ObservableObject {
     }
     
     // - MARK: FSM output receivers
-    @MainActor
     @objc func shouldHideEvaluationPanel(_: Notification) {
         hideEvaluationPanel()
     }
     
-    @MainActor
     @objc func shouldSelectCard(notifier: Notification) {
         selectCard(cardId: notifier.getCardIndex())
     }
     
-    @MainActor
     @objc func shouldDeselectCard(notifier: Notification) {
         deselectCard(cardId: notifier.getCardIndex())
     }
     
-    @MainActor
     @objc func shouldDealThreeCards(notifier: Notification) {
         if notifier.getShouldReplace() {
             // In case 3 cards are a set, deal 3 will **replace** those
@@ -240,7 +289,6 @@ class SetGameViewModel: ObservableObject {
         }
     }
     
-    @MainActor
     @objc func shouldEvaluate(notifier: Notification) {
         fsm.acceptSetEvaluated(matchState: model.isMatchedSet)
         calculateScore()
@@ -248,11 +296,12 @@ class SetGameViewModel: ObservableObject {
         startEvalPanelTimer()
     }
     
-    @MainActor
     @objc func shouldClearSelection(notifier: Notification) {
         if notifier.getShouldDeselectAll() {
+            // In case not a set, just deselect all
             deselectAllSelected()
         } else {
+            // In case is a set, replace the selected cards
             replaceSelectedCardsByDealNew()
         }
     }
@@ -314,6 +363,9 @@ class SetGameViewModel: ObservableObject {
         let cardIds = selectedCards.map(\.id)
         model.replaceMatched(cardIds: cardIds)
         checkForWinCondition()
+        if !shouldDisplayWinPanel {
+            updateHintStructure()
+        }
     }
     
     func deselectAllSelected() {
@@ -323,24 +375,11 @@ class SetGameViewModel: ObservableObject {
         }
     }
     
-    func checkForWinCondition() {
-        if model.deckCards.count == 0 {
-            if model.playableCards.count == 0 {
-                // player has won the game
-                shouldDisplayWinPanel = true
-            } else {
-                if model.matchesInPlayableCards.count == 0 {
-                    // stalemate - no more matches available, and no cards to deal out
-                    shouldDisplayWinPanel = true
-                }
-            }
-        }
-    }
-    
     func dealThreeCards() {
         if debug {
             let cardsInDeck = model.deckCards.count
             assert(cardsInDeck >= 3)
+            assert(!isUpdatingMatches)
         }
         if !(model.isMatchedSet || model.matchesInPlayableCards.isEmpty) {
             if score >= Constants.CostOfDealThree {
@@ -351,6 +390,7 @@ class SetGameViewModel: ObservableObject {
             }
         }
         model.dealCards(cardCount: 3)
+        updateHintStructure()
     }
     
     struct Constants {
