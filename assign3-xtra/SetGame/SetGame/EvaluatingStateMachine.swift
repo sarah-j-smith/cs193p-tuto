@@ -145,27 +145,7 @@ class ThreeSelectedForEvaluation: GKState, EvaluatingTriggerHandler {
     }
 }
 
-class PanelControllerState: GKState {
-    var panelState: EvaluationPanelStateMachine?
-    
-    override func update(deltaTime seconds: TimeInterval) {
-        panelState?.update(deltaTime: seconds)
-    }
-    
-    override func didEnter(from previousState: GKState?) {
-        if previousState != nil {
-            panelState = EvaluationPanelStateMachine()
-            panelState?.start()
-        }
-    }
-    
-    override func willExit(to nextState: GKState) {
-        panelState?.hidePanel()
-        panelState = nil
-    }
-}
-
-class IsASet: PanelControllerState, EvaluatingTriggerHandler {
+class IsASet: GKState, EvaluatingTriggerHandler {
     
     func acceptTrigger(_ inputTrigger: InputTrigger) -> GKState.Type? {
         switch inputTrigger {
@@ -187,7 +167,7 @@ class IsASet: PanelControllerState, EvaluatingTriggerHandler {
     }
 }
 
-class NotASet: PanelControllerState, EvaluatingTriggerHandler {
+class NotASet: GKState, EvaluatingTriggerHandler {
     func acceptTrigger(_ inputTrigger: InputTrigger) -> GKState.Type? {
         switch inputTrigger {
         case .CardTapped(isSelected: _, hasId: _):

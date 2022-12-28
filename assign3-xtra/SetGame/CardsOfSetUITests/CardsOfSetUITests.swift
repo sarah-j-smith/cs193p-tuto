@@ -62,11 +62,13 @@ final class CardsOfSetUITests: XCTestCase {
         XCTAssert(newGameButton.isEnabled)
         XCTAssert(newGameButton.isHittable)
 
-        let evaluationPanelButton = app.buttons["Evaluation_Panel"]
-        let foundPanel = evaluationPanelButton.waitForExistence(timeout: timeout)
+        let evaluationPanel = app.otherElements["Evaluation_Panel"]
+        let foundPanel = evaluationPanel.waitForExistence(timeout: timeout)
+        XCTAssertEqual(evaluationPanel.label, "Not a Match!")
         XCTAssertTrue(foundPanel)
+        
+        let evaluationPanelButton = app.buttons["Dismiss_OK"]
         XCTAssertTrue(evaluationPanelButton.isHittable)
-        XCTAssertEqual(evaluationPanelButton.label, "Not a Match!")
     }
 
     func testGameWin() throws {
@@ -94,10 +96,11 @@ final class CardsOfSetUITests: XCTestCase {
             c2Card.tap()
             c3Card.tap()
             
-            let evaluationPanelButton = app.buttons["Evaluation_Panel"]
-            let foundPanel = evaluationPanelButton.waitForExistence(timeout: timeout)
+            let evaluationPanel = app.otherElements["Evaluation_Panel"]
+            let foundPanel = evaluationPanel.waitForExistence(timeout: timeout)
             XCTAssertTrue(foundPanel)
-            XCTAssertEqual(evaluationPanelButton.label, "It's a Match!")
+            XCTAssertEqual(evaluationPanel.label, "It's a Match!")
+            let evaluationPanelButton = app.buttons["Dismiss_OK"]
             evaluationPanelButton.tap()
         }
         

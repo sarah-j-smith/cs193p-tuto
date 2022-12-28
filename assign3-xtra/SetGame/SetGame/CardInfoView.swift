@@ -19,12 +19,28 @@ struct CardInfoView: View {
         VStack(spacing: 0.0) {
             headerLabel
             cardsView
+            dismissButton
         }.clipShape(RoundedRectangle(cornerSize: Constants.CornerRadius))
             .shadow(radius: 10.0)
             .padding(.horizontal, 30.0)
-            .onTapGesture {
+    }
+    
+    private var dismissButton: some View {
+        ZStack {
+            Button {
                 handler()
+            } label: {
+                Text("OK")
             }
+            .padding(EdgeInsets(top: 15.0, leading: 30.0, bottom: 15.0, trailing: 30.0))
+            .accessibilityIdentifier("Dismiss_OK")
+            .accessibilityLabel("Dismiss")
+        }
+        .frame(maxWidth: .infinity)
+        .background {
+            Rectangle()
+                .fill(.white)
+        }
     }
     
     private var cardsView: some View {
@@ -39,10 +55,10 @@ struct CardInfoView: View {
                 }
             }.padding(10)
         }
-            .background {
-                Rectangle()
-                    .fill(.white)
-            }
+        .background {
+            Rectangle()
+                .fill(.white)
+        }
     }
     
     private var headerLabel: some View {
@@ -114,14 +130,14 @@ struct CardInfoView_Previews: PreviewProvider {
                     handler: {
                         print("Handler")
                     })
-                CardInfoView(
-                    cards: Array( gameVM.cards[0 ..< 3] ),
-                    title: "Not a Match!",
-                    message: message,
-                    infoType: .Warning,
-                    handler: {
-                        print("Handler")
-                    })
+//                CardInfoView(
+//                    cards: Array( gameVM.cards[0 ..< 3] ),
+//                    title: "Not a Match!",
+//                    message: message,
+//                    infoType: .Warning,
+//                    handler: {
+//                        print("Handler")
+//                    })
             }
         }
     }

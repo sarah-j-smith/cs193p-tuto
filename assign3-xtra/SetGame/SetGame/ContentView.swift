@@ -324,7 +324,6 @@ struct ContentView: View {
                 }
             })
         .accessibilityElement(children: .contain)
-        .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("Evaluation_Panel")
         .accessibilityLabel(game.isMatch ? "It's a Match!" : "Not a Match!")
     }

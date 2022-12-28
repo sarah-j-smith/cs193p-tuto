@@ -47,6 +47,8 @@ final class SetGameViewModel: ObservableObject {
     @Published var score = Constants.StartScore
     @Published var isUpdatingMatches = false
     
+    private let scoresRepository = ScoresRepository()
+    
     private var evalPanelLastTick: Double = 0
     
     var testMode: Bool {
@@ -74,6 +76,7 @@ final class SetGameViewModel: ObservableObject {
     
     func calculateScore() {
         score += model.scoreForCurrentSet
+        scoresRepository.setScore(score)
     }
     
     // MARK: - Model convenience accessors/facade
@@ -163,8 +166,6 @@ final class SetGameViewModel: ObservableObject {
         print("<<< updateHintStructure")
     }
     
-    private var evalPanelTimer: Timer?
-    
     // MARK: - Game State
     
     static func registerStateEvents(forGame game: SetGameViewModel) {
@@ -237,7 +238,6 @@ final class SetGameViewModel: ObservableObject {
     
     func hideEvaluationPanel() {
         shouldDisplayEvaluationPanel = false
-        stopEvalPanelTimer()
     }
     
     func hideWinPanel() {
@@ -293,7 +293,6 @@ final class SetGameViewModel: ObservableObject {
         fsm.acceptSetEvaluated(matchState: model.isMatchedSet)
         calculateScore()
         shouldDisplayEvaluationPanel = true
-        startEvalPanelTimer()
     }
     
     @objc func shouldClearSelection(notifier: Notification) {
@@ -312,33 +311,6 @@ final class SetGameViewModel: ObservableObject {
         model = SetGameViewModel.createModel()
         fsm = GameStateMachine(withFactory: SetGameViewModel.fsmFactory)
         fsm.start()
-    }
-    
-    func startEvalPanelTimer() {
-        weak var welf = self
-        evalPanelLastTick = CACurrentMediaTime()
-        evalPanelTimer = Timer.scheduledTimer(
-            withTimeInterval: 0.1,
-            repeats: true) { timer in
-                DispatchQueue.main.async {
-                    if let haveSelf = welf {
-                        haveSelf.fsm.update(
-                            deltaTime: haveSelf.getDeltaAndUpdateEvalPanelLastTick())
-                    }
-                }
-            }
-    }
-    
-    private func getDeltaAndUpdateEvalPanelLastTick() -> TimeInterval {
-        let updatedEvalPanelLastTick = CACurrentMediaTime()
-        let delta = updatedEvalPanelLastTick - evalPanelLastTick
-        evalPanelLastTick = updatedEvalPanelLastTick
-        return delta
-    }
-    
-    func stopEvalPanelTimer() {
-        evalPanelTimer?.invalidate()
-        evalPanelTimer = nil
     }
     
     func selectCard(cardId: Int) {
@@ -394,8 +366,6 @@ final class SetGameViewModel: ObservableObject {
     }
     
     struct Constants {
-        static let EvalPanelDelay = 10.0 // seconds to display panel
-        
         static let ScoreForTriple = 3
         static let ScoreForRun = 6
         

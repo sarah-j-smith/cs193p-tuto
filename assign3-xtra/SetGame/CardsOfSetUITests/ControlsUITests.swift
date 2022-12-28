@@ -70,9 +70,12 @@ final class ControlsUITests: XCTestCase {
         XCTAssert(deal3Button.isEnabled)
         XCTAssert(deal3Button.isHittable)
 
-        let evaluationPanelButton = app.buttons["Evaluation_Panel"]
-        let foundPanel = evaluationPanelButton.waitForExistence(timeout: timeout)
-        XCTAssertEqual(evaluationPanelButton.label, "It's a Match!")
+        let evaluationPanel = app.otherElements["Evaluation_Panel"]
+        let foundPanel = evaluationPanel.waitForExistence(timeout: timeout)
+        XCTAssertTrue(foundPanel)
+        XCTAssertEqual(evaluationPanel.label, "It's a Match!")
+        
+        let evaluationPanelButton = app.buttons["Dismiss_OK"]
         evaluationPanelButton.tap()
         
         deal3Button.tap()
@@ -133,9 +136,11 @@ final class ControlsUITests: XCTestCase {
             c2Card.tap()
             c3Card.tap()
             
-            let evaluationPanelButton = app.buttons["Evaluation_Panel"]
-            let foundPanel = evaluationPanelButton.waitForExistence(timeout: timeout)
+            let evaluationPanel = app.otherElements["Evaluation_Panel"]
+            let foundPanel = evaluationPanel.waitForExistence(timeout: timeout)
             XCTAssertTrue(foundPanel)
+            
+            let evaluationPanelButton = app.buttons["Dismiss_OK"]
             evaluationPanelButton.tap()
         }
         
