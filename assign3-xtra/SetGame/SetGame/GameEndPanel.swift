@@ -19,19 +19,18 @@ struct GameEndPanel: View {
         VStack(spacing: 0.0) {
             headerLabel
             gameEndView
+            dismissButton
+                .zIndex(-1.0)
         }.clipShape(RoundedRectangle(cornerSize: Constants.CornerRadius))
             .shadow(radius: 10.0)
             .padding(.horizontal, 30.0)
-            .onTapGesture {
-                handler()
-            }
     }
     
     private var gameEndView: some View {
         VStack(spacing: 0.0) {
             Text(message)
                 .foregroundColor(.black)
-                .padding(10.0)
+                .padding(20.0)
         }
         .frame(maxWidth: .infinity)
         .background {
@@ -60,7 +59,23 @@ struct GameEndPanel: View {
         }
     }
     
-    
+    private var dismissButton: some View {
+        ZStack {
+            Button {
+                handler()
+            } label: {
+                Text("OK")
+            }
+            .padding(EdgeInsets(top: 15.0, leading: 30.0, bottom: 15.0, trailing: 30.0))
+            .accessibilityIdentifier("Dismiss_OK")
+            .accessibilityLabel("Dismiss")
+        }
+        .frame(maxWidth: .infinity)
+        .background {
+            Rectangle()
+                .fill(.white)
+        }
+    }
     
     enum InfoType {
         case Warning

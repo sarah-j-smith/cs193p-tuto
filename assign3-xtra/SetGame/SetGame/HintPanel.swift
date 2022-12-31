@@ -20,12 +20,10 @@ struct HintPanel: View {
         VStack(spacing: 0.0) {
             headerLabel
             cardsView
+            dismissButton
         }.clipShape(RoundedRectangle(cornerSize: Constants.CornerRadius))
             .shadow(radius: 10.0)
             .padding(.horizontal, 30.0)
-            .onTapGesture {
-                handler()
-            }
     }
     
     private var cardsView: some View {
@@ -73,7 +71,25 @@ struct HintPanel: View {
         }
     }
     
+    private var dismissButton: some View {
+        ZStack {
+            Button {
+                handler()
+            } label: {
+                Text("OK")
+            }
+            .padding(EdgeInsets(top: 15.0, leading: 30.0, bottom: 15.0, trailing: 30.0))
+            .accessibilityIdentifier("Dismiss_OK")
+            .accessibilityLabel("Dismiss")
+        }
+        .frame(maxWidth: .infinity)
+        .background {
+            Rectangle()
+                .fill(.white)
+        }
+    }
     
+
     
     enum InfoType {
         case Warning

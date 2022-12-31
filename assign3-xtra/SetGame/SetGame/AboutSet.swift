@@ -11,23 +11,43 @@ import SwiftUI
 struct AboutSet: View {
     
     var title = "About Cards of Set"
-    var message = """
- The code of this Swift version (c) 2022 by Sarah Smith is released under MIT License.  The image of Set (the Egyptian deity) is copyright Jeff Dahl, used here under CC-by-SA 4.0
-license.  See the link above for details.
+
+    let attribution = """
+The Set card game was designed by Marsha Falco in 1974 and published by Set
+Enterprises in 1991.
 """
-    var infoType = InfoType.Information
+    
+    let picAttribution = """
+The image of Set (the Egyptian deity) is copyright Jeff Dahl, used here under CC-by-SA 4.0
+license.  Tap the link below for details.
+"""
+
+    let courseInfo = """
+This SwiftUI implementation of Set is an academic exercise. Tap the Stanford Developing Apps
+for iOS course link below for more information.
+"""
+
+    let codeInfo = """
+The code of this Swift version (c) 2022 by Sarah Smith is released under MIT License.
+"""
+
+    let cardGame = """
+To buy the original card game of Set, visit Set Enterprises, now owned by PlayMonster.
+See the link below. This app is not affiliated with Set Enterprises or PlayMonster.
+"""
+    
     var handler: () -> Void
     
     var body: some View {
         VStack(spacing: 0.0) {
             headerLabel
-            messageView
+            ScrollView {
+                messageView
+            }
+            dismissButton
         }.clipShape(RoundedRectangle(cornerSize: Constants.CornerRadius))
             .shadow(radius: 10.0)
             .padding(.horizontal, 30.0)
-            .onTapGesture {
-                handler()
-            }
     }
     
     private var picURL: URL {
@@ -36,6 +56,10 @@ license.  See the link above for details.
     
     private var setURL: URL {
         URL(string: "https://en.wikipedia.org/wiki/Set_(card_game)")!
+    }
+    
+    private var playMonsterURL: URL {
+        URL(string: "https://www.playmonster.com/product/set/")!
     }
     
     private var githubURL: URL {
@@ -47,24 +71,19 @@ license.  See the link above for details.
     }
     
     private var messageView: some View {
-        VStack(spacing: 0.0) {
-            Image("Set").scaledToFit()
+        VStack {
+            Image("Set")
+                .scaledToFit()
             
-            Link("Set card game & rules - Wikipedia", destination: setURL)
-            Text("The Set card game was designed by Marsha Falco in '74 & published by Set Enterprises in '91.").font(.caption).padding(EdgeInsets(top: 0.0, leading: 2.0, bottom: 3.0, trailing: 2.0))
+            aboutPanel(linkText: "Egyptian Deity \"Set\"", linkURL: picURL, detailText: picAttribution)
             
-            Link("Swift code MIT license Github - Sarah Smith", destination: githubURL)
-            Text("The code of this Swift version (c) 2022 by Sarah Smith is released under MIT License.").font(.caption).padding(EdgeInsets(top: 0.0, leading: 2.0, bottom: 5.0, trailing: 2.0))
+            aboutPanel(linkText: "Set Game (Wikipedia)", linkURL: setURL, detailText: attribution)
             
-            Link("Assignment 3 - CS193p - Stanford Course", destination: stanfordURL)
-            Text("This app is an academic exercise and released for free under the MIT license. See Stanford Developing Apps for iOS course").font(.caption).padding(EdgeInsets(top: 0.0, leading: 2.0, bottom: 5.0, trailing: 2.0))
-
-            Link("Set illustration by Jeff Dahl - CC-by-SA 4.0", destination: picURL)
-            Text("The image of Set (the Egyptian deity) is copyright Jeff Dahl, used here under CC-by-SA 4.0 license.").font(.caption).padding(EdgeInsets(top: 0.0, leading: 2.0, bottom: 3.0, trailing: 2.0))
-
-//            Text(message)
-//                .foregroundColor(.black)
-//                .padding(10.0)
+            aboutPanel(linkText: "Stanford Course CS193p", linkURL: stanfordURL, detailText: courseInfo)
+            
+            aboutPanel(linkText: "MIT Licensed Code on Github", linkURL: githubURL, detailText: codeInfo)
+            
+            aboutPanel(linkText: "Set Enterprises", linkURL: playMonsterURL, detailText: cardGame)
         }
         .frame(maxWidth: .infinity)
         .background {
@@ -73,18 +92,27 @@ license.  See the link above for details.
         }
     }
     
+    private func aboutPanel(linkText: String, linkURL: URL, detailText: String) -> some View {
+        return VStack {
+            Text(detailText.replacingOccurrences(of: "\n", with: " "))
+                .frame(maxWidth: .infinity)
+                .padding(5.0)
+                .background {
+                    Rectangle().fill().foregroundColor(.yellow.opacity(0.4))
+                }
+            Link(linkText, destination: linkURL)
+                .padding()
+        }
+        .background {
+            Rectangle().fill().foregroundColor(.white).shadow(radius: 2.0)
+        }
+    }
+    
     private var headerLabel: some View {
         ZStack {
-            switch infoType {
-            case .Warning:
-                Label(self.title, systemImage: Constants.WarningSymbol)
-                    .labelStyle(WarningDialogLabelStyle())
-                    .padding(10.0)
-            default:
-                Label(self.title, systemImage: Constants.InfoSymbol)
-                    .labelStyle(InfoDialogLabelStyle())
-                    .padding(5.0)
-            }
+            Label(self.title, systemImage: Constants.InfoSymbol)
+                .labelStyle(InfoDialogLabelStyle())
+                .padding(5.0)
         }
         .frame(maxWidth: .infinity)
         .background {
@@ -93,17 +121,26 @@ license.  See the link above for details.
         }
     }
     
-    
-    
-    enum InfoType {
-        case Warning
-        case Information
+    private var dismissButton: some View {
+        ZStack {
+            Button {
+                handler()
+            } label: {
+                Text("OK")
+            }
+            .padding(EdgeInsets(top: 15.0, leading: 30.0, bottom: 15.0, trailing: 30.0))
+            .accessibilityIdentifier("Dismiss_OK")
+            .accessibilityLabel("Dismiss")
+        }
+        .frame(maxWidth: .infinity)
+        .background {
+            Rectangle()
+                .fill(.white).shadow(radius: 5.0)
+        }
     }
     
     struct Constants {
-        static let WarningSymbol = "exclamationmark.triangle.fill"
-        static let InfoSymbol = "checkmark.seal.fill"
-        static let CardsAspect: CGFloat = 2/3
+        static let InfoSymbol = "info.circle"
         static let CornerRadius = CGSize(width: 10.0, height: 10.0)
     }
     
@@ -111,15 +148,6 @@ license.  See the link above for details.
         func makeBody(configuration: Configuration) -> some View {
             HStack(spacing: 8) {
                 configuration.icon.font(.title2).foregroundColor(.blue)
-                configuration.title.font(.title2).foregroundColor(.white)
-            }
-        }
-    }
-    
-    struct WarningDialogLabelStyle: LabelStyle {
-        func makeBody(configuration: Configuration) -> some View {
-            HStack(spacing: 8) {
-                configuration.icon.font(.title2).foregroundColor(.orange)
                 configuration.title.font(.title2).foregroundColor(.white)
             }
         }
@@ -133,6 +161,7 @@ struct AboutSet_Previews: PreviewProvider {
             VStack {
                 AboutSet(
                     handler: { print ("Handler") })
+                Spacer()
             }
         }
     }
