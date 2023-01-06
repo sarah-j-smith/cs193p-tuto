@@ -14,13 +14,22 @@ struct HintPanel: View {
     var title: String
     var message: String
     var infoType: InfoType
-    var handler: () -> Void
+    var handler: (Bool) -> Void
     
     var body: some View {
         VStack(spacing: 0.0) {
             headerLabel
             cardsView
-            dismissButton
+            HStack {
+                howToButton
+                Spacer()
+                dismissButton
+            }
+            .frame(maxWidth: .infinity)
+            .background {
+                Rectangle()
+                    .fill(.white)
+            }
         }.clipShape(RoundedRectangle(cornerSize: Constants.CornerRadius))
             .shadow(radius: 10.0)
             .padding(.horizontal, 30.0)
@@ -71,26 +80,32 @@ struct HintPanel: View {
         }
     }
     
+    private var howToButton: some View {
+        ZStack {
+            Button {
+                handler(true)
+            } label: {
+                Label("Guide", systemImage: "book.circle").labelStyle(VerticalLabelStyle())
+            }
+            .padding(EdgeInsets(top: 15.0, leading: 30.0, bottom: 15.0, trailing: 30.0))
+            .accessibilityIdentifier("Dismiss_HowTo")
+            .accessibilityLabel("Dismiss and Open How-to")
+        }
+    }
+    
     private var dismissButton: some View {
         ZStack {
             Button {
-                handler()
+                handler(false)
             } label: {
-                Text("OK")
+                Label("Got it", systemImage: "hand.thumbsup.circle").labelStyle(VerticalLabelStyle())
             }
             .padding(EdgeInsets(top: 15.0, leading: 30.0, bottom: 15.0, trailing: 30.0))
             .accessibilityIdentifier("Dismiss_OK")
             .accessibilityLabel("Dismiss")
         }
-        .frame(maxWidth: .infinity)
-        .background {
-            Rectangle()
-                .fill(.white)
-        }
     }
-    
 
-    
     enum InfoType {
         case Warning
         case Information
@@ -101,6 +116,15 @@ struct HintPanel: View {
         static let InfoSymbol = "checkmark.seal.fill"
         static let CardsAspect: CGFloat = 2/3
         static let CornerRadius = CGSize(width: 10.0, height: 10.0)
+    }
+    
+    struct VerticalLabelStyle: LabelStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            VStack(alignment: .center, spacing: 8) {
+                configuration.icon.font(.largeTitle)
+                configuration.title
+            }
+        }
     }
     
     struct InfoDialogLabelStyle: LabelStyle {
@@ -138,14 +162,16 @@ struct HintPanel_Previews: PreviewProvider {
                     title: "No Sets",
                     message: noHintAvailable,
                     infoType: .Warning,
-                    handler: { print ("Handler") })
+                    handler: { howToRequested in
+                        print ("Handler")
+                    })
                 Spacer()
                 HintPanel(
                     cards: cards,
                     title: "Hint",
                     message: message,
                     infoType: .Information,
-                    handler: {
+                    handler: { howToRequested in
                         print("Handler")
                     })
             }

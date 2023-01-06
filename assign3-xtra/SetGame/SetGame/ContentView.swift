@@ -60,21 +60,36 @@ struct ContentView: View {
                 }
                 if game.shouldDisplayEvaluationPanel {
                     setEvaluationPanel.transition(.offset(x: 0.0, y: geometry.size.height))
-                        .padding(30.0)
+                        .padding(10.0)
                         .zIndex(Constants.zDialogs)
                         .transition(.offset(x: 0.0, y: geometry.size.height))
                 }
                 if game.shouldDisplayAboutPanel {
-                    AboutSet(handler: {
+                    AboutSet(handler: { shouldDisplayGuide in
                         withAnimation {
                             game.hideAboutPanel()
+                            if shouldDisplayGuide {
+                                game.showHowToPanel()
+                            }
                         }
                     }).padding(4.0).zIndex(Constants.zDialogs)
                         .transition(.offset(x: 0.0, y: geometry.size.height))
                         .accessibilityElement(children: .contain)
                         .accessibilityAddTraits(.isButton)
                         .accessibilityIdentifier("About_Panel")
-                        .accessibilityLabel("About Set Game")
+                        .accessibilityLabel("About Cards of Set")
+                }
+                if game.shouldDisplayHowToPanel {
+                    HowToPlay(handler: {
+                        withAnimation {
+                            game.hideHowToPanel()
+                        }
+                    }).padding(4.0).zIndex(Constants.zDialogs)
+                        .transition(.offset(x: 0.0, y: geometry.size.height))
+                        .accessibilityElement(children: .contain)
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityIdentifier("HowTo_Panel")
+                        .accessibilityLabel("How to Play Cards of Set")
                 }
             }
         }
@@ -299,8 +314,11 @@ struct ContentView: View {
             title: "Hints",
             message: hint.message,
             infoType: hint.cards.count == 0 ? .Warning : .Information,
-            handler: {
+            handler: { howToRequested in
                 withAnimation(.easeInOut(duration: panelDuration)) {
+                    if howToRequested {
+                        game.showHowToPanel()
+                    }
                     game.hideHintPanel()
                 }
             })
@@ -318,8 +336,11 @@ struct ContentView: View {
             title: game.isMatch ? "It's a Match!" : "Not a Match!",
             message: game.matchResultExplanation,
             infoType: game.isMatch ? .Information : .Warning,
-            handler: {
+            handler: { doGuide in
                 withAnimation(.easeInOut(duration: panelDuration)) {
+                    if doGuide {
+                        game.showHowToPanel()
+                    }
                     game.hideEvaluationPanel()
                 }
             })

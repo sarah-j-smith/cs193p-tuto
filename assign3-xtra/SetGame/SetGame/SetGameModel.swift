@@ -135,27 +135,27 @@ struct SetGameModel {
         if (selectedCards.count != 3) { return "Not a set: must have 3 cards selected" }
         // See isMatchedSet above for this logic
         if denominations.count == 2 {
-            return "Not a set: denominations are \(denominations)"
+            let denomStr = denominations.map{ String($0) }.joined(separator: " & ")
+            return "Not a set: counts are \(denomStr)"
         }
         if (shapes.count == 2) {
-            return "Not a set: shapes are \(shapes)"
+            let shapesStr = shapes.map{ $0.description }.joined(separator: " & ")
+            return "Not a set: shapes are \(shapesStr)"
         }
         if (colors.count == 2) {
-            return "Not a set: colours are \(colors)"
+            let colorsStr = colors.map{ $0.description }.joined(separator: " & ")
+            return "Not a set: colours are \(colorsStr)"
         }
         if (shadings.count == 2) {
-            return "Not a set: shadings are \(shadings)"
+            let shadingsStr = shadings.map{ $0.description }.joined(separator: " & ")
+            return "Not a set: fills are \(shadingsStr)"
         }
         let denomScore = (denominations.count == 1 ? 3 : 6)
         let shapeScore = (shapes.count == 1 ? 3 : 6)
         let colorsScore = (colors.count == 1 ? 3 : 6)
         let shadingsScore = (shadings.count == 1 ? 3 : 6)
 
-        let denomExplainer = (denominations.count == 1 ? "Triple:" : "Run:") + " \(denominations.description) [\(denomScore)pts]"
-        let shapesExplainer = (shapes.count == 1 ? "Triple:" : "Run:") + " \(shapes.description) [\(shapeScore)pts]"
-        let colorsExplainer = (colors.count == 1 ? "Triple:" : "Run:") + " \(colors.description) [\(colorsScore)pts]"
-        let shadingExplainer = (shadings.count == 1 ? "Triple:" : "Run:") + " \(shadings.description) [\(shadingsScore)pts]"
-        return "Set! \(denomExplainer); \(shapesExplainer); \(colorsExplainer); \(shadingExplainer)"
+        return "You scored \(scoreForCurrentSet) points = \(colorsScore) + \(denomScore) + \(shapeScore) + \(shadingsScore)"
     }
 
     

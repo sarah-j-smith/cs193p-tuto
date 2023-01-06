@@ -92,12 +92,16 @@ Each high-level state can be modeled by a lower level finite state machine.
 
 ```mermaid
 stateDiagram-v2
+    state "game start" as B
     state "selecting cards" as S
     state "evaluating selection" as E
-    [*] --> S
+    state "game end" as G
+    [*] --> B
+    B --> S
     S --> E: 3 selected
     E --> S: player acknowledged
-    E --> [*]: deck exhausted
+    E --> G: win/loss condition triggered
+    G --> [*]
 ```
 
 The trigger to transition from **selecting cards** to **evaluating selection** is when the count

@@ -72,7 +72,7 @@ final class SetGameModelTests: XCTestCase {
         XCTAssertEqual(game.shadings, Set<SetGameModel.ShadingFeature>([ .SolidShading ]))
         XCTAssertEqual(game.shapes, Set<SetGameModel.ShapeFeature>([ .Squiggle ]))
         XCTAssert(game.isMatchedSet)
-        let exp = "Set!"
+        let exp = "You scored"
         let got = String(game.matchResultExplanation.prefix(exp.count))
         XCTAssertEqual(exp, got)
     }

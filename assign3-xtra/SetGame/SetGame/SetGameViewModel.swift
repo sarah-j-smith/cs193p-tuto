@@ -44,6 +44,7 @@ final class SetGameViewModel: ObservableObject {
     @Published var shouldDisplayHintPanel = false
     @Published var shouldDisplayAboutPanel = false
     @Published var shouldDisplayWinPanel = false
+    @Published var shouldDisplayHowToPanel = false
     @Published var score = Constants.StartScore
     @Published var isUpdatingMatches = false
     
@@ -250,6 +251,14 @@ final class SetGameViewModel: ObservableObject {
     
     func hideAboutPanel() {
         shouldDisplayAboutPanel = false
+    }
+    
+    func showHowToPanel() {
+        shouldDisplayHowToPanel = true
+    }
+    
+    func hideHowToPanel() {
+        shouldDisplayHowToPanel = false
     }
     
     func dealThreeMorePressed() {
