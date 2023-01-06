@@ -203,8 +203,8 @@ struct CardInfoView: View {
                 Label("Guide", systemImage: "book.circle").labelStyle(VerticalLabelStyle())
             }
             .padding(EdgeInsets(top: 15.0, leading: 30.0, bottom: 15.0, trailing: 30.0))
-            .accessibilityIdentifier("Dismiss_OK")
-            .accessibilityLabel("Dismiss")
+            .accessibilityIdentifier("Dismiss_HowTo")
+            .accessibilityLabel("Dismiss and Launch How-to")
         }
     }
     

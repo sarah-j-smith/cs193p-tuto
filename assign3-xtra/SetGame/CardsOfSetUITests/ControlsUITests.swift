@@ -108,7 +108,7 @@ final class ControlsUITests: XCTestCase {
         let foundPanel = aboutPanelButton.waitForExistence(timeout: timeout)
         XCTAssertTrue(foundPanel)
         XCTAssertTrue(aboutPanelButton.isHittable)
-        XCTAssertEqual(aboutPanelButton.label, "About Set Game")
+        XCTAssertEqual(aboutPanelButton.label, "About Cards of Set")
     }
     
     func testNewGameButton() throws {
